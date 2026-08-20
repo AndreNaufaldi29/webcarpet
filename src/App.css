@@ -1,0 +1,20 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #07130f;
+  color: #f3f0e7;
+  font-family: "Poppins", sans-serif;
+}
+
+body.dark {
+  background: #0f172a;
+  color: white;
+}
+
+.site-shell {
+  min-height: 100vh;
+}

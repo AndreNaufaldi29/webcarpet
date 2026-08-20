@@ -1,0 +1,195 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// 1. Model Manajemen User & Admin
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("Admin") // "Super Admin", "Manager", "Staff", "Admin"
+  status    String   @default("active") // "active", "inactive"
+  avatar    String?  @default("A")
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// 2. Model Kategori Produk
+model Category {
+  id            Int       @id @default(autoincrement())
+  name          String    @unique
+  slug          String    @unique
+  description   String?   @db.Text
+  productsCount Int       @default(0)
+  iconType      String?   @default("custom") // "mosque", "hotel", "office", "home", "custom", "tool"
+  image         String?   @db.Text
+  status        String    @default("Aktif") // "Aktif", "Nonaktif"
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  products      Product[]
+
+  @@map("categories")
+}
+
+// 3. Model Produk Karpet
+model Product {
+  id             Int       @id @default(autoincrement())
+  name           String
+  slug           String?
+  category       String    @default("Karpet Masjid") // "Karpet Masjid", "Karpet Hotel", "Karpet Kantor", "Karpet Rumah", "Karpet Custom", "Aksesoris"
+  categoryId     Int?
+  categoryRel    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  stock          Int       @default(10)
+  status         String    @default("Aktif") // "Aktif", "Nonaktif"
+  rating         Float     @default(5.0)
+  reviews        Int       @default(0)
+  description    String    @db.Text
+  images         String[]  @default([])
+  isFeatured     Boolean   @default(false)
+  isNew          Boolean   @default(false)
+  specifications Json?     // { Material, Ketebalan, Warna, Garansi, Ukuran }
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("products")
+}
+
+// 4. Model Portofolio Proyek
+model Portfolio {
+  id          Int      @id @default(autoincrement())
+  title       String
+  category    String   // "Masjid", "Hotel", "Kantor", "Rumah"
+  location    String   @default("Sidoarjo, Jawa Timur")
+  area        String   @default("100 m²")
+  date        String   @default("Maret 2026")
+  image       String   @db.Text // URL foto atau video
+  mediaType   String   @default("image") // "image" atau "video"
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("portfolios")
+}
+
+// 5. Model Testimonial & Review Pelanggan
+model Testimonial {
+  id        Int      @id @default(autoincrement())
+  name      String
+  role      String?  @default("Pelanggan AB Carpet")
+  category  String   @default("Karpet Masjid")
+  city      String?  @default("Indonesia")
+  text      String   @db.Text
+  rating    Int      @default(5)
+  status    String   @default("Menunggu Persetujuan") // "Aktif", "Menunggu Persetujuan", "Ditolak"
+  avatarBg  String?  @default("#2563eb")
+  photo     String?  @db.Text
+  media     Json?    // Array media [{ type: "image", src: "..." }]
+  date      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("testimonials")
+}
+
+// 6. Model Pengaturan Website & SEO
+model Setting {
+  id              Int      @id @default(1)
+  companyName     String   @default("AB Carpet")
+  tagline         String?  @default("Spesialis Karpet Masjid, Hotel, Kantor & Custom Premium")
+  phone           String?  @default("0812-5223-5800")
+  whatsapp        String?  @default("081252235800")
+  email           String?  @default("marketing1@abkarpet.com")
+  address         String?  @default("Jl. Raya Taman No. 45, Sidoarjo, Jawa Timur (Dekat Bundaran Waru)")
+  workingHours    String?  @default("Senin - Sabtu: 08:00 - 17:00 WIB (Minggu Libur/Perjanjian)")
+  description     String?  @db.Text
+  instagram       String?  @default("https://instagram.com/ab_karpetonline")
+  facebook        String?  @default("https://facebook.com/abcarpetindonesia")
+  tiktok          String?  @default("https://tiktok.com/@abcarpet")
+  youtube         String?  @default("https://youtube.com/@abcarpet")
+  mapsUrl         String?  @default("https://maps.google.com/?q=AB+Carpet+Sidoarjo")
+  metaTitle       String?  @default("AB Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya")
+  metaDescription String?  @db.Text
+  metaKeywords    String?  @default("karpet masjid, karpet hotel, karpet kantor, karpet custom, ab carpet sidoarjo, karpet surabaya")
+  metaAuthor      String?  @default("AB Carpet Indonesia")
+  ogImage         String?  @default("https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200")
+  canonicalUrl    String?  @default("https://abcarpet.co.id")
+  robotsIndex     String?  @default("index, follow")
+  promoActive     Boolean  @default(true)
+  promoText       String?  @db.Text
+  promoLink       String?
+  updatedAt       DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// 7. Model Cabang & Showroom
+model Branch {
+  id        Int      @id @default(autoincrement())
+  name      String
+  city      String
+  badge     String?  @default("Showroom Display")
+  address   String   @db.Text
+  phone     String?  @default("0812-5223-5800")
+  mapsUrl   String?
+  image     String?  @db.Text
+  status    String   @default("Aktif")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("branches")
+}
+
+// 8. Model Log & Riwayat Aktivitas Admin
+model AdminLog {
+  id          Int      @id @default(autoincrement())
+  userId      Int?
+  userName    String?  @default("Admin")
+  userRole    String?  @default("Super Admin")
+  action      String   // "LOGIN", "CREATE_USER", "UPDATE_PASSWORD", "CREATE_PRODUCT", "UPDATE_SETTINGS", "DELETE_ITEM"
+  module      String   // "Auth", "User", "Product", "Setting", "Portfolio", "Testimonial"
+  description String   @db.Text
+  ipAddress   String?  @default("127.0.0.1")
+  userAgent   String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  @@map("admin_logs")
+}
+
+// 9. Model Notifikasi & Peringatan Admin
+model AdminNotification {
+  id        Int      @id @default(autoincrement())
+  title     String
+  message   String   @db.Text
+  type      String   @default("info") // "info", "warning", "success", "danger"
+  module    String   @default("system") // "user", "product", "testimonial", "security", "system"
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  @@map("admin_notifications")
+}
+
+// 10. Model Sesi Login & Keamanan Admin
+model AdminSession {
+  id        String   @id @default(uuid())
+  userId    Int
+  token     String   @unique
+  ipAddress String?
+  userAgent String?  @db.Text
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("admin_sessions")
+}
