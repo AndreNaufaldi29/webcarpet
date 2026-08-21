@@ -234,9 +234,10 @@ function HeroSearch() {
             )}
           </div>
 
-          <button type="submit" className="search-btn">
-            <FiSearch />
-            <span>Cari Produk</span>
+          <button type="submit" className="search-btn" aria-label="Cari Produk">
+            <FiSearch className="search-btn-icon" />
+            <span className="search-btn-text-desktop">Cari Produk</span>
+            <span className="search-btn-text-mobile">Cari</span>
           </button>
         </div>
 
