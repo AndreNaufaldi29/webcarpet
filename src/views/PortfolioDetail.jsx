@@ -9,6 +9,11 @@ import {
   DEFAULT_PORTFOLIOS,
   isVideoMedia,
 } from "@/lib/portfolioStore";
+import {
+  getStoredSettings,
+  subscribeSettings,
+  DEFAULT_SETTINGS,
+} from "@/lib/settingsStore";
 
 import {
   FiArrowLeft,
@@ -27,6 +32,15 @@ export default function PortfolioDetail() {
 
   const [portfolios, setPortfolios] = useState(DEFAULT_PORTFOLIOS);
   const [dbPortfolio, setDbPortfolio] = useState(null);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+
+  useEffect(() => {
+    setSettings(getStoredSettings());
+    const unsubSettings = subscribeSettings((updated) => {
+      setSettings(updated);
+    });
+    return () => unsubSettings();
+  }, []);
 
   useEffect(() => {
     // 1. Initial cached
@@ -60,10 +74,12 @@ export default function PortfolioDetail() {
   const isVideo = isVideoMedia(portfolio.image, portfolio.mediaType);
 
   const handleWhatsApp = () => {
-    const message = `Halo Rumah Indah Carpet, saya tertarik dengan portofolio proyek "${portfolio.title}". Mohon info estimasi biaya dan konsultasi untuk lokasi kami.`;
+    const cleanWhatsapp = (settings.whatsapp || "08212128701").replace(/[^0-9]/g, "");
+    const num = cleanWhatsapp.startsWith("0") ? "62" + cleanWhatsapp.slice(1) : cleanWhatsapp;
+    const message = `Halo ${settings.companyName || "Rumah Indah Carpet"}, saya tertarik dengan portofolio proyek "${portfolio.title}". Mohon info estimasi biaya dan konsultasi untuk lokasi kami.`;
 
     window.open(
-      `https://wa.me/6281252235800?text=${encodeURIComponent(
+      `https://wa.me/${num}?text=${encodeURIComponent(
         message
       )}`,
       "_blank"

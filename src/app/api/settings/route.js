@@ -13,9 +13,9 @@ export async function GET() {
           id: 1,
           companyName: "Rumah Indah Carpet",
           tagline: "Spesialis Karpet Masjid, Hotel, Kantor & Custom Premium",
-          phone: "0812-5223-5800",
-          whatsapp: "081252235800",
-          email: "marketing1@rumahindahcarpet.com",
+          phone: "0821-2128-701",
+          whatsapp: "08212128701",
+          email: "rumahindahkarpet1@gmail.com",
           address: "Jl. Raya Taman No. 45, Sidoarjo, Jawa Timur (Dekat Bundaran Waru)",
           workingHours: "Senin - Sabtu: 08:00 - 17:00 WIB (Minggu Libur/Perjanjian)",
           description:
@@ -36,7 +36,7 @@ export async function GET() {
           robotsIndex: "index, follow",
           promoActive: true,
           promoText: "🎉 Dapatkan Diskon Spesial Karpet Masjid & Free Obras dari Rumah Indah Carpet! Hubungi Kami Sekarang.",
-          promoLink: "https://wa.me/6281252235800",
+          promoLink: "https://wa.me/628212128701",
         },
       });
     }

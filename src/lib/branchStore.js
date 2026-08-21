@@ -7,7 +7,7 @@ export const DEFAULT_BRANCHES = [
     city: "Sidoarjo",
     badge: "Pusat & Gudang Utama",
     address: "Jl. Raya Taman No. 45, Sidoarjo, Jawa Timur (Dekat Bundaran Waru)",
-    phone: "0812-5223-5800",
+    phone: "0821-2128-701",
     mapsUrl: "https://maps.google.com/?q=Rumah+Indah+Carpet+Sidoarjo",
     image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200",
     status: "Aktif",
@@ -18,7 +18,7 @@ export const DEFAULT_BRANCHES = [
     city: "Surabaya",
     badge: "Showroom Display",
     address: "Jl. Ahmad Yani No. 45, Surabaya, Jawa Timur",
-    phone: "0812-5223-5800",
+    phone: "0821-2128-701",
     mapsUrl: "https://maps.google.com/?q=Rumah+Indah+Carpet+Surabaya",
     image: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1200",
     status: "Aktif",
@@ -29,14 +29,14 @@ export const DEFAULT_BRANCHES = [
     city: "Malang",
     badge: "Showroom & Konsultasi",
     address: "Jl. Soekarno Hatta No. 20, Malang, Jawa Timur",
-    phone: "0812-5223-5800",
+    phone: "0821-2128-701",
     mapsUrl: "https://maps.google.com/?q=Rumah+Indah+Carpet+Malang",
     image: "https://images.unsplash.com/photo-1460317442991-0ec209397118?w=1200",
     status: "Aktif",
   },
 ];
 
-const STORAGE_KEY = "rumahindah_branches_data_v2";
+const STORAGE_KEY = "rumahindah_branches_data_v3";
 
 export async function syncBranchesFromDatabase() {
   if (typeof window === "undefined") return DEFAULT_BRANCHES;

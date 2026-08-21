@@ -507,7 +507,7 @@ export default function PengaturanPage() {
                         className="admin-input"
                         value={settings.whatsapp}
                         onChange={handleChange}
-                        placeholder="Contoh: 081252235800"
+                        placeholder="Contoh: 08212128701"
                       />
                     </div>
 
@@ -723,7 +723,7 @@ export default function PengaturanPage() {
                       className="admin-input"
                       value={settings.promoLink || ""}
                       onChange={handleChange}
-                      placeholder="https://wa.me/6281252235800 atau /catalog"
+                      placeholder="https://wa.me/628212128701 atau /catalog"
                     />
                     <span className="helper-text">
                       Kosongkan untuk otomatis mengarahkan ke kontak WhatsApp resmi.

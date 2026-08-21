@@ -242,17 +242,21 @@ function HeroSearch() {
         </div>
 
         {/* DYNAMIC CATEGORY FILTER PILLS UNDER SEARCH */}
-        <div className="category-filter">
-          {categories.map((item) => (
-            <button
-              key={item}
-              type="button"
-              className={activeCategory === item ? "active" : ""}
-              onClick={() => handleCategoryClick(item)}
-            >
-              {item}
-            </button>
-          ))}
+        <div className="category-filter-wrap">
+          <div className="category-filter" role="tablist" aria-label="Filter Kategori Karpet">
+            {categories.map((item) => (
+              <button
+                key={item}
+                type="button"
+                role="tab"
+                aria-selected={activeCategory === item}
+                className={activeCategory === item ? "active" : ""}
+                onClick={() => handleCategoryClick(item)}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
         </div>
       </form>
     </section>

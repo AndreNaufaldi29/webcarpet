@@ -30,7 +30,7 @@ function Footer() {
     return () => unsubscribe();
   }, []);
 
-  const cleanWhatsapp = (settings.whatsapp || "0812-5223-5800").replace(/[^0-9]/g, "");
+  const cleanWhatsapp = (settings.whatsapp || "08212128701").replace(/[^0-9]/g, "");
   const whatsappUrl = `https://wa.me/${cleanWhatsapp.startsWith("0") ? "62" + cleanWhatsapp.slice(1) : cleanWhatsapp}`;
 
   return (
@@ -62,11 +62,11 @@ function Footer() {
 
           <p title="Telepon">
             <FiPhone />
-            {settings.phone || "0812 5223 5800"}
+            {settings.phone || "0821 2128 701"}
           </p>
           <p title="Email">
             <FiMail />
-            {settings.email || "marketing1@rumahindahcarpet.com"}
+            {settings.email || "rumahindahkarpet1@gmail.com"}
           </p>
           <p title="Alamat">
             <FiMapPin />

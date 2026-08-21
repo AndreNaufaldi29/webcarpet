@@ -56,6 +56,11 @@ export const metadata = {
       "Pusat karpet masjid, hotel, kantor, dan custom berkualitas tinggi dengan harga produsen langsung.",
     images: ["https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200"],
   },
+  icons: {
+    icon: "/rumah_indah_carpet.png",
+    shortcut: "/rumah_indah_carpet.png",
+    apple: "/rumah_indah_carpet.png",
+  },
   robots: {
     index: true,
     follow: true,

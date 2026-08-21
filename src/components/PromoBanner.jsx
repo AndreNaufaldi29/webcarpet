@@ -24,7 +24,7 @@ export default function PromoBanner() {
 
   const promoLink =
     settings.promoLink ||
-    `https://wa.me/${(settings.whatsapp || "6281252235800").replace(/[^0-9]/g, "")}`;
+    `https://wa.me/${(settings.whatsapp || "628212128701").replace(/[^0-9]/g, "")}`;
 
   return (
     <div className="promo-top-banner">

@@ -8,6 +8,11 @@ import {
   subscribeProducts,
   DEFAULT_PRODUCTS,
 } from "@/lib/productStore";
+import {
+  getStoredSettings,
+  subscribeSettings,
+  DEFAULT_SETTINGS,
+} from "@/lib/settingsStore";
 
 import {
   FiArrowLeft,
@@ -24,6 +29,15 @@ export default function ProductDetail() {
 
   const [products, setProducts] = useState(DEFAULT_PRODUCTS);
   const [dbProduct, setDbProduct] = useState(null);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+
+  useEffect(() => {
+    setSettings(getStoredSettings());
+    const unsubSettings = subscribeSettings((updated) => {
+      setSettings(updated);
+    });
+    return () => unsubSettings();
+  }, []);
 
   useEffect(() => {
     // 1. Initial cached products
@@ -55,7 +69,7 @@ export default function ProductDetail() {
     DEFAULT_PRODUCTS[0];
 
   const [activeImage, setActiveImage] = useState(
-    product.images?.[0] || "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200"
+    product.images?.[0] || product.image || "/carpet-placeholder.jpg"
   );
 
   useEffect(() => {
@@ -65,10 +79,12 @@ export default function ProductDetail() {
   }, [product]);
 
   const handleWhatsApp = () => {
-    const message = `Halo Rumah Indah Carpet, saya tertarik dengan ${product.name}. Saya ingin konsultasi & harga penawaran.`;
+    const cleanWhatsapp = (settings.whatsapp || "08212128701").replace(/[^0-9]/g, "");
+    const num = cleanWhatsapp.startsWith("0") ? "62" + cleanWhatsapp.slice(1) : cleanWhatsapp;
+    const message = `Halo ${settings.companyName || "Rumah Indah Carpet"}, saya tertarik dengan ${product.name}. Saya ingin konsultasi & harga penawaran.`;
 
     window.open(
-      `https://wa.me/6281252235800?text=${encodeURIComponent(
+      `https://wa.me/${num}?text=${encodeURIComponent(
         message
       )}`,
       "_blank"

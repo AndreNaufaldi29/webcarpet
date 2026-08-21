@@ -59,7 +59,7 @@ function Cabang() {
     };
   }, []);
 
-  const cleanWhatsapp = (settings.whatsapp || "0812-5223-5800").replace(/[^0-9]/g, "");
+  const cleanWhatsapp = (settings.whatsapp || "08212128701").replace(/[^0-9]/g, "");
   const activeBranches = useMemo(
     () => branches.filter((b) => b.status !== "Nonaktif"),
     [branches]
@@ -327,10 +327,10 @@ function Cabang() {
                     <FiPhone className="info-icon" />
                     <div className="info-text">
                       <a
-                        href={`tel:${(branch.phone || settings.phone || "0812-5223-5800").replace(/[^0-9+]/g, "")}`}
+                        href={`tel:${(branch.phone || settings.phone || "0821-2128-701").replace(/[^0-9+]/g, "")}`}
                         className="phone-link"
                       >
-                        {branch.phone || settings.phone || "0812-5223-5800"}
+                        {branch.phone || settings.phone || "0821-2128-701"}
                       </a>
                     </div>
                   </div>

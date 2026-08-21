@@ -37,9 +37,10 @@ async function main() {
   ];
 
   for (const u of users) {
+    const { id, ...userData } = u;
     await prisma.user.upsert({
       where: { email: u.email },
-      update: u,
+      update: userData,
       create: u,
     });
   }
@@ -104,9 +105,10 @@ async function main() {
   ];
 
   for (const c of categories) {
+    const { id, ...catData } = c;
     await prisma.category.upsert({
       where: { slug: c.slug },
-      update: c,
+      update: catData,
       create: c,
     });
   }
@@ -359,9 +361,9 @@ async function main() {
     id: 1,
     companyName: "Rumah Indah Carpet",
     tagline: "Spesialis Karpet Masjid, Hotel, Kantor & Custom Premium",
-    phone: "0812-5223-5800",
-    whatsapp: "081252235800",
-    email: "marketing1@rumahindahcarpet.com",
+    phone: "0821-2128-701",
+    whatsapp: "08212128701",
+    email: "rumahindahkarpet1@gmail.com",
     address: "Jl. Raya Taman No. 45, Sidoarjo, Jawa Timur (Dekat Bundaran Waru)",
     workingHours: "Senin - Sabtu: 08:00 - 17:00 WIB (Minggu Libur/Perjanjian)",
     description:
@@ -382,12 +384,13 @@ async function main() {
     robotsIndex: "index, follow",
     promoActive: true,
     promoText: "🎉 Dapatkan Diskon Spesial Karpet Masjid & Free Obras dari Rumah Indah Carpet! Hubungi Kami Sekarang.",
-    promoLink: "https://wa.me/6281252235800",
+    promoLink: "https://wa.me/628212128701",
   };
 
+  const { id: sId, ...settingDataWithoutId } = settingData;
   await prisma.setting.upsert({
     where: { id: 1 },
-    update: settingData,
+    update: settingDataWithoutId,
     create: settingData,
   });
   console.log("✓ Berhasil seed data Settings & SEO");
@@ -400,7 +403,7 @@ async function main() {
       city: "Sidoarjo",
       badge: "Pusat & Gudang Utama",
       address: "Jl. Raya Taman No. 45, Sidoarjo, Jawa Timur (Dekat Bundaran Waru)",
-      phone: "0812-5223-5800",
+      phone: "0821-2128-701",
       mapsUrl: "https://maps.google.com/?q=Rumah+Indah+Carpet+Sidoarjo",
       image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200",
       status: "Aktif",
@@ -411,7 +414,7 @@ async function main() {
       city: "Surabaya",
       badge: "Showroom Display",
       address: "Jl. Ahmad Yani No. 45, Surabaya, Jawa Timur",
-      phone: "0812-5223-5800",
+      phone: "0821-2128-701",
       mapsUrl: "https://maps.google.com/?q=Rumah+Indah+Carpet+Surabaya",
       image: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1200",
       status: "Aktif",
@@ -422,7 +425,7 @@ async function main() {
       city: "Malang",
       badge: "Showroom & Konsultasi",
       address: "Jl. Soekarno Hatta No. 20, Malang, Jawa Timur",
-      phone: "0812-5223-5800",
+      phone: "0821-2128-701",
       mapsUrl: "https://maps.google.com/?q=Rumah+Indah+Carpet+Malang",
       image: "https://images.unsplash.com/photo-1460317442991-0ec209397118?w=1200",
       status: "Aktif",
