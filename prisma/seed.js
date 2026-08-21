@@ -24,6 +24,16 @@ async function main() {
       avatar: "A",
       phone: "0812-3456-7890",
     },
+    {
+      id: 2,
+      name: "Andre Naufaldi",
+      email: "andrenaufaldi29@gmail.com",
+      password: "coregundam",
+      role: "Super Admin",
+      status: "active",
+      avatar: "A",
+      phone: "0823-33893-4488",
+    },
   ];
 
   for (const u of users) {
