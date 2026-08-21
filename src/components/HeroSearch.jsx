@@ -24,7 +24,7 @@ const slides = [
     badge: "KARPET MASJID & IBADAH",
     title: "Lembut, Nyaman & Elegan Untuk Rumah Ibadah Anda",
     desc:
-      "AB Carpet menyediakan berbagai pilihan karpet berkualitas tinggi untuk masjid, musholla, hotel, kantor dan kebutuhan custom lainnya.",
+      "Rumah Indah Carpet menyediakan berbagai pilihan karpet berkualitas tinggi untuk masjid, musholla, hotel, kantor dan kebutuhan custom lainnya.",
   },
   {
     image:

@@ -60,7 +60,7 @@ export default function PortfolioDetail() {
   const isVideo = isVideoMedia(portfolio.image, portfolio.mediaType);
 
   const handleWhatsApp = () => {
-    const message = `Halo AB Carpet, saya tertarik dengan portofolio proyek "${portfolio.title}". Mohon info estimasi biaya dan konsultasi untuk lokasi kami.`;
+    const message = `Halo Rumah Indah Carpet, saya tertarik dengan portofolio proyek "${portfolio.title}". Mohon info estimasi biaya dan konsultasi untuk lokasi kami.`;
 
     window.open(
       `https://wa.me/6281252235800?text=${encodeURIComponent(
@@ -110,7 +110,7 @@ export default function PortfolioDetail() {
             <h1>{portfolio.title}</h1>
 
             <p className="portfolio-desc">
-              {portfolio.description || "Dokumentasi pengerjaan karpet profesional bergaransi resmi dari AB Carpet."}
+              {portfolio.description || "Dokumentasi pengerjaan karpet profesional bergaransi resmi dari Rumah Indah Carpet."}
             </p>
 
             {/* DETAILS GRID */}

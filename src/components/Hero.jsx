@@ -7,7 +7,7 @@ function Hero() {
 
       <img
         src={heroImage}
-        alt="AB Carpet"
+        alt="Rumah Indah Carpet"
         className="hero-image"
       />
 

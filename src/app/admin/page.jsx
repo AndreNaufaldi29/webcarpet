@@ -92,7 +92,7 @@ export default function AdminDashboardPage() {
       <main className={`admin-main ${collapsed ? "sidebar-collapsed" : ""}`}>
         {/* UNIFIED ADMIN HEADER */}
         <AdminHeader
-          title="Dashboard AB Carpet"
+          title="Dashboard Rumah Indah Carpet"
           breadcrumb="ADMIN PANEL"
           setMobileOpen={setMobileOpen}
         />
@@ -102,7 +102,7 @@ export default function AdminDashboardPage() {
           {/* BANNER WELCOME */}
           <div className="admin-welcome-banner">
             <div>
-              <h2>Selamat Datang di Admin Panel AB Carpet! 👋</h2>
+              <h2>Selamat Datang di Admin Panel Rumah Indah Carpet! 👋</h2>
               <p>Kelola katalog produk, portofolio pengerjaan, testimonial, dan manajemen pengguna aplikasi secara terpusat.</p>
             </div>
             <Link

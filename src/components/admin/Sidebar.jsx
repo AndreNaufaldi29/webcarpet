@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { logout } from "@/lib/authStore";
-import logoAB from "../../assets/Original-AB-Carpet-Logo.png";
+import BrandLogo from "../BrandLogo";
 import {
   FiHome,
   FiUsers,
@@ -101,15 +101,11 @@ export default function Sidebar({
         <div className="sidebar-logo">
           <div className="sidebar-brand">
             <div className="logo-box">
-              <img
-                src={logoAB.src}
-                alt="AB Carpet Logo"
-                className="sidebar-logo-img"
-              />
+              <BrandLogo variant="icon-only" size="sm" />
             </div>
             {!collapsed && (
               <div className="logo-text">
-                <strong>AB Carpet</strong>
+                <strong>Rumah Indah</strong>
                 <span>ADMIN PANEL</span>
               </div>
             )}

@@ -4,17 +4,30 @@
   box-sizing: border-box;
 }
 
+:root {
+  --deep-green: #0A3B25;
+  --mod-green: #2A6151;
+  --laurel: #B2B7AA;
+  --light-cream: #FCF7F0;
+  --tuscan-gold: #D8C2A4;
+
+  --bg-primary: #FCF7F0;
+  --text-main: #0D1B14;
+}
+
 body {
-  background: #07130f;
-  color: #f3f0e7;
-  font-family: "Poppins", sans-serif;
+  background: var(--light-cream, #FCF7F0);
+  color: #0D1B14;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body.dark {
-  background: #0f172a;
-  color: white;
+  background: #061A12 !important;
+  color: #FCF7F0 !important;
 }
 
 .site-shell {
   min-height: 100vh;
+  background: transparent;
 }

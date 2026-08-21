@@ -8,7 +8,7 @@ function ProductGrid() {
         <h2>Produk Unggulan</h2>
         <p>
           Koleksi karpet terbaik
-          AB Carpet
+          Rumah Indah Carpet
         </p>
       </div>
 

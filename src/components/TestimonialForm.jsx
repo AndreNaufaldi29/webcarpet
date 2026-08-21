@@ -181,7 +181,7 @@ export default function TestimonialForm() {
         {/* HEADER */}
         <div className="form-section-header">
           <span className="section-badge">BAGIKAN PENGALAMAN ANDA</span>
-          <h2>Puas dengan Produk & Layanan AB Carpet?</h2>
+          <h2>Puas dengan Produk & Layanan Rumah Indah Carpet?</h2>
           <p>
             Ceritakan pengalaman Anda setelah memesan atau memasang karpet bersama kami. Ulasan serta dokumentasi foto dan video Anda sangat berharga bagi kami dan calon pelanggan lainnya.
           </p>
@@ -200,7 +200,7 @@ export default function TestimonialForm() {
                 {uploadedMedia.length > 0
                   ? ` beserta ${uploadedMedia.length} foto/video dokumentasi`
                   : ""}{" "}
-                telah berhasil terkirim dan akan ditampilkan di halaman beranda setelah diverifikasi oleh tim AB Carpet.
+                telah berhasil terkirim dan akan ditampilkan di halaman beranda setelah diverifikasi oleh tim Rumah Indah Carpet.
               </p>
               <button
                 type="button"

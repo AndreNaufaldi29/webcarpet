@@ -1,4 +1,4 @@
-// Store terpusat untuk Manajemen Testimonial AB Carpet (Database Prisma + Local Storage + Event Synchronization)
+// Store terpusat untuk Manajemen Testimonial Rumah Indah Carpet (Database Prisma + Local Storage + Event Synchronization)
 
 export const DEFAULT_TESTIMONIALS = [
   {
@@ -7,10 +7,10 @@ export const DEFAULT_TESTIMONIALS = [
     role: "Ketua DKM Masjid Agung Al-Ikhlas",
     category: "Karpet Masjid",
     city: "Surabaya",
-    text: "Pemasangan karpet masjid sangat rapi, tebal, dan nyaman sekali untuk sholat tarawih & pengajian. Pelayanan tim AB Carpet sangat memuaskan dan tepat waktu!",
+    text: "Pemasangan karpet masjid sangat rapi, tebal, dan nyaman sekali untuk sholat tarawih & pengajian. Pelayanan tim Rumah Indah Carpet sangat memuaskan dan tepat waktu!",
     rating: 5,
     status: "Aktif",
-    avatarBg: "#2563eb",
+    avatarBg: "#0A3B25",
     date: "14 Agu 2026",
     photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43d?w=300",
     media: [
@@ -194,7 +194,7 @@ export async function addTestimonial({
 
   const payload = {
     name: name.trim(),
-    role: role.trim() || "Pelanggan AB Carpet",
+    role: role.trim() || "Pelanggan Rumah Indah Carpet",
     category: category || "Karpet Masjid",
     city: city.trim() || "Indonesia",
     text: review.trim(),

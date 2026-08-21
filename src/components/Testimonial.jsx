@@ -68,7 +68,7 @@ function Testimonial() {
       <h2>Testimoni Pelanggan</h2>
 
       <p className="subtitle">
-        Pengalaman nyata pelanggan yang telah menggunakan produk & layanan AB Carpet
+        Pengalaman nyata pelanggan yang telah menggunakan produk & layanan Rumah Indah Carpet
       </p>
 
       <div className="testimonial-card">
@@ -98,7 +98,7 @@ function Testimonial() {
                   onError={(e) => {
                     e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
                       currentItem.name
-                    )}&background=0019be&color=fff`;
+                    )}&background=0A3B25&color=fff`;
                   }}
                 />
               ) : (
@@ -107,7 +107,7 @@ function Testimonial() {
                     width: "48px",
                     height: "48px",
                     borderRadius: "50%",
-                    background: currentItem.avatarBg || "#0019be",
+                    background: currentItem.avatarBg || "#0A3B25",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",

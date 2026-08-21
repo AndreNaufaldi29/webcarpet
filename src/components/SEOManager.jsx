@@ -32,7 +32,7 @@ function updateCanonicalLink(url) {
 // Helper untuk menyisipkan Schema.org JSON-LD Structured Data
 function updateStructuredData(schemaData) {
   if (typeof document === "undefined") return;
-  const scriptId = "abcarpet-schema-jsonld";
+  const scriptId = "rumahindah-schema-jsonld";
   let script = document.getElementById(scriptId);
   if (!script) {
     script = document.createElement("script");
@@ -61,7 +61,7 @@ export default function SEOManager() {
 
     const baseUrl =
       settings.canonicalUrl ||
-      (typeof window !== "undefined" ? window.location.origin : "https://abcarpet.co.id");
+      (typeof window !== "undefined" ? window.location.origin : "https://rumahindahcarpet.co.id");
     const currentUrl = typeof window !== "undefined" ? window.location.href : baseUrl;
 
     let pageTitle = settings.metaTitle || `${settings.companyName} | Karpet Premium`;
@@ -101,7 +101,7 @@ export default function SEOManager() {
     } else if (pathname === "/cabang") {
       pageTitle = `Cabang & Workshop Kami | ${settings.companyName}`;
       pageDescription = `Temukan lokasi kantor, workshop, dan showroom ${settings.companyName} di Sidoarjo, Surabaya, dan kota lainnya. Siap melayani seluruh Indonesia.`;
-      pageKeywords = `lokasi toko karpet, alamat pabrik karpet, ab carpet sidoarjo, ${settings.metaKeywords}`;
+      pageKeywords = `lokasi toko karpet, alamat pabrik karpet, rumah indah carpet sidoarjo, ${settings.metaKeywords}`;
     }
 
     // 1. Terapkan Title Dokumen

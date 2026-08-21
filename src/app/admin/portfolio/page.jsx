@@ -241,7 +241,7 @@ export default function PortfolioPage() {
       date: formData.date || "2026",
       image: formData.image || "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800",
       mediaType: formData.mediaType || (isVideoMedia(formData.image) ? "video" : "image"),
-      description: formData.description || "Dokumentasi pengerjaan karpet AB Carpet.",
+      description: formData.description || "Dokumentasi pengerjaan karpet Rumah Indah Carpet.",
     };
 
     try {

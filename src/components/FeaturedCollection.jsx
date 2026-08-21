@@ -46,7 +46,7 @@ function FeaturedCollection() {
         </span>
 
         <h2>
-          Produk Terbaik Pilihan Pelanggan AB Carpet
+          Produk Terbaik Pilihan Pelanggan Rumah Indah Carpet
         </h2>
 
         <p>

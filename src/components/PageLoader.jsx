@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import logoAB from "../assets/Original-AB-Carpet-Logo.png";
+import BrandLogo from "./BrandLogo";
 
 export default function PageLoader() {
   const [loading, setLoading] = useState(false);
@@ -18,75 +18,47 @@ export default function PageLoader() {
     return () => clearTimeout(timer);
   }, [pathname, searchParams]);
 
+  // Intercept Next.js internal Link clicks to show instant loader
   useEffect(() => {
-    // Intercept clicks on internal links
-    const handleLinkClick = (e) => {
+    const handleAnchorClick = (e) => {
       const target = e.target.closest("a");
       if (!target) return;
 
       const href = target.getAttribute("href");
       if (!href) return;
 
-      // Ignore external links, new tabs, mailto, tel, hashes, and admin routes
+      // Ignore external links, mailto, tel, anchors on same page, and target=_blank
       if (
         href.startsWith("http://") ||
         href.startsWith("https://") ||
         href.startsWith("mailto:") ||
         href.startsWith("tel:") ||
         href.startsWith("#") ||
-        target.target === "_blank" ||
-        target.hasAttribute("download") ||
-        e.ctrlKey ||
-        e.metaKey ||
-        e.shiftKey
+        target.getAttribute("target") === "_blank"
       ) {
         return;
       }
 
-      // Ignore admin links
-      if (href.startsWith("/admin")) {
-        return;
-      }
-
-      // If clicking same page hash or exact same route without param change
+      // If internal link to different path, show loader
       const currentUrl = window.location.pathname + window.location.search;
-      if (href === currentUrl || href === window.location.pathname) {
-        return;
-      }
-
-      // Start loading
-      setLoading(true);
-    };
-
-    const handlePopState = () => {
-      if (!window.location.pathname.startsWith("/admin")) {
+      if (href !== currentUrl) {
         setLoading(true);
       }
     };
 
-    document.addEventListener("click", handleLinkClick, true);
-    window.addEventListener("popstate", handlePopState);
-
-    return () => {
-      document.removeEventListener("click", handleLinkClick, true);
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [pathname]);
-
-  // Safety fallback so loading never gets stuck
-  useEffect(() => {
-    if (loading) {
-      const safetyTimer = setTimeout(() => {
-        setLoading(false);
-      }, 3500);
-      return () => clearTimeout(safetyTimer);
-    }
-  }, [loading]);
+    document.addEventListener("click", handleAnchorClick);
+    return () => document.removeEventListener("click", handleAnchorClick);
+  }, []);
 
   if (!loading) return null;
 
   return (
-    <div className="user-page-loader-overlay" aria-live="polite" aria-busy="true">
+    <div
+      className="user-page-loader-overlay"
+      role="status"
+      aria-live="polite"
+      aria-label="Memuat Halaman Rumah Indah Carpet..."
+    >
       {/* TOP PROGRESS BAR */}
       <div className="user-page-loader-bar" />
 
@@ -96,18 +68,14 @@ export default function PageLoader() {
         <div className="user-loader-spinner-wrap">
           <div className="user-loader-spinner-ring" />
           <div className="user-loader-brand-badge">
-            <img
-              src={logoAB.src}
-              alt="AB Carpet Logo"
-              className="user-loader-logo-img"
-            />
+            <BrandLogo variant="icon-only" size="sm" />
           </div>
         </div>
 
         {/* LOADING TEXT */}
         <div className="user-loader-text-group">
           <h4 className="user-loader-title">Memuat Halaman...</h4>
-          <p className="user-loader-subtitle">AB Carpet • Karpet Premium</p>
+          <p className="user-loader-subtitle">Rumah Indah Carpet • Karpet Premium</p>
         </div>
 
         {/* PULSING DOTS */}

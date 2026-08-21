@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import logoAB from "../assets/Original-AB-Carpet-Logo.png";
+import BrandLogo from "./BrandLogo";
 import { getStoredSettings, subscribeSettings, DEFAULT_SETTINGS } from "@/lib/settingsStore";
 
 import {
@@ -38,14 +38,8 @@ function Footer() {
       <div className="ab-footer-top">
         <div className="ab-footer-brand">
           <div className="ab-footer-logo-wrapper">
-            <img
-              src={logoAB.src}
-              alt={settings.companyName || "AB Carpet"}
-              className="ab-footer-logo"
-            />
+            <BrandLogo variant="light" size="lg" />
           </div>
-
-          <h2>{settings.companyName || "AB Carpet"}</h2>
 
           <p>
             {settings.description ||
@@ -72,7 +66,7 @@ function Footer() {
           </p>
           <p title="Email">
             <FiMail />
-            {settings.email || "marketing1@abkarpet.com"}
+            {settings.email || "marketing1@rumahindahcarpet.com"}
           </p>
           <p title="Alamat">
             <FiMapPin />
@@ -150,7 +144,7 @@ function Footer() {
       </div>
 
       <div className="ab-footer-bottom">
-        © {new Date().getFullYear()} {settings.companyName || "AB Carpet"}. All Rights Reserved.
+        © {new Date().getFullYear()} {settings.companyName || "Rumah Indah Carpet"}. All Rights Reserved.
       </div>
     </footer>
   );

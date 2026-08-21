@@ -1,4 +1,4 @@
-// Store terpusat untuk Manajemen Kategori AB Carpet (Database Prisma + Local Storage + Realtime Sync)
+// Store terpusat untuk Manajemen Kategori Rumah Indah Carpet (Database Prisma + Local Storage + Realtime Sync)
 
 export const DEFAULT_CATEGORIES = [
   {
@@ -63,20 +63,20 @@ export const DEFAULT_CATEGORIES = [
   },
 ];
 
-const STORAGE_KEY = "abcarpet_categories_data_v1";
+const STORAGE_KEY = "rumahindah_categories_data_v2";
 
-const COLOR_PALETTE = ["blue", "purple", "green", "orange", "red", "teal", "indigo", "rose", "amber"];
+const COLOR_PALETTE = ["blue", "purple", "green", "orange", "red", "teal", "gold", "deep", "laurel", "sand"];
 
 export function getCategoryColor(cat, index = 0) {
-  if (cat?.color) return cat.color;
+  if (cat?.color && COLOR_PALETTE.includes(cat.color)) return cat.color;
   const name = (cat?.name || "").toLowerCase();
-  if (name.includes("masjid")) return "blue";
-  if (name.includes("hotel")) return "purple";
-  if (name.includes("kantor")) return "green";
-  if (name.includes("rumah")) return "orange";
-  if (name.includes("custom")) return "red";
-  if (name.includes("aksesoris")) return "teal";
-  return COLOR_PALETTE[index % COLOR_PALETTE.length];
+  if (name.includes("masjid") || name.includes("musholla")) return "blue";
+  if (name.includes("hotel") || name.includes("ballroom")) return "purple";
+  if (name.includes("kantor") || name.includes("meeting")) return "green";
+  if (name.includes("rumah") || name.includes("keluarga")) return "orange";
+  if (name.includes("custom") || name.includes("motif")) return "red";
+  if (name.includes("aksesoris") || name.includes("underlayer")) return "teal";
+  return COLOR_PALETTE[index % 6];
 }
 
 export async function syncCategoriesFromDatabase() {

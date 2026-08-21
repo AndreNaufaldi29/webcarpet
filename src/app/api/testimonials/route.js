@@ -31,14 +31,14 @@ export async function POST(request) {
     const body = await request.json();
     const {
       name,
-      role = "Pelanggan AB Carpet",
+      role = "Pelanggan Rumah Indah Carpet",
       category = "Karpet Masjid",
       city = "Indonesia",
       text,
       review,
       rating = 5,
       status = "Aktif",
-      avatarBg = "#2563eb",
+      avatarBg = "#0A3B25",
       photo,
       media = [],
     } = body;

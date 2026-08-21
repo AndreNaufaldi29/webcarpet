@@ -148,7 +148,7 @@ export const INITIAL_TESTIMONIALS = [
     id: 1,
     name: "H. Ahmad Fauzi",
     role: "Pengurus Masjid Al-Hidayah",
-    text: "Karpet masjid dari AB Carpet sangat lembut, tebal, dan nyaman dipakai jamaah. Pemasangannya sangat presisi!",
+    text: "Karpet masjid dari Rumah Indah Carpet sangat lembut, tebal, dan nyaman dipakai jamaah. Pemasangannya sangat presisi!",
     rating: 5,
     status: "Aktif",
   },

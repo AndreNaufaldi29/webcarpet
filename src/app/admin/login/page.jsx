@@ -4,7 +4,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import logoAB from "@/assets/Original-AB-Carpet-Logo.png";
+import BrandLogo from "@/components/BrandLogo";
 import {
   login,
   DEFAULT_ADMIN_ACCOUNTS,
@@ -122,15 +122,11 @@ function LoginFormInner() {
 
       {/* LOGIN CARD */}
       <div className="admin-login-card">
-        {/* HEADER & BRANDING */}
+        {/* LOGO & TITLE */}
         <div className="admin-login-header">
           <div className="admin-login-logo-wrap">
             <div className="admin-login-logo-box">
-              <img
-                src={logoAB.src}
-                alt="AB Carpet Logo"
-                className="admin-login-logo-img"
-              />
+              <BrandLogo variant="icon-only" size="md" />
             </div>
             <div className="admin-login-badge">
               <FiShield size={12} />
@@ -140,7 +136,7 @@ function LoginFormInner() {
 
           <h1 className="admin-login-title">Masuk ke Admin Panel</h1>
           <p className="admin-login-subtitle">
-            Khusus pengelola & staf AB Carpet untuk mengelola produk, testimonial, dan konten website.
+            Khusus pengelola & staf Rumah Indah Carpet untuk mengelola produk, testimonial, dan konten website.
           </p>
         </div>
 
@@ -287,7 +283,7 @@ function LoginFormInner() {
         {/* FOOTER INFO */}
         <div className="admin-login-card-footer">
           <p>
-            Dilindungi enkripsi sistem AB Carpet. Segala bentuk akses tanpa izin
+            Dilindungi enkripsi sistem Rumah Indah Carpet. Segala bentuk akses tanpa izin
             akan dicatat.
           </p>
         </div>
@@ -306,7 +302,7 @@ function LoginFormInner() {
           >
             <div className="admin-modal-header">
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <FiHelpCircle size={18} style={{ color: "#2563eb" }} />
+                <FiHelpCircle size={18} style={{ color: "#2A6151" }} />
                 <h3>Bantuan Akses Akun</h3>
               </div>
               <button
@@ -320,7 +316,7 @@ function LoginFormInner() {
 
             <div className="admin-modal-body">
               <p style={{ margin: "0 0 14px", fontSize: "14px", lineHeight: 1.6, color: "#475569" }}>
-                Untuk keamanan data, reset kata sandi admin dilakukan secara manual oleh <strong>Super Administrator</strong> atau Tim IT AB Carpet.
+                Untuk keamanan data, reset kata sandi admin dilakukan secara manual oleh <strong>Super Administrator</strong> atau Tim IT Rumah Indah Carpet.
               </p>
               <div
                 style={{

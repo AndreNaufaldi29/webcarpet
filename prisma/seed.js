@@ -1,4 +1,4 @@
-import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client.ts";
 import { PrismaPg } from "@prisma/adapter-pg";
 import "dotenv/config";
 
@@ -347,31 +347,31 @@ async function main() {
   // 6. SEED SETTINGS
   const settingData = {
     id: 1,
-    companyName: "AB Carpet",
+    companyName: "Rumah Indah Carpet",
     tagline: "Spesialis Karpet Masjid, Hotel, Kantor & Custom Premium",
     phone: "0812-5223-5800",
     whatsapp: "081252235800",
-    email: "marketing1@abkarpet.com",
+    email: "marketing1@rumahindahcarpet.com",
     address: "Jl. Raya Taman No. 45, Sidoarjo, Jawa Timur (Dekat Bundaran Waru)",
     workingHours: "Senin - Sabtu: 08:00 - 17:00 WIB (Minggu Libur/Perjanjian)",
     description:
-      "AB Carpet adalah produsen dan distributor karpet terkemuka di Indonesia yang melayani penjualan, pembuatan motif custom, hingga jasa pemasangan bergaransi untuk masjid, hotel, kantor, dan residensial.",
-    instagram: "https://instagram.com/ab_karpetonline",
-    facebook: "https://facebook.com/abcarpetindonesia",
-    tiktok: "https://tiktok.com/@abcarpet",
-    youtube: "https://youtube.com/@abcarpet",
-    mapsUrl: "https://maps.google.com/?q=AB+Carpet+Sidoarjo",
-    metaTitle: "AB Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya",
+      "Rumah Indah Carpet adalah produsen dan distributor karpet terkemuka di Indonesia yang melayani penjualan, pembuatan motif custom, hingga jasa pemasangan bergaransi untuk masjid, hotel, kantor, dan residensial.",
+    instagram: "https://instagram.com/rumahindahcarpet",
+    facebook: "https://facebook.com/rumahindahcarpet",
+    tiktok: "https://tiktok.com/@rumahindahcarpet",
+    youtube: "https://youtube.com/@rumahindahcarpet",
+    mapsUrl: "https://maps.google.com/?q=Rumah+Indah+Carpet+Sidoarjo",
+    metaTitle: "Rumah Indah Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya",
     metaDescription:
       "Pusat karpet masjid, karpet hotel, karpet kantor, dan karpet custom berkualitas tinggi dengan harga distributor langsung. Gratis konsultasi & pemasangan rapi bergaransi.",
     metaKeywords:
-      "karpet masjid, karpet hotel, karpet kantor, karpet custom, ab carpet sidoarjo, karpet surabaya, produsen karpet, pasang karpet masjid",
-    metaAuthor: "AB Carpet Indonesia",
+      "karpet masjid, karpet hotel, karpet kantor, karpet custom, rumah indah carpet, karpet sidoarjo, karpet surabaya, produsen karpet, pasang karpet masjid",
+    metaAuthor: "Rumah Indah Carpet Indonesia",
     ogImage: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200",
-    canonicalUrl: "https://abcarpet.co.id",
+    canonicalUrl: "https://rumahindahcarpet.co.id",
     robotsIndex: "index, follow",
     promoActive: true,
-    promoText: "🎉 Dapatkan Diskon Spesial Karpet Masjid & Free Obras Sepanjang Bulan Ini! Hubungi Kami Sekarang.",
+    promoText: "🎉 Dapatkan Diskon Spesial Karpet Masjid & Free Obras dari Rumah Indah Carpet! Hubungi Kami Sekarang.",
     promoLink: "https://wa.me/6281252235800",
   };
 
@@ -386,12 +386,12 @@ async function main() {
   const branches = [
     {
       id: 1,
-      name: "AB Carpet Head Office & Workshop Sidoarjo",
+      name: "Rumah Indah Carpet Head Office & Workshop Sidoarjo",
       city: "Sidoarjo",
       badge: "Pusat & Gudang Utama",
       address: "Jl. Raya Taman No. 45, Sidoarjo, Jawa Timur (Dekat Bundaran Waru)",
       phone: "0812-5223-5800",
-      mapsUrl: "https://maps.google.com/?q=AB+Carpet+Sidoarjo",
+      mapsUrl: "https://maps.google.com/?q=Rumah+Indah+Carpet+Sidoarjo",
       image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200",
       status: "Aktif",
     },
@@ -402,7 +402,7 @@ async function main() {
       badge: "Showroom Display",
       address: "Jl. Ahmad Yani No. 45, Surabaya, Jawa Timur",
       phone: "0812-5223-5800",
-      mapsUrl: "https://maps.google.com/?q=AB+Carpet+Surabaya",
+      mapsUrl: "https://maps.google.com/?q=Rumah+Indah+Carpet+Surabaya",
       image: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1200",
       status: "Aktif",
     },
@@ -413,7 +413,7 @@ async function main() {
       badge: "Showroom & Konsultasi",
       address: "Jl. Soekarno Hatta No. 20, Malang, Jawa Timur",
       phone: "0812-5223-5800",
-      mapsUrl: "https://maps.google.com/?q=AB+Carpet+Malang",
+      mapsUrl: "https://maps.google.com/?q=Rumah+Indah+Carpet+Malang",
       image: "https://images.unsplash.com/photo-1460317442991-0ec209397118?w=1200",
       status: "Aktif",
     },

@@ -12,7 +12,7 @@ import {
   FiX,
 } from "react-icons/fi";
 
-import logoAB from "../assets/Original-AB-Carpet-Logo.png";
+import BrandLogo from "./BrandLogo";
 
 function Navbar() {
   const pathname = usePathname();
@@ -49,7 +49,7 @@ function Navbar() {
   const handleRequestQuote = () => {
     const cleanWhatsapp = (settings.whatsapp || "0812-5223-5800").replace(/[^0-9]/g, "");
     const num = cleanWhatsapp.startsWith("0") ? "62" + cleanWhatsapp.slice(1) : cleanWhatsapp;
-    const msg = `Halo ${settings.companyName || "AB Carpet"}, saya ingin meminta penawaran harga & katalog karpet untuk kebutuhan kami.`;
+    const msg = `Halo ${settings.companyName || "Rumah Indah Carpet"}, saya ingin meminta penawaran harga & katalog karpet untuk kebutuhan kami.`;
     window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
@@ -63,12 +63,8 @@ function Navbar() {
   return (
     <header className="navbar">
       <div className="logo">
-        <Link href="/">
-          <img
-            src={logoAB.src}
-            alt={settings.companyName || "AB Carpet"}
-            className="logo-image"
-          />
+        <Link href="/" style={{ textDecoration: "none" }}>
+          <BrandLogo variant={darkMode ? "light" : "default"} size="md" />
         </Link>
       </div>
 
@@ -77,7 +73,6 @@ function Navbar() {
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="Toggle Menu"
       >
-        <nav className={`navbar-menu ${menuOpen ? "open" : ""}`}></nav>
         {menuOpen ? <FiX /> : <FiMenu />}
       </button>
 

@@ -112,7 +112,7 @@ function Cabang() {
   };
 
   const handleWhatsApp = (branchName) => {
-    const msg = `Halo ${settings.companyName || "AB Carpet"}, saya ingin konsultasi dan berkunjung ke ${branchName}.`;
+    const msg = `Halo ${settings.companyName || "Rumah Indah Carpet"}, saya ingin konsultasi dan berkunjung ke ${branchName}.`;
     const num = cleanWhatsapp.startsWith("0") ? "62" + cleanWhatsapp.slice(1) : cleanWhatsapp;
     window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, "_blank");
   };
@@ -144,7 +144,7 @@ function Cabang() {
           <span>JARINGAN & SHOWROOM RESMI</span>
         </span>
 
-        <h2>Cabang & Showroom {settings.companyName || "AB Carpet"}</h2>
+        <h2>Cabang & Showroom {settings.companyName || "Rumah Indah Carpet"}</h2>
 
         <p>
           Kunjungi kantor pusat, workshop, dan showroom display kami di berbagai kota strategis Jawa Timur untuk melihat langsung ratusan sampel karpet premium & konsultasi gratis.
@@ -432,7 +432,7 @@ function Cabang() {
                 onClick={() => setSelectedMapBranchId(b.id)}
               >
                 <span className="dot" />
-                <span>{b.city}: {b.name.replace(/AB Carpet (Head Office & Workshop|Showroom Cabang)?/i, "").trim() || b.name}</span>
+                <span>{b.city}: {b.name.replace(/(Rumah Indah Carpet|AB Carpet) (Head Office & Workshop|Showroom Cabang)?/i, "").trim() || b.name}</span>
               </button>
             ))}
           </div>
@@ -467,7 +467,7 @@ function Cabang() {
             type="button"
             className="cta-wa-btn"
             onClick={() => {
-              const msg = `Halo ${settings.companyName || "AB Carpet"}, saya ingin mengajukan jadwal survei lokasi dan konsultasi sampel karpet.`;
+              const msg = `Halo ${settings.companyName || "Rumah Indah Carpet"}, saya ingin mengajukan jadwal survei lokasi dan konsultasi sampel karpet.`;
               const num = cleanWhatsapp.startsWith("0") ? "62" + cleanWhatsapp.slice(1) : cleanWhatsapp;
               window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, "_blank");
             }}

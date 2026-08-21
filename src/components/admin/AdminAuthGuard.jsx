@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { isAuthenticated, subscribeAuth } from "@/lib/authStore";
-import logoAB from "@/assets/Original-AB-Carpet-Logo.png";
+import BrandLogo from "@/components/BrandLogo";
 import { FiShield, FiLock } from "react-icons/fi";
 
 export default function AdminAuthGuard({ children }) {
@@ -23,36 +23,31 @@ export default function AdminAuthGuard({ children }) {
       return;
     }
 
-    const checkAuth = () => {
-      const isAuth = isAuthenticated();
-      if (isAuth) {
-        setAuthorized(true);
-        setIsChecking(false);
-      } else {
+    const checkAuthStatus = () => {
+      const loggedIn = isAuthenticated();
+      if (!loggedIn) {
         setAuthorized(false);
         setIsChecking(false);
-        const currentPath = window.location.pathname;
-        const redirectUrl =
-          currentPath && currentPath !== "/admin/login"
-            ? `/admin/login?redirect=${encodeURIComponent(currentPath)}`
-            : "/admin/login";
-        router.replace(redirectUrl);
+        router.replace("/admin/login");
+      } else {
+        setAuthorized(true);
+        setIsChecking(false);
       }
     };
 
-    checkAuth();
-
-    // Subscribe ke perubahan status auth
-    const unsubscribe = subscribeAuth((authPayload) => {
-      if (!isLoginPage && (!authPayload || !authPayload.token)) {
+    checkAuthStatus();
+    const unsubscribe = subscribeAuth((user) => {
+      if (!user && !isLoginPage) {
         setAuthorized(false);
+        setIsChecking(false);
         router.replace("/admin/login");
+      } else if (user) {
+        setAuthorized(true);
+        setIsChecking(false);
       }
     });
 
-    return () => {
-      unsubscribe();
-    };
+    return () => unsubscribe();
   }, [pathname, isLoginPage, router]);
 
   // Jika di halaman login, langsung render children
@@ -60,19 +55,15 @@ export default function AdminAuthGuard({ children }) {
     return <>{children}</>;
   }
 
-  // Jika sedang memverifikasi hak akses atau belum authorized
-  if (isChecking || !authorized) {
+  // Loading screen saat verifikasi
+  if (isChecking) {
     return (
       <div className="admin-auth-guard-overlay" aria-busy="true">
         <div className="admin-auth-guard-card">
           <div className="auth-guard-spinner-wrap">
             <div className="auth-guard-spinner-ring" />
             <div className="auth-guard-logo-box">
-              <img
-                src={logoAB.src}
-                alt="AB Carpet Logo"
-                className="auth-guard-logo-img"
-              />
+              <BrandLogo variant="icon-only" size="sm" />
             </div>
           </div>
 

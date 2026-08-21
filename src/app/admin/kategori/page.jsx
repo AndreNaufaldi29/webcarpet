@@ -199,7 +199,7 @@ export default function KategoriPage() {
     const payload = {
       name: formData.name.trim(),
       slug: formData.slug || formData.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-"),
-      description: formData.description || "Kategori produk berkualitas AB Carpet.",
+      description: formData.description || "Kategori produk berkualitas Rumah Indah Carpet.",
       products: parseInt(formData.products) || 0,
       status: formData.status,
       iconType: formData.iconType || "custom",

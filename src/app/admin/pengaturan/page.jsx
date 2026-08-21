@@ -283,7 +283,7 @@ export default function PengaturanPage() {
                     </div>
 
                     <h4 className="serp-title">
-                      {settings.metaTitle || "AB Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya"}
+                      {settings.metaTitle || "Rumah Indah Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya"}
                     </h4>
 
                     <p className="serp-snippet">
@@ -451,8 +451,8 @@ export default function PengaturanPage() {
                           )}
                         </div>
                         <div className="social-card-info">
-                          <span className="social-card-domain">ABCATPET.CO.ID</span>
-                          <h5 className="social-card-title">{settings.metaTitle || "AB Carpet"}</h5>
+                          <span className="social-card-domain">RUMAHINDAHCARPET.CO.ID</span>
+                          <h5 className="social-card-title">{settings.metaTitle || "Rumah Indah Carpet"}</h5>
                           <p className="social-card-desc">{settings.metaDescription || "Pusat Karpet Premium"}</p>
                         </div>
                       </div>

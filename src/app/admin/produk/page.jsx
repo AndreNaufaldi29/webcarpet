@@ -388,7 +388,7 @@ export default function ProductsPage() {
           <div className="page-heading">
             <div>
               <h2>Katalog Produk Karpet</h2>
-              <p>Kelola seluruh katalog produk karpet AB Carpet secara terpusat.</p>
+              <p>Kelola seluruh katalog produk karpet Rumah Indah Carpet secara terpusat.</p>
             </div>
 
             <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>

@@ -184,7 +184,7 @@ export async function POST() {
             userRole: "Super Admin",
             action: "LOGIN",
             module: "Auth",
-            description: "Super Admin login ke Dashboard AB Carpet",
+            description: "Super Admin login ke Dashboard Rumah Indah Carpet",
             ipAddress: "127.0.0.1",
           },
           {
@@ -218,7 +218,7 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      message: "Database Prisma AB Carpet berhasil disinkronkan!",
+      message: "Database Prisma Rumah Indah Carpet berhasil disinkronkan!",
     });
   } catch (error) {
     console.error("Error syncing database:", error);

@@ -6,10 +6,10 @@ import "../views/pages.css";
 import SiteShell from "../components/SiteShell";
 
 export const metadata = {
-   dataBase: new URL("https://abcarpet.co.id"),
+   dataBase: new URL("https://rumahindahcarpet.co.id"),
   title: {
-    default: "AB Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya",
-    template: "%s | AB Carpet",
+    default: "Rumah Indah Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya",
+    template: "%s | Rumah Indah Carpet",
   },
   description:
     "Pusat karpet masjid, karpet hotel, karpet kantor, dan karpet custom berkualitas tinggi dengan harga distributor langsung. Gratis konsultasi & pemasangan rapi bergaransi.",
@@ -18,14 +18,15 @@ export const metadata = {
     "karpet hotel",
     "karpet kantor",
     "karpet custom",
-    "ab carpet sidoarjo",
+    "rumah indah carpet",
+    "karpet sidoarjo",
     "karpet surabaya",
     "produsen karpet",
     "pasang karpet masjid",
   ],
-  authors: [{ name: "AB Carpet Indonesia", url: "https://abcarpet.co.id" }],
-  creator: "AB Carpet Indonesia",
-  publisher: "AB Carpet Indonesia",
+  authors: [{ name: "Rumah Indah Carpet Indonesia", url: "https://rumahindahcarpet.co.id" }],
+  creator: "Rumah Indah Carpet Indonesia",
+  publisher: "Rumah Indah Carpet Indonesia",
   formatDetection: {
     email: true,
     address: true,
@@ -34,9 +35,9 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "https://abcarpet.co.id",
-    siteName: "AB Carpet",
-    title: "AB Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya",
+    url: "https://rumahindahcarpet.co.id",
+    siteName: "Rumah Indah Carpet",
+    title: "Rumah Indah Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya",
     description:
       "Pusat karpet masjid, karpet hotel, karpet kantor, dan karpet custom berkualitas tinggi dengan harga distributor langsung. Gratis konsultasi & pemasangan rapi.",
     images: [
@@ -44,13 +45,13 @@ export const metadata = {
         url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200",
         width: 1200,
         height: 630,
-        alt: "AB Carpet - Produsen Karpet Premium",
+        alt: "Rumah Indah Carpet - Produsen Karpet Premium",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AB Carpet - Produsen Karpet Premium Sidoarjo Surabaya",
+    title: "Rumah Indah Carpet - Produsen Karpet Premium Sidoarjo Surabaya",
     description:
       "Pusat karpet masjid, hotel, kantor, dan custom berkualitas tinggi dengan harga produsen langsung.",
     images: ["https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200"],
