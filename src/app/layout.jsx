@@ -6,7 +6,7 @@ import "../views/pages.css";
 import SiteShell from "../components/SiteShell";
 
 export const metadata = {
-  metadataBase: new URL("https://abcarpet.co.id"),
+   dataBase: new URL("https://abcarpet.co.id"),
   title: {
     default: "AB Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya",
     template: "%s | AB Carpet",
