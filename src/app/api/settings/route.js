@@ -147,3 +147,48 @@ export async function POST(request) {
     );
   }
 }
+
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type");
+
+    if (type === "seo") {
+      const setting = await prisma.setting.upsert({
+        where: { id: 1 },
+        update: {
+          metaTitle: "",
+          metaDescription: "",
+          metaKeywords: "",
+          ogImage: "",
+          canonicalUrl: "",
+          robotsIndex: "index, follow",
+        },
+        create: {
+          id: 1,
+          companyName: "Rumah Indah Carpet",
+          metaTitle: "",
+          metaDescription: "",
+          metaKeywords: "",
+          ogImage: "",
+          canonicalUrl: "",
+          robotsIndex: "index, follow",
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: "Data SEO & Metadata Google berhasil dihapus",
+        data: setting,
+      });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting settings:", error);
+    return NextResponse.json(
+      { success: false, error: "Gagal menghapus data SEO & Metadata" },
+      { status: 500 }
+    );
+  }
+}

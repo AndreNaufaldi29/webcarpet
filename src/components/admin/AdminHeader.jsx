@@ -401,7 +401,7 @@ export default function AdminHeader({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="admin-modal-header">
-              <h3>Konfirmasi Keluar</h3>
+              <h3 style={{ margin: 0, color: "#ffffff", fontSize: "17px", fontWeight: 700 }}>Konfirmasi Keluar</h3>
               <button
                 type="button"
                 className="admin-modal-close"
@@ -412,7 +412,7 @@ export default function AdminHeader({
             </div>
 
             <div className="admin-modal-body">
-              <p style={{ margin: 0, color: "#475569", fontSize: "14px", lineHeight: 1.6 }}>
+              <p style={{ margin: 0, color: "#ffffff", fontSize: "14px", lineHeight: 1.6 }}>
                 Apakah Anda yakin ingin keluar dari sesi <strong>{currentUser?.name || "Administrator"} ({currentUser?.role || "Admin"})</strong>?
               </p>
             </div>

@@ -161,6 +161,58 @@ export async function resetSettings() {
 }
 
 /**
+ * Menghapus/mengosongkan data SEO & Metadata Google dari database Prisma & localStorage
+ */
+export async function deleteSeoSettings() {
+  const current = getStoredSettings();
+  const cleared = {
+    ...current,
+    metaTitle: "",
+    metaDescription: "",
+    metaKeywords: "",
+    canonicalUrl: "",
+    ogImage: "",
+    robotsIndex: "index, follow",
+  };
+
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cleared));
+      window.dispatchEvent(
+        new CustomEvent("abcarpet:settings_updated", {
+          detail: cleared,
+        })
+      );
+    } catch (e) {
+      console.warn("Error caching cleared SEO settings:", e);
+    }
+  }
+
+  try {
+    const res = await fetch("/api/settings?type=seo", {
+      method: "DELETE",
+    });
+    const result = await res.json();
+    if (result.success && result.data) {
+      const merged = {
+        ...cleared,
+        ...result.data,
+        promoActive: String(result.data.promoActive),
+      };
+      if (typeof window !== "undefined") {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      }
+      return merged;
+    }
+  } catch (error) {
+    console.error("Gagal menghapus data SEO di database:", error);
+    await saveSettings(cleared);
+  }
+
+  return cleared;
+}
+
+/**
  * Subscribe terhadap perubahan pengaturan (antar komponen dan antar tab)
  */
 export function subscribeSettings(callback) {

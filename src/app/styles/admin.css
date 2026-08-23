@@ -3887,15 +3887,17 @@ body.dark .admin-modal-close:hover {
 
 body.dark .admin-modal-body {
   background: #0A3B25;
-  color: #cbd5e1;
+  color: #ffffff;
 }
 
 body.dark .admin-modal-body h4 {
   color: #ffffff;
 }
 
-body.dark .admin-modal-body p {
-  color: #94a3b8;
+body.dark .admin-modal-body p,
+body.dark .admin-modal-body li,
+body.dark .admin-modal-body span {
+  color: #ffffff;
 }
 
 body.dark .admin-modal-footer {
@@ -5546,4 +5548,94 @@ body.dark .admin-promo-preview-box {
   font-weight: 700;
   color: #64748b;
   margin-bottom: 6px;
-}
+}
+
+/* Delete SEO & Metadata Button */
+.admin-btn-delete-seo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-btn-delete-seo:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+  transform: translateY(-1px);
+}
+
+.admin-btn-delete-seo:active {
+  transform: translateY(0);
+}
+
+body.dark .admin-btn-delete-seo {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+
+body.dark .admin-btn-delete-seo:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+/* OG Image Upload Box */
+.admin-og-upload-zone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 24px 20px;
+  text-align: center;
+  background: #fafbfd;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.admin-og-upload-zone:hover {
+  border-color: #2A6151;
+  background: #f4fbf7;
+}
+
+body.dark .admin-og-upload-zone {
+  background: #072016;
+  border-color: #2A6151;
+}
+
+body.dark .admin-og-upload-zone:hover {
+  border-color: #38a169;
+  background: #0a2d20;
+}
+
+.admin-og-upload-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(10, 59, 37, 0.08);
+  color: #0A3B25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  transition: transform 0.2s ease;
+}
+
+.admin-og-upload-zone:hover .admin-og-upload-icon {
+  transform: translateY(-2px);
+}
+
+body.dark .admin-og-upload-icon {
+  background: rgba(167, 243, 208, 0.15);
+  color: #a7f3d0;
+}
+
+

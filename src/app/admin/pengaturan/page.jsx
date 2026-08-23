@@ -7,6 +7,7 @@ import {
   getStoredSettings,
   saveSettings,
   resetSettings,
+  deleteSeoSettings,
   subscribeSettings,
   DEFAULT_SETTINGS,
 } from "@/lib/settingsStore";
@@ -31,6 +32,9 @@ import {
   FiCheck,
   FiAlertCircle,
   FiInfo,
+  FiTrash2,
+  FiX,
+  FiUpload,
 } from "react-icons/fi";
 import { FaTiktok, FaWhatsapp, FaYoutube } from "react-icons/fa";
 
@@ -41,6 +45,8 @@ export default function PengaturanPage() {
   const [toastMessage, setToastMessage] = useState("");
   const [previewDevice, setPreviewDevice] = useState("desktop"); // desktop | mobile
   const [showResetModal, setShowResetModal] = useState(false);
+  const [showDeleteSeoModal, setShowDeleteSeoModal] = useState(false);
+  const [isDeletingSeo, setIsDeletingSeo] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -94,6 +100,32 @@ export default function PengaturanPage() {
     }));
   };
 
+  const handleOgImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      showToast("Format tidak didukung. Silakan pilih file gambar (JPG, PNG, WebP).");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      showToast("Ukuran gambar maksimal adalah 10MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target.result;
+      setSettings((prev) => ({
+        ...prev,
+        ogImage: dataUrl,
+      }));
+      showToast("Gambar banner berhasil diunggah!");
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -119,6 +151,21 @@ export default function PengaturanPage() {
       console.error("Gagal reset pengaturan:", err);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDeleteSeoConfirm = async () => {
+    setIsDeletingSeo(true);
+    try {
+      const updatedData = await deleteSeoSettings();
+      setSettings(updatedData);
+      setShowDeleteSeoModal(false);
+      showToast("SEO & Metadata Google yang tersimpan berhasil dihapus!");
+    } catch (err) {
+      console.error("Gagal menghapus SEO & metadata:", err);
+      showToast("Gagal menghapus data SEO dari database.");
+    } finally {
+      setIsDeletingSeo(false);
     }
   };
 
@@ -235,9 +282,20 @@ export default function PengaturanPage() {
                       Konfigurasi judul, deskripsi, kata kunci pencarian, dan pratinjau kartu sosial yang terbaca oleh Google, WhatsApp, dan Facebook.
                     </p>
                   </div>
-                  <span className="seo-live-badge">
-                    <span className="live-dot" /> Sinkron Realtime
-                  </span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                    <span className="seo-live-badge">
+                      <span className="live-dot" /> Sinkron Realtime
+                    </span>
+                    <button
+                      type="button"
+                      className="admin-btn-delete-seo"
+                      onClick={() => setShowDeleteSeoModal(true)}
+                      title="Hapus / Kosongkan data SEO & Metadata Google yang tersimpan"
+                    >
+                      <FiTrash2 size={14} />
+                      <span>Hapus SEO & Metadata</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* GOOGLE SERP SIMULATOR CARD */}
@@ -283,7 +341,7 @@ export default function PengaturanPage() {
                     </div>
 
                     <h4 className="serp-title">
-                      {settings.metaTitle || "Rumah Indah Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya"}
+                      {settings.metaTitle || `${settings.companyName || "AB Carpet"} - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya`}
                     </h4>
 
                     <p className="serp-snippet">
@@ -291,6 +349,7 @@ export default function PengaturanPage() {
                         {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })} —{" "}
                       </span>
                       {settings.metaDescription ||
+                        settings.description ||
                         "Pusat karpet masjid, karpet hotel, karpet kantor, dan karpet custom berkualitas tinggi dengan harga distributor langsung. Gratis konsultasi & pemasangan rapi."}
                     </p>
                   </div>
@@ -302,7 +361,7 @@ export default function PengaturanPage() {
                   <div className="admin-form-group">
                     <div className="field-label-row">
                       <label>
-                        Default Meta Title <span className="required">*</span>
+                        Default Meta Title
                       </label>
                       <div className="char-badge" style={{ color: titleStatus.color, borderColor: titleStatus.color }}>
                         <span>{titleLength}/60 Karakter</span> • <strong>{titleStatus.label}</strong>
@@ -312,10 +371,9 @@ export default function PengaturanPage() {
                       type="text"
                       name="metaTitle"
                       className="admin-input"
-                      value={settings.metaTitle}
+                      value={settings.metaTitle || ""}
                       onChange={handleChange}
                       placeholder="Masukkan judul website yang menarik untuk Google..."
-                      required
                     />
                     <div className="char-progress-bar">
                       <div
@@ -335,7 +393,7 @@ export default function PengaturanPage() {
                   <div className="admin-form-group">
                     <div className="field-label-row">
                       <label>
-                        Default Meta Description <span className="required">*</span>
+                        Default Meta Description
                       </label>
                       <div className="char-badge" style={{ color: descStatus.color, borderColor: descStatus.color }}>
                         <span>{descLength}/160 Karakter</span> • <strong>{descStatus.label}</strong>
@@ -345,10 +403,9 @@ export default function PengaturanPage() {
                       name="metaDescription"
                       className="admin-textarea"
                       rows={3}
-                      value={settings.metaDescription}
+                      value={settings.metaDescription || ""}
                       onChange={handleChange}
                       placeholder="Tuliskan rangkuman bisnis yang padat, jelas, dan memikat calon pembeli..."
-                      required
                     />
                     <div className="char-progress-bar">
                       <div
@@ -371,7 +428,7 @@ export default function PengaturanPage() {
                       type="text"
                       name="metaKeywords"
                       className="admin-input"
-                      value={settings.metaKeywords}
+                      value={settings.metaKeywords || ""}
                       onChange={handleChange}
                       placeholder="karpet masjid, karpet hotel, karpet kantor, karpet sidoarjo, karpet surabaya..."
                     />
@@ -415,20 +472,76 @@ export default function PengaturanPage() {
                     </div>
                   </div>
 
-                  {/* OPEN GRAPH IMAGE (SHARE PREVIEW) */}
+                  {/* OPEN GRAPH IMAGE (SHARE PREVIEW & UPLOAD) */}
                   <div className="admin-form-group">
-                    <label>URL Gambar Banner Berbagi Media Sosial (Open Graph Image)</label>
-                    <input
-                      type="url"
-                      name="ogImage"
-                      className="admin-input"
-                      value={settings.ogImage || ""}
-                      onChange={handleChange}
-                      placeholder="https://images.unsplash.com/... (Ukuran disarankan 1200x630px)"
-                    />
+                    <div className="field-label-row">
+                      <label>Gambar Banner Berbagi Media Sosial (Open Graph Image)</label>
+                      {settings.ogImage && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSettings((prev) => ({ ...prev, ogImage: "" }));
+                            showToast("Gambar banner berhasil dihapus");
+                          }}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "#ef4444",
+                            fontSize: "12px",
+                            fontWeight: "600",
+                            cursor: "pointer",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            padding: 0,
+                          }}
+                          title="Hapus gambar banner"
+                        >
+                          <FiTrash2 size={13} />
+                          <span>Hapus Gambar</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* UPLOAD ZONE */}
+                    <div className="admin-og-upload-zone">
+                      <div className="admin-og-upload-icon">
+                        <FiUpload size={22} />
+                      </div>
+                      <div style={{ fontSize: "14px", fontWeight: "600", color: "#ffffff", marginBottom: "4px" }}>
+                        {settings.ogImage ? "Ganti Gambar Banner" : "Unggah Gambar Banner Media Sosial"}
+                      </div>
+                      <div style={{ fontSize: "12px", color: "#cbd5e1", marginBottom: "12px" }}>
+                        Format didukung: JPG, PNG, WebP (Rasio ideal 1200 × 630 px, maks. 10MB)
+                      </div>
+                      <label
+                        className="admin-upload-btn"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          padding: "8px 20px",
+                          fontSize: "13px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <FiUpload size={15} />
+                        <span>{settings.ogImage ? "Pilih File Gambar Baru" : "Pilih File Dari Perangkat"}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          style={{ display: "none" }}
+                          onChange={handleOgImageUpload}
+                        />
+                      </label>
+                    </div>
+
+                    <span className="helper-text" style={{ marginTop: "8px", display: "block" }}>
+                      Gambar ini akan muncul secara otomatis saat tautan website dibagikan di WhatsApp, Facebook, Instagram, LinkedIn, dan Telegram.
+                    </span>
 
                     {/* SOCIAL SHARE CARD PREVIEW */}
-                    <div className="social-card-preview-box">
+                    <div className="social-card-preview-box" style={{ marginTop: "16px" }}>
                       <div className="social-card-badge">
                         <FaWhatsapp size={14} color="#25D366" />
                         <span>Pratinjau Kartu Link WhatsApp / Facebook / LinkedIn</span>
@@ -451,9 +564,9 @@ export default function PengaturanPage() {
                           )}
                         </div>
                         <div className="social-card-info">
-                          <span className="social-card-domain">RUMAHINDAHCARPET.CO.ID</span>
-                          <h5 className="social-card-title">{settings.metaTitle || "Rumah Indah Carpet"}</h5>
-                          <p className="social-card-desc">{settings.metaDescription || "Pusat Karpet Premium"}</p>
+                          <span className="social-card-domain">{(settings.companyName || "AB CARPET").toUpperCase()}</span>
+                          <h5 className="social-card-title">{settings.metaTitle || settings.companyName || "Rumah Indah Carpet"}</h5>
+                          <p className="social-card-desc">{settings.metaDescription || settings.tagline || "Pusat Karpet Premium"}</p>
                         </div>
                       </div>
                     </div>
@@ -768,7 +881,7 @@ export default function PengaturanPage() {
               </h3>
             </div>
             <div className="admin-modal-body">
-              <p style={{ color: "#475569", fontSize: "14px", lineHeight: 1.6, margin: 0 }}>
+              <p style={{ color: "#ffffff", fontSize: "14px", lineHeight: 1.6, margin: 0 }}>
                 Apakah Anda yakin ingin mengembalikan semua konfigurasi website (Profil Toko, SEO Title & Description, Sosial Media, dan Promo) kembali ke pengaturan standar awal?
               </p>
             </div>
@@ -787,6 +900,79 @@ export default function PengaturanPage() {
                 onClick={handleResetConfirm}
               >
                 Ya, Reset Sekarang
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL HAPUS SEO CONFIRMATION */}
+      {showDeleteSeoModal && (
+        <div className="admin-modal-backdrop" onClick={() => !isDeletingSeo && setShowDeleteSeoModal(false)}>
+          <div className="admin-modal-box" style={{ maxWidth: "480px" }} onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <h3 style={{ display: "flex", alignItems: "center", gap: "8px", color: "#dc2626" }}>
+                <FiTrash2 size={20} /> Hapus SEO & Metadata Google
+              </h3>
+              <button
+                type="button"
+                className="admin-modal-close"
+                onClick={() => setShowDeleteSeoModal(false)}
+                disabled={isDeletingSeo}
+              >
+                <FiX size={16} />
+              </button>
+            </div>
+            <div className="admin-modal-body">
+              <div
+                style={{
+                  background: "rgba(239, 68, 68, 0.15)",
+                  border: "1px solid rgba(239, 68, 68, 0.35)",
+                  borderRadius: "8px",
+                  padding: "12px 14px",
+                  marginBottom: "14px",
+                  display: "flex",
+                  gap: "10px",
+                  alignItems: "flex-start",
+                }}
+              >
+                <FiAlertCircle size={18} color="#ef4444" style={{ flexShrink: 0, marginTop: "2px" }} />
+                <div style={{ fontSize: "13px", color: "#fca5a5", lineHeight: "1.5", fontWeight: "500" }}>
+                  Data SEO & Metadata Google yang tersimpan di database Prisma & Local Storage akan dihapus dan dikosongkan.
+                </div>
+              </div>
+              <p style={{ color: "#ffffff", fontSize: "14px", lineHeight: 1.6, margin: "0 0 10px 0" }}>
+                Apakah Anda yakin ingin menghapus data konfigurasi SEO berikut?
+              </p>
+              <ul style={{ margin: "0 0 14px 0", paddingLeft: "20px", fontSize: "13px", color: "#ffffff", lineHeight: "1.7" }}>
+                <li>Default Meta Title</li>
+                <li>Default Meta Description</li>
+                <li>Kata Kunci Utama (Meta Keywords)</li>
+                <li>URL Kanonikal Utama (Canonical URL)</li>
+                <li>Banner Gambar Open Graph (OG Image)</li>
+              </ul>
+              <p style={{ color: "#e2e8f0", fontSize: "12px", margin: 0, fontStyle: "italic" }}>
+                * Website publik nantinya akan menggunakan metadata fallback default dari Profil Toko hingga Anda mengisi konfigurasi baru.
+              </p>
+            </div>
+            <div className="admin-modal-footer">
+              <button
+                type="button"
+                className="admin-btn-secondary"
+                onClick={() => setShowDeleteSeoModal(false)}
+                disabled={isDeletingSeo}
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                className="admin-btn-danger"
+                style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}
+                onClick={handleDeleteSeoConfirm}
+                disabled={isDeletingSeo}
+              >
+                <FiTrash2 size={16} />
+                <span>{isDeletingSeo ? "Menghapus..." : "Ya, Hapus Data SEO"}</span>
               </button>
             </div>
           </div>

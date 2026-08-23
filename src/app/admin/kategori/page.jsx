@@ -24,8 +24,43 @@ import {
   FiBell,
   FiX,
   FiLayers,
+  FiHome,
+  FiBriefcase,
+  FiTool,
+  FiStar,
+  FiScissors,
+  FiAward,
+  FiShield,
+  FiFeather,
+  FiCheck,
 } from "react-icons/fi";
-import { FaMosque, FaHotel } from "react-icons/fa";
+import {
+  FaMosque,
+  FaHotel,
+  FaCrown,
+  FaPalette,
+  FaBuilding,
+  FaTools,
+} from "react-icons/fa";
+
+export const CATEGORY_ICON_OPTIONS = [
+  { id: "mosque", label: "Masjid & Musholla", icon: FaMosque },
+  { id: "hotel", label: "Hotel & Ballroom", icon: FaHotel },
+  { id: "office", label: "Kantor & Bisnis", icon: FiBriefcase },
+  { id: "home", label: "Rumah & Hunian", icon: FiHome },
+  { id: "custom", label: "Karpet Custom", icon: FiLayers },
+  { id: "tools", label: "Aksesoris & Alat", icon: FiTool },
+  { id: "grid", label: "Tile & Rollan", icon: FiGrid },
+  { id: "crown", label: "VIP & Mewah", icon: FaCrown },
+  { id: "star", label: "Premium & Favorit", icon: FiStar },
+  { id: "palette", label: "Motif & Seni", icon: FaPalette },
+  { id: "scissors", label: "Obras & Pasang", icon: FiScissors },
+  { id: "box", label: "Grosir & Paket", icon: FiBox },
+  { id: "building", label: "Gedung / Proyek", icon: FaBuilding },
+  { id: "award", label: "Eksklusif & Best", icon: FiAward },
+  { id: "shield", label: "Awet & Bergaransi", icon: FiShield },
+  { id: "feather", label: "Super Lembut", icon: FiFeather },
+];
 
 const initialCategories = [
   {
@@ -296,15 +331,26 @@ export default function KategoriPage() {
 
   const totalProducts = categories.reduce((sum, item) => sum + item.products, 0);
 
-  const getIcon = (type) => {
-    switch (type) {
-      case "mosque":
-        return <FaMosque />;
-      case "hotel":
-        return <FaHotel />;
-      default:
-        return <FiGrid />;
-    }
+  const getIcon = (type, name = "") => {
+    const t = (type || "").toLowerCase();
+    const n = (name || "").toLowerCase();
+
+    if (t === "mosque" || n.includes("masjid") || n.includes("musholla")) return <FaMosque />;
+    if (t === "hotel" || n.includes("hotel") || n.includes("ballroom")) return <FaHotel />;
+    if (t === "office" || n.includes("kantor") || n.includes("meeting")) return <FiBriefcase />;
+    if (t === "home" || n.includes("rumah") || n.includes("keluarga")) return <FiHome />;
+    if (t === "custom" || n.includes("custom") || n.includes("motif")) return <FiLayers />;
+    if (t === "tools" || t === "tool" || n.includes("aksesoris") || n.includes("underlayer")) return <FiTool />;
+    if (t === "crown") return <FaCrown />;
+    if (t === "star") return <FiStar />;
+    if (t === "palette") return <FaPalette />;
+    if (t === "scissors") return <FiScissors />;
+    if (t === "box") return <FiBox />;
+    if (t === "building") return <FaBuilding />;
+    if (t === "award") return <FiAward />;
+    if (t === "shield") return <FiShield />;
+    if (t === "feather") return <FiFeather />;
+    return <FiGrid />;
   };
 
   return (
@@ -359,7 +405,7 @@ export default function KategoriPage() {
                 </div>
                 <span className="stat-change">Status</span>
               </div>
-              <div className="stat-value">{categories.filter(c => c.status === "Aktif").length}</div>
+              <div className="stat-value">{categories.filter((c) => c.status === "Aktif").length}</div>
               <div className="stat-title">Kategori Ditampilkan</div>
             </div>
 
@@ -371,7 +417,7 @@ export default function KategoriPage() {
                 <span className="stat-change">Rata-rata</span>
               </div>
               <div className="stat-value">
-                {categories.length ? Math.round(totalProducts / categories.length) : 0}
+                {categories.length > 0 ? Math.round(totalProducts / categories.length) : 0}
               </div>
               <div className="stat-title">Produk per Kategori</div>
             </div>
@@ -398,7 +444,7 @@ export default function KategoriPage() {
                 className="admin-btn-secondary"
                 onClick={() => fetchCategoriesFromDB(true)}
                 disabled={isSyncing}
-                title="Sinkronkan kategori dengan database PostgreSQL melalui Prisma"
+                title="Sinkronkan data kategori dengan database PostgreSQL melalui Prisma"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -421,8 +467,17 @@ export default function KategoriPage() {
                 type="button"
                 className="admin-btn-primary"
                 onClick={handleOpenAdd}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "9px 18px",
+                  borderRadius: "8px",
+                  fontWeight: 600,
+                  fontSize: "13px",
+                }}
               >
-                <FiPlus size={18} />
+                <FiPlus size={16} />
                 <span>Tambah Kategori</span>
               </button>
             </div>
@@ -435,10 +490,10 @@ export default function KategoriPage() {
                 <div>
                   <div className="admin-cat-top">
                     <div className="admin-cat-icon">
-                      {getIcon(category.iconType)}
+                      {getIcon(category.iconType, category.name)}
                     </div>
                     <span className="admin-badge-count">
-                      {category.products} Produk
+                      {category.products ?? category.productsCount ?? 0} Produk
                     </span>
                   </div>
 
@@ -486,9 +541,9 @@ export default function KategoriPage() {
       {/* MODAL TAMBAH KATEGORI */}
       {showAddModal && (
         <div className="admin-modal-backdrop" onClick={() => setShowAddModal(false)}>
-          <div className="admin-modal-box" onClick={(e) => e.stopPropagation()}>
+          <div className="admin-modal-box" style={{ maxWidth: "540px" }} onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
-              <h3>Tambah Kategori Baru</h3>
+              <h3 style={{ margin: 0, color: "#ffffff", fontSize: "17px", fontWeight: 700 }}>Tambah Kategori Baru</h3>
               <button
                 type="button"
                 className="admin-modal-close"
@@ -509,6 +564,82 @@ export default function KategoriPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
+                </div>
+
+                {/* PILIHAN ICON KATEGORI */}
+                <div className="admin-form-group">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <label style={{ margin: 0 }}>Pilihan Icon Kategori <span className="required">*</span></label>
+                    <span style={{ fontSize: "12px", color: "#a7f3d0" }}>
+                      Terpilih: <strong>{CATEGORY_ICON_OPTIONS.find((opt) => opt.id === (formData.iconType || "custom"))?.label || "Karpet Custom"}</strong>
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fill, minmax(105px, 1fr))",
+                      gap: "8px",
+                      maxHeight: "175px",
+                      overflowY: "auto",
+                      padding: "10px",
+                      background: "rgba(7, 32, 22, 0.7)",
+                      border: "1px solid #2A6151",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    {CATEGORY_ICON_OPTIONS.map((opt) => {
+                      const IconComponent = opt.icon;
+                      const isSelected = (formData.iconType || "custom") === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, iconType: opt.id })}
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "6px",
+                            padding: "10px 6px",
+                            borderRadius: "8px",
+                            border: isSelected ? "2px solid #34d399" : "1px solid rgba(42, 97, 81, 0.4)",
+                            background: isSelected ? "rgba(16, 185, 129, 0.25)" : "rgba(10, 59, 37, 0.35)",
+                            color: isSelected ? "#ffffff" : "#cbd5e1",
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
+                            textAlign: "center",
+                          }}
+                          title={opt.label}
+                        >
+                          <div
+                            style={{
+                              fontSize: "20px",
+                              color: isSelected ? "#34d399" : "#94a3b8",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <IconComponent />
+                          </div>
+                          <span
+                            style={{
+                              fontSize: "11px",
+                              fontWeight: isSelected ? "600" : "400",
+                              lineHeight: 1.2,
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              maxWidth: "100%",
+                            }}
+                          >
+                            {opt.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <div className="admin-form-row">
@@ -564,9 +695,9 @@ export default function KategoriPage() {
       {/* MODAL EDIT KATEGORI */}
       {showEditModal && (
         <div className="admin-modal-backdrop" onClick={() => setShowEditModal(false)}>
-          <div className="admin-modal-box" onClick={(e) => e.stopPropagation()}>
+          <div className="admin-modal-box" style={{ maxWidth: "540px" }} onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
-              <h3>Edit Kategori</h3>
+              <h3 style={{ margin: 0, color: "#ffffff", fontSize: "17px", fontWeight: 700 }}>Edit Kategori</h3>
               <button
                 type="button"
                 className="admin-modal-close"
@@ -586,6 +717,82 @@ export default function KategoriPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
+                </div>
+
+                {/* PILIHAN ICON KATEGORI */}
+                <div className="admin-form-group">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <label style={{ margin: 0 }}>Pilihan Icon Kategori <span className="required">*</span></label>
+                    <span style={{ fontSize: "12px", color: "#a7f3d0" }}>
+                      Terpilih: <strong>{CATEGORY_ICON_OPTIONS.find((opt) => opt.id === (formData.iconType || "custom"))?.label || "Karpet Custom"}</strong>
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fill, minmax(105px, 1fr))",
+                      gap: "8px",
+                      maxHeight: "175px",
+                      overflowY: "auto",
+                      padding: "10px",
+                      background: "rgba(7, 32, 22, 0.7)",
+                      border: "1px solid #2A6151",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    {CATEGORY_ICON_OPTIONS.map((opt) => {
+                      const IconComponent = opt.icon;
+                      const isSelected = (formData.iconType || "custom") === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, iconType: opt.id })}
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "6px",
+                            padding: "10px 6px",
+                            borderRadius: "8px",
+                            border: isSelected ? "2px solid #34d399" : "1px solid rgba(42, 97, 81, 0.4)",
+                            background: isSelected ? "rgba(16, 185, 129, 0.25)" : "rgba(10, 59, 37, 0.35)",
+                            color: isSelected ? "#ffffff" : "#cbd5e1",
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
+                            textAlign: "center",
+                          }}
+                          title={opt.label}
+                        >
+                          <div
+                            style={{
+                              fontSize: "20px",
+                              color: isSelected ? "#34d399" : "#94a3b8",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <IconComponent />
+                          </div>
+                          <span
+                            style={{
+                              fontSize: "11px",
+                              fontWeight: isSelected ? "600" : "400",
+                              lineHeight: 1.2,
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              maxWidth: "100%",
+                            }}
+                          >
+                            {opt.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <div className="admin-form-row">
@@ -641,7 +848,7 @@ export default function KategoriPage() {
         <div className="admin-modal-backdrop" onClick={() => setShowDeleteModal(false)}>
           <div className="admin-modal-box" style={{ maxWidth: "450px" }} onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
-              <h3>Hapus Kategori</h3>
+              <h3 style={{ margin: 0, color: "#ffffff", fontSize: "17px", fontWeight: 700 }}>Hapus Kategori</h3>
               <button
                 type="button"
                 className="admin-modal-close"
@@ -651,7 +858,7 @@ export default function KategoriPage() {
               </button>
             </div>
             <div className="admin-modal-body">
-              <p style={{ margin: 0, color: "#475569", fontSize: "14px", lineHeight: 1.6 }}>
+              <p style={{ margin: 0, color: "#ffffff", fontSize: "14px", lineHeight: 1.6 }}>
                 Apakah Anda yakin ingin menghapus kategori <strong>{selectedCategory?.name}</strong>?
                 Tindakan ini tidak dapat dibatalkan.
               </p>

@@ -1,8 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { logout } from "@/lib/authStore";
+import { getCurrentUser, logout, subscribeAuth } from "@/lib/authStore";
 import BrandLogo from "../BrandLogo";
 import {
   FiHome,
@@ -27,6 +28,22 @@ export default function Sidebar({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState(() => getCurrentUser());
+
+  useEffect(() => {
+    setCurrentUser(getCurrentUser());
+    const unsubAuth = subscribeAuth(() => {
+      setCurrentUser(getCurrentUser());
+    });
+    return () => unsubAuth();
+  }, []);
+
+  const handleLogout = () => {
+    setShowLogoutModal(false);
+    logout();
+    router.replace("/admin/login");
+  };
 
   const menus = [
     {
@@ -157,12 +174,7 @@ export default function Sidebar({
           <button
             type="button"
             className="sidebar-link logout"
-            onClick={() => {
-              if (confirm("Apakah Anda yakin ingin keluar dari Admin Panel?")) {
-                logout();
-                router.replace("/admin/login");
-              }
-            }}
+            onClick={() => setShowLogoutModal(true)}
             title={collapsed ? "Keluar" : undefined}
           >
             <span className="sidebar-icon">
@@ -172,6 +184,53 @@ export default function Sidebar({
           </button>
         </div>
       </aside>
+
+      {/* CONFIRM LOGOUT MODAL */}
+      {showLogoutModal && (
+        <div className="admin-modal-backdrop" onClick={() => setShowLogoutModal(false)}>
+          <div
+            className="admin-modal-box"
+            style={{ maxWidth: "420px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="admin-modal-header">
+              <h3 style={{ margin: 0, color: "#ffffff", fontSize: "17px", fontWeight: 700 }}>
+                Konfirmasi Keluar
+              </h3>
+              <button
+                type="button"
+                className="admin-modal-close"
+                onClick={() => setShowLogoutModal(false)}
+              >
+                <FiX size={16} />
+              </button>
+            </div>
+
+            <div className="admin-modal-body">
+              <p style={{ margin: 0, color: "#ffffff", fontSize: "14px", lineHeight: 1.6 }}>
+                Apakah Anda yakin ingin keluar dari sesi <strong>{currentUser?.name || "Administrator"} ({currentUser?.role || "Super Admin"})</strong>?
+              </p>
+            </div>
+
+            <div className="admin-modal-footer">
+              <button
+                type="button"
+                className="admin-btn-secondary"
+                onClick={() => setShowLogoutModal(false)}
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                className="admin-btn-danger"
+                onClick={handleLogout}
+              >
+                Ya, Keluar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

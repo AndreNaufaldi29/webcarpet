@@ -10,10 +10,18 @@ import {
   FiArrowRight,
   FiStar,
   FiLayers,
+  FiScissors,
+  FiBox,
+  FiAward,
+  FiShield,
+  FiFeather,
 } from "react-icons/fi";
 import {
   FaMosque,
   FaHotel,
+  FaCrown,
+  FaPalette,
+  FaBuilding,
 } from "react-icons/fa";
 import {
   getStoredCategories,
@@ -39,12 +47,21 @@ function getIconForCategory(cat) {
     return <FiHome />;
   }
   if (iconType === "custom" || name.includes("custom") || name.includes("motif")) {
-    return <FiGrid />;
+    return <FiLayers />;
   }
-  if (iconType === "tools" || name.includes("aksesoris") || name.includes("underlayer")) {
+  if (iconType === "tools" || iconType === "tool" || name.includes("aksesoris") || name.includes("underlayer")) {
     return <FiTool />;
   }
-  return <FiLayers />;
+  if (iconType === "crown") return <FaCrown />;
+  if (iconType === "star") return <FiStar />;
+  if (iconType === "palette") return <FaPalette />;
+  if (iconType === "scissors") return <FiScissors />;
+  if (iconType === "box") return <FiBox />;
+  if (iconType === "building") return <FaBuilding />;
+  if (iconType === "award") return <FiAward />;
+  if (iconType === "shield") return <FiShield />;
+  if (iconType === "feather") return <FiFeather />;
+  return <FiGrid />;
 }
 
 function Category() {
