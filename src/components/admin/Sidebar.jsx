@@ -39,10 +39,10 @@ export default function Sidebar({
     return () => unsubAuth();
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setShowLogoutModal(false);
-    logout();
-    router.replace("/admin/login");
+    await logout();
+    window.location.href = "/admin/login";
   };
 
   const menus = [

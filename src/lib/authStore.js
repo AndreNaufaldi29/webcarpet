@@ -43,8 +43,8 @@ const COOKIE_NAME = "abcarpet_admin_session";
  */
 function getCookie(name) {
   if (typeof document === "undefined") return null;
-  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-  return match ? decodeURIComponent(match[2]) : null;
+  const match = document.cookie.match(new RegExp("(?:^|;\\s*)" + name + "=([^;]+)"));
+  return match ? decodeURIComponent(match[1]) : null;
 }
 
 /**
@@ -62,11 +62,13 @@ function setCookie(name, value, days = 7) {
 }
 
 /**
- * Menghapus cookie di browser
+ * Menghapus cookie di browser secara menyeluruh
  */
-function deleteCookie(name) {
+export function deleteCookie(name) {
   if (typeof document === "undefined") return;
-  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0; SameSite=Lax`;
+  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0;`;
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0;`;
 }
 
 /**
@@ -81,13 +83,25 @@ export function getStoredAuth() {
       // Coba periksa cookie jika localStorage kosong
       const cookieSession = getCookie(COOKIE_NAME);
       if (cookieSession) {
-        const parsedCookie = JSON.parse(cookieSession);
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(parsedCookie));
-        return parsedCookie;
+        try {
+          const parsedCookie = JSON.parse(cookieSession);
+          if (parsedCookie && parsedCookie.email && parsedCookie.token) {
+            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(parsedCookie));
+            return parsedCookie;
+          }
+        } catch {
+          deleteCookie(COOKIE_NAME);
+          return null;
+        }
       }
       return null;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.email && parsed.token) {
+      return parsed;
+    }
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    return null;
   } catch {
     return null;
   }
@@ -239,10 +253,35 @@ export async function login(email, password, rememberMe = true) {
 /**
  * Fungsi Logout Admin
  */
-export function logout() {
+export async function logout() {
   if (typeof window !== "undefined") {
-    localStorage.removeItem(AUTH_STORAGE_KEY);
+    // 1. Bersihkan localStorage & sessionStorage
+    try {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+      sessionStorage.clear();
+    } catch (e) {
+      console.warn("Storage removal error:", e);
+    }
+
+    // 2. Hapus cookie client secara komprehensif
     deleteCookie(COOKIE_NAME);
+    deleteCookie("abcarpet_admin_session");
+
+    // 3. Panggil API logout server untuk menghapus HTTP cookie & catat audit log
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (err) {
+      console.warn("Server logout request error:", err);
+    }
+
+    // 4. Pastikan cookie terhapus kembali di browser
+    deleteCookie(COOKIE_NAME);
+    deleteCookie("abcarpet_admin_session");
+
+    // 5. Trigger event pembaruan auth
     window.dispatchEvent(new CustomEvent("abcarpet:auth_changed", { detail: null }));
   }
 }

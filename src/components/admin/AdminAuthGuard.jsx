@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { isAuthenticated, subscribeAuth } from "@/lib/authStore";
+import { isAuthenticated, logout, subscribeAuth } from "@/lib/authStore";
 import BrandLogo from "@/components/BrandLogo";
 import { FiShield, FiLock } from "react-icons/fi";
 
@@ -15,6 +15,55 @@ export default function AdminAuthGuard({ children }) {
 
   // Jika sedang berada di rute login admin, tidak perlu proteksi
   const isLoginPage = pathname === "/admin/login";
+
+  // Intersep klik link yang keluar dari /admin untuk otomatis log out
+  useEffect(() => {
+    if (isLoginPage) return;
+
+    const handleAnchorClick = (e) => {
+      const anchor = e.target.closest("a");
+      if (!anchor) return;
+
+      const href = anchor.getAttribute("href");
+      if (!href) return;
+
+      // Abaikan anchor hash lokal, mailto, tel, dan javascript
+      if (
+        href.startsWith("#") ||
+        href.startsWith("javascript:") ||
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:")
+      ) {
+        return;
+      }
+
+      // Periksa apakah link menuju ke luar dari /admin
+      let isLeavingAdmin = false;
+      try {
+        const targetUrl = new URL(href, window.location.origin);
+        if (
+          targetUrl.origin !== window.location.origin ||
+          !targetUrl.pathname.startsWith("/admin")
+        ) {
+          isLeavingAdmin = true;
+        }
+      } catch {
+        if (!href.startsWith("/admin")) {
+          isLeavingAdmin = true;
+        }
+      }
+
+      if (isLeavingAdmin) {
+        // Otomatis bersihkan sesi admin saat keluar lewat link
+        logout();
+      }
+    };
+
+    document.addEventListener("click", handleAnchorClick, true);
+    return () => {
+      document.removeEventListener("click", handleAnchorClick, true);
+    };
+  }, [isLoginPage]);
 
   useEffect(() => {
     if (isLoginPage) {

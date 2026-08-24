@@ -116,10 +116,10 @@ export default function AdminHeader({
 
   const totalAlerts = pendingTestimonials.length + lowStockProducts.length;
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setShowLogoutModal(false);
-    logout();
-    router.replace("/admin/login");
+    await logout();
+    window.location.href = "/admin/login";
   };
 
 
@@ -363,9 +363,11 @@ export default function AdminHeader({
 
                   <Link
                     href="/"
-                    target="_blank"
                     className="profile-dropdown-link"
-                    onClick={() => setShowProfileMenu(false)}
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      logout();
+                    }}
                   >
                     <FiExternalLink size={15} />
                     <span>Kunjungi Website Publik</span>

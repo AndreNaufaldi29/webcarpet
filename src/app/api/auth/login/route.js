@@ -65,12 +65,31 @@ export async function POST(request) {
       phone: user.phone || "-",
     };
 
-    return NextResponse.json({
+    const authPayload = {
+      token,
+      email: user.email,
+      loginAt: new Date().toISOString(),
+      rememberMe,
+      user: userData,
+    };
+
+    const response = NextResponse.json({
       success: true,
       token,
       user: userData,
       message: `Selamat datang kembali, ${user.name}!`,
     });
+
+    const maxAge = rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60;
+    response.cookies.set({
+      name: "abcarpet_admin_session",
+      value: JSON.stringify(authPayload),
+      path: "/",
+      maxAge,
+      sameSite: "lax",
+    });
+
+    return response;
   } catch (error) {
     console.error("Error authenticating admin:", error);
     return NextResponse.json(
