@@ -2,7 +2,7 @@ import "../App.css";
 import "../components/global.css";
 import "../views/pages.css";
 
-
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import SiteShell from "../components/SiteShell";
 
 export const metadata = {
@@ -79,6 +79,7 @@ export default function RootLayout({ children }) {
     <html lang="id">
       <body>
         <SiteShell>{children}</SiteShell>
+        <SpeedInsights />
       </body>
     </html>
   );
