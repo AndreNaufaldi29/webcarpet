@@ -6,7 +6,9 @@ import "../views/pages.css";
 import SiteShell from "../components/SiteShell";
 
 export const metadata = {
-   dataBase: new URL("https://rumahindahcarpet.co.id"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://webcarpet-p2id.vercel.app"
+  ),
   title: {
     default: "Rumah Indah Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya",
     template: "%s | Rumah Indah Carpet",
@@ -24,7 +26,13 @@ export const metadata = {
     "produsen karpet",
     "pasang karpet masjid",
   ],
-  authors: [{ name: "Rumah Indah Carpet Indonesia", url: "https://rumahindahcarpet.co.id" }],
+  alternates: {
+    canonical: "./",
+    languages: {
+      "id-ID": "/",
+    },
+  },
+  authors: [{ name: "Rumah Indah Carpet Indonesia", url: "https://webcarpet-p2id.vercel.app" }],
   creator: "Rumah Indah Carpet Indonesia",
   publisher: "Rumah Indah Carpet Indonesia",
   formatDetection: {
@@ -35,11 +43,11 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "https://rumahindahcarpet.co.id",
+    url: "/",
     siteName: "Rumah Indah Carpet",
     title: "Rumah Indah Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya",
     description:
-      "Pusat karpet masjid, karpet hotel, karpet kantor, dan karpet custom berkualitas tinggi dengan harga distributor langsung. Gratis konsultasi & pemasangan rapi.",
+      "Pusat karpet masjid, karpet hotel, karpet kantor, dan karpet custom berkualitas tinggi dengan harga distributor langsung. Gratis konsultasi & pemasangan rapi bergaransi.",
     images: [
       {
         url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200",
@@ -64,6 +72,7 @@ export const metadata = {
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,

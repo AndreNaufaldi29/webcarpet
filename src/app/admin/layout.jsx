@@ -4,9 +4,13 @@ import AdminAuthGuard from "@/components/admin/AdminAuthGuard";
 export const metadata = {
   title: "Admin Panel | Rumah Indah Carpet",
   description: "Halaman Admin Rumah Indah Carpet",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
 };
 
 export default function AdminLayout({ children }) {
   return <AdminAuthGuard>{children}</AdminAuthGuard>;
 }
-

@@ -111,7 +111,6 @@ export default function SEOManager() {
     updateMetaTag("name", "description", pageDescription);
     updateMetaTag("name", "keywords", pageKeywords);
     updateMetaTag("name", "author", settings.metaAuthor || settings.companyName);
-    updateMetaTag("name", "robots", settings.robotsIndex || "index, follow");
 
     // 3. Terapkan Open Graph Tags (Facebook, WhatsApp, LinkedIn)
     updateMetaTag("property", "og:title", pageTitle);
@@ -128,10 +127,7 @@ export default function SEOManager() {
     updateMetaTag("name", "twitter:description", pageDescription);
     updateMetaTag("name", "twitter:image", pageImage);
 
-    // 5. Terapkan Canonical Link
-    updateCanonicalLink(currentUrl);
-
-    // 6. Injeksi Schema.org JSON-LD Structured Data
+    // 5. Injeksi Schema.org JSON-LD Structured Data
     const schemaData = {
       "@context": "https://schema.org",
       "@graph": [
