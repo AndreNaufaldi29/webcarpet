@@ -10,8 +10,8 @@ export const metadata = {
     process.env.NEXT_PUBLIC_SITE_URL || "https://webcarpet-p2id.vercel.app"
   ),
   title: {
-    default: "Rumah Indah Carpet - Produsen & Toko Karpet Masjid & Hotel Premium Sidoarjo Surabaya",
-    template: "%s | Rumah Indah Carpet",
+    default: "Rumah Indah Carpet - Produsen & Toko Karpet Premium",
+    template: "%s",
   },
   description:
     "Pusat karpet masjid, karpet hotel, karpet kantor, dan karpet custom berkualitas tinggi dengan harga distributor langsung. Gratis konsultasi & pemasangan rapi bergaransi.",

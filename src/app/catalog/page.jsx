@@ -1,29 +1,59 @@
 import Catalog from "../../components/Catalog";
+import prisma from "@/lib/prisma";
+import { DEFAULT_SETTINGS } from "@/lib/settingsStore";
 
-export const metadata = {
-  title: "Katalog Produk Karpet Lengkap - Karpet Masjid, Hotel, Kantor & Custom",
-  description:
-    "Jelajahi berbagai pilihan karpet masjid tebal, karpet ballroom hotel, karpet tile kantor, hingga karpet custom motif dari Rumah Indah Carpet dengan kualitas terbaik dan harga langsung produsen.",
-  alternates: {
-    canonical: "/catalog",
-    languages: {
-      "id-ID": "/catalog",
+export async function generateMetadata() {
+  let settings = DEFAULT_SETTINGS;
+
+  try {
+    const dbSetting = await prisma.setting.findUnique({
+      where: { id: 1 },
+    });
+    if (dbSetting) {
+      settings = { ...DEFAULT_SETTINGS, ...dbSetting };
+    }
+  } catch (e) {
+    // Fallback jika database offline saat build
+  }
+
+  const title = `Katalog Produk Karpet Lengkap | ${settings.companyName}`;
+  const description = `Jelajahi berbagai pilihan karpet masjid tebal, karpet ballroom hotel, karpet tile kantor, hingga karpet custom motif dari ${settings.companyName}.`;
+  const imageUrl =
+    settings.ogImage ||
+    "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: "/catalog",
+      languages: {
+        "id-ID": "/catalog",
+      },
     },
-  },
-  openGraph: {
-    title: "Katalog Produk Karpet Lengkap | Rumah Indah Carpet",
-    description:
-      "Jelajahi berbagai pilihan karpet masjid tebal, karpet ballroom hotel, karpet tile kantor, hingga karpet custom motif dengan harga produsen langsung.",
-    url: "/catalog",
-    siteName: "Rumah Indah Carpet",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Katalog Produk Karpet Lengkap | Rumah Indah Carpet",
-    description: "Jelajahi berbagai pilihan karpet masjid, hotel, kantor, dan custom.",
-  },
-};
+    openGraph: {
+      title,
+      description,
+      url: "/catalog",
+      siteName: settings.companyName,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: settings.companyName,
+        },
+      ],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
+}
 
 export default function CatalogPage() {
   return <Catalog />;
