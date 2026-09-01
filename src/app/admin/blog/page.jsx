@@ -672,34 +672,22 @@ export default function AdminBlogPage() {
                       ))}
                   </div>
 
-                  <div className="admin-card-actions">
+                  <div className="admin-article-card-actions">
                     <Link
                       href={`/blog/${art.slug}`}
                       target="_blank"
-                      className="action-btn-pill"
-                      style={{
-                        marginRight: "auto",
-                        background: "rgba(37, 99, 235, 0.1)",
-                        color: "#2563eb",
-                        border: "1px solid rgba(37, 99, 235, 0.2)",
-                        textDecoration: "none",
-                      }}
+                      className="admin-article-action-btn view"
                       title="Lihat artikel di web live"
                     >
-                      <FiExternalLink size={12} />
+                      <FiExternalLink size={13} />
                       <span>Lihat</span>
                     </Link>
 
                     <button
                       type="button"
-                      className="action-btn-pill"
-                      style={{
-                        background: "rgba(100, 116, 139, 0.1)",
-                        color: "#475569",
-                        border: "1px solid rgba(100, 116, 139, 0.2)",
-                      }}
+                      className="admin-article-action-btn format"
                       onClick={() => handleOpenPreview(art)}
-                      title="Pratinjau Format"
+                      title="Pratinjau Format Artikel"
                     >
                       <FiEye size={13} />
                       <span>Format</span>
@@ -707,9 +695,9 @@ export default function AdminBlogPage() {
 
                     <button
                       type="button"
-                      className="action-btn-pill edit"
+                      className="admin-article-action-btn edit"
                       onClick={() => handleOpenEdit(art)}
-                      title="Edit Artikel"
+                      title="Edit Konten & SEO Artikel"
                     >
                       <FiEdit2 size={13} />
                       <span>Edit</span>
@@ -717,7 +705,7 @@ export default function AdminBlogPage() {
 
                     <button
                       type="button"
-                      className="action-btn-pill delete"
+                      className="admin-article-action-btn delete"
                       onClick={() => handleOpenDelete(art)}
                       title="Hapus Artikel"
                     >
@@ -747,7 +735,7 @@ export default function AdminBlogPage() {
       ================================================= */}
       {showAddModal && (
         <div className="admin-modal-backdrop" onClick={() => setShowAddModal(false)}>
-          <div className="admin-modal-box" style={{ maxWidth: "840px" }} onClick={(e) => e.stopPropagation()}>
+          <div className="admin-modal-box admin-blog-modal-box" onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
               <div>
                 <h3 style={{ margin: 0 }}>Tulis Artikel Edukasi Baru</h3>
@@ -764,7 +752,7 @@ export default function AdminBlogPage() {
               </button>
             </div>
             <form onSubmit={handleSaveNew}>
-              <div className="admin-modal-body" style={{ maxHeight: "75vh", overflowY: "auto" }}>
+              <div className="admin-modal-body">
                 {/* 1. INFORMASI DASAR ARTIKEL */}
                 <div className="admin-form-group">
                   <label>Judul Artikel <span className="required">*</span></label>
@@ -809,7 +797,7 @@ export default function AdminBlogPage() {
                   </div>
                 </div>
 
-                <div className="admin-form-row">
+                <div className="admin-form-row-3">
                   <div className="admin-form-group">
                     <label>Waktu Estimasi Baca</label>
                     <input
@@ -848,7 +836,7 @@ export default function AdminBlogPage() {
                 {/* COVER IMAGE */}
                 <div className="admin-form-group">
                   <label>Foto Sampul Artikel <span className="required">*</span></label>
-                  <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+                  <div className="admin-image-upload-row">
                     <input
                       type="text"
                       className="admin-input"
@@ -895,7 +883,7 @@ export default function AdminBlogPage() {
                 <div className="admin-form-group">
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px", flexWrap: "wrap", gap: "8px" }}>
                     <label style={{ margin: 0 }}>Isi Konten Lengkap Artikel</label>
-                    <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
+                    <div className="admin-markdown-tools">
                       <button
                         type="button"
                         className="action-btn-pill"
@@ -963,16 +951,8 @@ export default function AdminBlogPage() {
                 {/* =================================================
                     2. METADATA SEO & GOOGLE RANKING OPTIMIZATION
                 ================================================= */}
-                <div
-                  style={{
-                    marginTop: "26px",
-                    padding: "20px",
-                    borderRadius: "16px",
-                    background: "linear-gradient(135deg, rgba(10, 59, 37, 0.05) 0%, rgba(42, 97, 81, 0.08) 100%)",
-                    border: "1.5px solid rgba(42, 97, 81, 0.25)",
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "10px" }}>
+                <div className="admin-seo-card">
+                  <div className="admin-seo-card-header">
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <div style={{ width: "28px", height: "28px", borderRadius: "8px", background: "#0A3B25", color: "#D8C2A4", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <FiGlobe size={15} />
@@ -1008,31 +988,22 @@ export default function AdminBlogPage() {
                   </div>
 
                   {/* GOOGLE SERP LIVE PREVIEW */}
-                  <div
-                    style={{
-                      background: "#ffffff",
-                      borderRadius: "12px",
-                      padding: "16px",
-                      border: "1px solid #e2e8f0",
-                      marginBottom: "18px",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-                    }}
-                  >
+                  <div className="admin-serp-box">
                     <span style={{ fontSize: "10px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", display: "block", marginBottom: "8px" }}>
                       Pratinjau Hasil Pencarian Google (SERP Preview)
                     </span>
                     <div style={{ fontFamily: "Arial, sans-serif" }}>
-                      <div style={{ fontSize: "12px", color: "#202124", display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
+                      <div style={{ fontSize: "12px", color: "#202124", display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px", flexWrap: "wrap" }}>
                         <div style={{ width: "16px", height: "16px", borderRadius: "50%", background: "#0A3B25", color: "#fff", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
                           R
                         </div>
                         <span style={{ color: "#202124", fontWeight: 500 }}>Rumah Indah Carpet</span>
                         <span style={{ color: "#5f6368" }}>› blog › {formData.slug || "panduan-karpet"}</span>
                       </div>
-                      <h4 style={{ fontSize: "18px", color: "#1a0dab", fontWeight: 400, margin: "0 0 4px", lineHeight: "1.3", cursor: "pointer" }}>
+                      <h4 style={{ fontSize: "17px", color: "#1a0dab", fontWeight: 400, margin: "0 0 4px", lineHeight: "1.35", cursor: "pointer", wordBreak: "break-word" }}>
                         {formData.metaTitle || (formData.title ? `${formData.title} | Rumah Indah Carpet` : "Judul Artikel di Hasil Pencarian Google")}
                       </h4>
-                      <p style={{ fontSize: "13px", color: "#4d5156", lineHeight: "1.5", margin: 0 }}>
+                      <p style={{ fontSize: "12.5px", color: "#4d5156", lineHeight: "1.5", margin: 0, wordBreak: "break-word" }}>
                         {formData.metaDescription || formData.excerpt || "Deskripsi ringkas yang menarik pembaca mengklik artikel Anda dari hasil pencarian Google..."}
                       </p>
                     </div>
@@ -1040,7 +1011,7 @@ export default function AdminBlogPage() {
 
                   {/* META TITLE */}
                   <div className="admin-form-group">
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px", flexWrap: "wrap", gap: "4px" }}>
                       <label style={{ margin: 0 }}>
                         Meta Title Google <span style={{ fontSize: "11px", fontWeight: 500, color: "#64748b" }}>(Judul Tag HTML)</span>
                       </label>
@@ -1075,7 +1046,7 @@ export default function AdminBlogPage() {
 
                   {/* META DESCRIPTION */}
                   <div className="admin-form-group">
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px", flexWrap: "wrap", gap: "4px" }}>
                       <label style={{ margin: 0 }}>
                         Meta Description <span style={{ fontSize: "11px", fontWeight: 500, color: "#64748b" }}>(Snippet Pencarian Google)</span>
                       </label>
@@ -1184,7 +1155,7 @@ export default function AdminBlogPage() {
       ================================================= */}
       {showEditModal && selectedArticle && (
         <div className="admin-modal-backdrop" onClick={() => setShowEditModal(false)}>
-          <div className="admin-modal-box" style={{ maxWidth: "840px" }} onClick={(e) => e.stopPropagation()}>
+          <div className="admin-modal-box admin-blog-modal-box" onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
               <div>
                 <h3 style={{ margin: 0 }}>Edit Artikel & Metadata SEO</h3>
@@ -1201,7 +1172,7 @@ export default function AdminBlogPage() {
               </button>
             </div>
             <form onSubmit={handleSaveEdit}>
-              <div className="admin-modal-body" style={{ maxHeight: "75vh", overflowY: "auto" }}>
+              <div className="admin-modal-body">
                 {/* 1. KONTEN UTAMA */}
                 <div className="admin-form-group">
                   <label>Judul Artikel <span className="required">*</span></label>
@@ -1244,7 +1215,7 @@ export default function AdminBlogPage() {
                   </div>
                 </div>
 
-                <div className="admin-form-row">
+                <div className="admin-form-row-3">
                   <div className="admin-form-group">
                     <label>Waktu Estimasi Baca</label>
                     <input
@@ -1281,7 +1252,7 @@ export default function AdminBlogPage() {
                 {/* COVER IMAGE */}
                 <div className="admin-form-group">
                   <label>Foto Sampul Artikel</label>
-                  <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+                  <div className="admin-image-upload-row">
                     <input
                       type="text"
                       className="admin-input"
@@ -1326,7 +1297,7 @@ export default function AdminBlogPage() {
                 <div className="admin-form-group">
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px", flexWrap: "wrap", gap: "8px" }}>
                     <label style={{ margin: 0 }}>Isi Konten Lengkap Artikel</label>
-                    <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
+                    <div className="admin-markdown-tools">
                       <button
                         type="button"
                         className="action-btn-pill"
@@ -1384,16 +1355,8 @@ export default function AdminBlogPage() {
                 {/* =================================================
                     2. METADATA SEO & GOOGLE RANKING OPTIMIZATION
                 ================================================= */}
-                <div
-                  style={{
-                    marginTop: "26px",
-                    padding: "20px",
-                    borderRadius: "16px",
-                    background: "linear-gradient(135deg, rgba(10, 59, 37, 0.05) 0%, rgba(42, 97, 81, 0.08) 100%)",
-                    border: "1.5px solid rgba(42, 97, 81, 0.25)",
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "10px" }}>
+                <div className="admin-seo-card">
+                  <div className="admin-seo-card-header">
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <div style={{ width: "28px", height: "28px", borderRadius: "8px", background: "#0A3B25", color: "#D8C2A4", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <FiGlobe size={15} />
@@ -1429,31 +1392,22 @@ export default function AdminBlogPage() {
                   </div>
 
                   {/* GOOGLE SERP LIVE PREVIEW */}
-                  <div
-                    style={{
-                      background: "#ffffff",
-                      borderRadius: "12px",
-                      padding: "16px",
-                      border: "1px solid #e2e8f0",
-                      marginBottom: "18px",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-                    }}
-                  >
+                  <div className="admin-serp-box">
                     <span style={{ fontSize: "10px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", display: "block", marginBottom: "8px" }}>
                       Pratinjau Hasil Pencarian Google (SERP Preview)
                     </span>
                     <div style={{ fontFamily: "Arial, sans-serif" }}>
-                      <div style={{ fontSize: "12px", color: "#202124", display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
+                      <div style={{ fontSize: "12px", color: "#202124", display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px", flexWrap: "wrap" }}>
                         <div style={{ width: "16px", height: "16px", borderRadius: "50%", background: "#0A3B25", color: "#fff", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
                           R
                         </div>
                         <span style={{ color: "#202124", fontWeight: 500 }}>Rumah Indah Carpet</span>
                         <span style={{ color: "#5f6368" }}>› blog › {formData.slug || "panduan-karpet"}</span>
                       </div>
-                      <h4 style={{ fontSize: "18px", color: "#1a0dab", fontWeight: 400, margin: "0 0 4px", lineHeight: "1.3", cursor: "pointer" }}>
+                      <h4 style={{ fontSize: "17px", color: "#1a0dab", fontWeight: 400, margin: "0 0 4px", lineHeight: "1.35", cursor: "pointer", wordBreak: "break-word" }}>
                         {formData.metaTitle || (formData.title ? `${formData.title} | Rumah Indah Carpet` : "Judul Artikel di Hasil Pencarian Google")}
                       </h4>
-                      <p style={{ fontSize: "13px", color: "#4d5156", lineHeight: "1.5", margin: 0 }}>
+                      <p style={{ fontSize: "12.5px", color: "#4d5156", lineHeight: "1.5", margin: 0, wordBreak: "break-word" }}>
                         {formData.metaDescription || formData.excerpt || "Deskripsi ringkas yang menarik pembaca mengklik artikel Anda dari hasil pencarian Google..."}
                       </p>
                     </div>
@@ -1461,7 +1415,7 @@ export default function AdminBlogPage() {
 
                   {/* META TITLE */}
                   <div className="admin-form-group">
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px", flexWrap: "wrap", gap: "4px" }}>
                       <label style={{ margin: 0 }}>
                         Meta Title Google <span style={{ fontSize: "11px", fontWeight: 500, color: "#64748b" }}>(Judul Tag HTML)</span>
                       </label>
@@ -1496,7 +1450,7 @@ export default function AdminBlogPage() {
 
                   {/* META DESCRIPTION */}
                   <div className="admin-form-group">
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px", flexWrap: "wrap", gap: "4px" }}>
                       <label style={{ margin: 0 }}>
                         Meta Description <span style={{ fontSize: "11px", fontWeight: 500, color: "#64748b" }}>(Snippet Pencarian Google)</span>
                       </label>

@@ -77,6 +77,7 @@ export const DEFAULT_PORTFOLIOS = [
     category: "Masjid",
     location: "Sidoarjo, Jawa Timur",
     area: "450 m²",
+    duration: "7 Hari",
     date: "Januari 2026",
     image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200",
     images: [
@@ -95,6 +96,7 @@ export const DEFAULT_PORTFOLIOS = [
     category: "Hotel",
     location: "Surabaya, Jawa Timur",
     area: "850 m²",
+    duration: "14 Hari",
     date: "Desember 2025",
     image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200",
     images: [
@@ -113,6 +115,7 @@ export const DEFAULT_PORTFOLIOS = [
     category: "Kantor",
     location: "Surabaya, Jawa Timur",
     area: "620 m²",
+    duration: "5 Hari",
     date: "Februari 2026",
     image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200",
     images: [
@@ -131,6 +134,7 @@ export const DEFAULT_PORTFOLIOS = [
     category: "Rumah",
     location: "Puri Indah, Sidoarjo",
     area: "120 m²",
+    duration: "3 Hari",
     date: "Maret 2026",
     image: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200",
     images: [

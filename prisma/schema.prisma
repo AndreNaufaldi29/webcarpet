@@ -73,8 +73,10 @@ model Portfolio {
   category    String   // "Masjid", "Hotel", "Kantor", "Rumah"
   location    String   @default("Sidoarjo, Jawa Timur")
   area        String   @default("100 m²")
+  duration    String?  @default("7 Hari")
   date        String   @default("Maret 2026")
   image       String   @db.Text // URL foto atau video
+  images      String[] @default([])
   mediaType   String   @default("image") // "image" atau "video"
   description String   @db.Text
   createdAt   DateTime @default(now())

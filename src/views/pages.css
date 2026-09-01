@@ -523,36 +523,42 @@ body.dark .product-spec-card strong {
 
 
 /* ==========================================================================
-   2. PORTFOLIO DETAIL PAGE
+   2. PORTFOLIO DETAIL PAGE (FULLY FLEXIBLE & RESPONSIVE)
    ========================================================================== */
 
 .portfolio-detail-page {
-  max-width: 1400px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 100px 5% 80px;
+  padding: 95px 24px 75px;
   background: var(--light-cream, #FCF7F0);
   min-height: 80vh;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .portfolio-container {
-  max-width: 1400px;
+  width: 100%;
+  max-width: 1220px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .portfolio-back-btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 22px;
+  gap: 8px;
+  padding: 10px 20px;
   background: linear-gradient(135deg, #0A3B25 0%, #2A6151 100%);
   color: #FCF7F0;
   text-decoration: none;
   border-radius: 12px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   border: 1px solid rgba(216, 194, 164, 0.3);
   transition: all 0.3s ease;
   box-shadow: 0 4px 14px rgba(10, 59, 37, 0.2);
+  box-sizing: border-box;
 }
 
 .portfolio-back-btn:hover {
@@ -564,33 +570,43 @@ body.dark .product-spec-card strong {
 
 .portfolio-detail-grid {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 50px;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+  gap: 36px;
   background: #ffffff;
-  padding: 40px;
-  border-radius: 28px;
+  padding: 34px;
+  border-radius: 24px;
   border: 1px solid #E3E8E4;
-  box-shadow: 0 20px 50px rgba(10, 59, 37, 0.05);
+  box-shadow: 0 16px 45px rgba(10, 59, 37, 0.05);
   align-items: start;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* PORTFOLIO GALLERY */
 .portfolio-gallery {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+  box-sizing: border-box;
 }
 
 .portfolio-main-image-card {
   position: relative;
   width: 100%;
-  height: 480px;
-  border-radius: 22px;
+  max-width: 100%;
+  aspect-ratio: 16 / 10.5;
+  min-height: 220px;
+  max-height: 480px;
+  border-radius: 20px;
   overflow: hidden;
   background: var(--bg-soft, #F4F7F5);
   border: 1px solid var(--border, #D8DED9);
   box-shadow: 0 10px 30px rgba(10, 59, 37, 0.08);
+  box-sizing: border-box;
 }
 
 .portfolio-main-media {
@@ -598,7 +614,7 @@ body.dark .product-spec-card strong {
   height: 100%;
   object-fit: cover;
   display: block;
-  border-radius: 21px;
+  border-radius: 19px;
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
@@ -607,10 +623,10 @@ body.dark .product-spec-card strong {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
   border: 1.5px solid rgba(10, 59, 37, 0.15);
   color: #0A3B25;
@@ -624,11 +640,11 @@ body.dark .product-spec-card strong {
 }
 
 .portfolio-slide-btn.prev {
-  left: 14px;
+  left: 12px;
 }
 
 .portfolio-slide-btn.next {
-  right: 14px;
+  right: 12px;
 }
 
 .portfolio-slide-btn:hover {
@@ -646,18 +662,18 @@ body.dark .product-spec-card strong {
 /* PHOTO COUNTER BADGE */
 .portfolio-img-counter {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(10, 59, 37, 0.85);
+  top: 14px;
+  right: 14px;
+  background: rgba(10, 59, 37, 0.88);
   backdrop-filter: blur(10px);
   color: #FCF7F0;
-  padding: 6px 14px;
+  padding: 5px 12px;
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   border: 1px solid rgba(216, 194, 164, 0.4);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
   z-index: 5;
@@ -668,16 +684,19 @@ body.dark .product-spec-card strong {
 .portfolio-thumb-slider-wrapper {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
+  max-width: 100%;
   position: relative;
   margin-top: 2px;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .portfolio-thumb-arrow {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
   background: #ffffff;
   border: 1.5px solid #D8DED9;
   color: #0A3B25;
@@ -688,6 +707,7 @@ body.dark .product-spec-card strong {
   flex-shrink: 0;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(10, 59, 37, 0.08);
+  padding: 0;
 }
 
 .portfolio-thumb-arrow:hover {
@@ -704,13 +724,17 @@ body.dark .product-spec-card strong {
 
 .portfolio-thumb-track {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   overflow-x: auto;
   scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 4px 2px;
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  width: 100%;
 }
 
 .portfolio-thumb-track::-webkit-scrollbar {
@@ -719,16 +743,18 @@ body.dark .product-spec-card strong {
 
 .portfolio-thumb-item {
   position: relative;
-  width: 76px;
-  height: 76px;
-  border-radius: 14px;
+  width: 68px;
+  height: 68px;
+  border-radius: 12px;
   padding: 0;
   border: 2.5px solid #D8DED9;
   background: #F4F7F5;
   cursor: pointer;
   overflow: hidden;
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  scroll-snap-align: center;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
 }
 
 .portfolio-thumb-item img {
@@ -736,7 +762,7 @@ body.dark .product-spec-card strong {
   height: 100%;
   object-fit: cover;
   display: block;
-  border-radius: 11px;
+  border-radius: 9px;
 }
 
 .portfolio-thumb-item:hover {
@@ -753,14 +779,14 @@ body.dark .product-spec-card strong {
 
 .thumb-index-pill {
   position: absolute;
-  bottom: 4px;
-  right: 4px;
-  background: rgba(10, 59, 37, 0.85);
+  bottom: 3px;
+  right: 3px;
+  background: rgba(10, 59, 37, 0.88);
   color: #FCF7F0;
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 6px;
+  padding: 1px 5px;
+  border-radius: 5px;
   pointer-events: none;
 }
 
@@ -774,9 +800,17 @@ body.dark .product-spec-card strong {
   color: #FCF7F0;
 }
 
+/* PORTFOLIO INFO */
 .portfolio-detail-info {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 .portfolio-category-tag {
@@ -784,54 +818,64 @@ body.dark .product-spec-card strong {
   align-items: center;
   gap: 6px;
   width: max-content;
+  max-width: 100%;
   background: linear-gradient(135deg, #0A3B25 0%, #2A6151 100%);
   color: #FCF7F0;
-  padding: 8px 18px;
+  padding: 6px 15px;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   border: 1px solid rgba(216, 194, 164, 0.4);
   box-shadow: 0 4px 12px rgba(10, 59, 37, 0.2);
+  box-sizing: border-box;
 }
 
 .portfolio-detail-info h1 {
-  margin: 16px 0 12px;
-  font-size: 2.4rem;
+  margin: 14px 0 10px;
+  font-size: 2.1rem;
   color: #0A3B25;
   line-height: 1.25;
   font-weight: 800;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .portfolio-desc {
   color: #4A5B52;
-  font-size: 1.05rem;
-  line-height: 1.8;
-  margin-bottom: 28px;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  margin-bottom: 22px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .portfolio-meta-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
-  margin-bottom: 35px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 26px;
   background: #F4F7F5;
-  padding: 24px;
-  border-radius: 20px;
+  padding: 18px;
+  border-radius: 16px;
   border: 1px solid #D8DED9;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .meta-item {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  min-width: 0;
 }
 
 .meta-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   background: rgba(42, 97, 81, 0.12);
   color: #0A3B25;
   display: flex;
@@ -843,50 +887,57 @@ body.dark .product-spec-card strong {
 
 .meta-item strong {
   display: block;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   color: #5A6D63;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .meta-item span {
   display: block;
-  font-size: 1.05rem;
+  font-size: 0.96rem;
   color: #0A3B25;
   font-weight: 700;
   margin-top: 2px;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .portfolio-detail-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   flex-wrap: wrap;
   width: 100%;
-  margin-top: 10px;
+  max-width: 100%;
+  margin-top: 4px;
+  box-sizing: border-box;
 }
 
 .portfolio-whatsapp-btn {
   flex: 1 1 200px;
-  height: 52px;
-  min-height: 52px;
-  max-height: 52px;
-  padding: 0 22px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  border-radius: 14px;
+  gap: 8px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #0A3B25 0%, #1A543C 100%);
   color: #FCF7F0 !important;
   border: 1px solid rgba(216, 194, 164, 0.45);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 4px 16px rgba(10, 59, 37, 0.25);
   text-decoration: none;
-  white-space: nowrap;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .portfolio-whatsapp-btn:hover {
@@ -902,25 +953,25 @@ body.dark .product-spec-card strong {
 
 .portfolio-back-outline-btn {
   flex: 1 1 200px;
-  height: 52px;
-  min-height: 52px;
-  max-height: 52px;
-  padding: 0 22px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   border: 1.5px solid #D2DCD5;
-  border-radius: 14px;
+  border-radius: 12px;
   background: #ffffff;
   color: #0A3B25;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   text-decoration: none;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
-  white-space: nowrap;
   box-shadow: 0 2px 8px rgba(10, 59, 37, 0.05);
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .portfolio-back-outline-btn:hover {
@@ -935,35 +986,68 @@ body.dark .product-spec-card strong {
   transform: scale(0.98);
 }
 
-/* RESPONSIVE PORTFOLIO */
+/* ==========================================================================
+   FLUID RESPONSIVE BREAKPOINTS (PORTFOLIO DETAIL)
+   ========================================================================== */
+
 @media (max-width: 992px) {
   .portfolio-detail-grid {
     grid-template-columns: 1fr;
-    gap: 35px;
-    padding: 30px;
+    gap: 30px;
+    padding: 28px;
+    border-radius: 22px;
   }
 
   .portfolio-main-image-card {
-    height: 380px;
+    aspect-ratio: 16 / 10;
+    max-height: 380px;
   }
 
   .portfolio-detail-info h1 {
-    font-size: 2rem;
+    font-size: 1.85rem;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .portfolio-detail-page {
-    padding: 80px 4% 50px;
+    padding: 85px 18px 55px;
   }
 
   .portfolio-detail-grid {
-    padding: 20px;
+    padding: 22px;
     border-radius: 20px;
+    gap: 24px;
+  }
+
+  .portfolio-detail-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .portfolio-whatsapp-btn,
+  .portfolio-back-outline-btn {
+    width: 100%;
+    flex: none;
+    height: 48px;
+    min-height: 48px;
+  }
+}
+
+@media (max-width: 520px) {
+  .portfolio-detail-page {
+    padding: 78px 12px 45px;
+  }
+
+  .portfolio-detail-grid {
+    padding: 16px 14px;
+    border-radius: 18px;
+    gap: 20px;
   }
 
   .portfolio-main-image-card {
-    height: 270px;
+    aspect-ratio: 16 / 10.5;
+    min-height: 190px;
+    max-height: 300px;
     border-radius: 16px;
   }
 
@@ -972,8 +1056,8 @@ body.dark .product-spec-card strong {
   }
 
   .portfolio-slide-btn {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
   }
 
   .portfolio-slide-btn.prev {
@@ -984,36 +1068,98 @@ body.dark .product-spec-card strong {
     right: 8px;
   }
 
-  .portfolio-thumb-item {
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
+  .portfolio-img-counter {
+    top: 10px;
+    right: 10px;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+  }
+
+  .portfolio-thumb-slider-wrapper {
+    gap: 6px;
   }
 
   .portfolio-thumb-arrow {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+
+  .portfolio-thumb-track {
+    gap: 8px;
+  }
+
+  .portfolio-thumb-item {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    border-width: 2px;
+  }
+
+  .portfolio-detail-info h1 {
+    font-size: 1.4rem;
+    line-height: 1.3;
+    margin: 10px 0 8px;
+  }
+
+  .portfolio-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 18px;
   }
 
   .portfolio-meta-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 16px;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 14px;
+    margin-bottom: 20px;
   }
 
-  .portfolio-detail-actions {
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
+  .meta-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
   }
 
-  .portfolio-whatsapp-btn,
-  .portfolio-back-outline-btn {
-    width: 100%;
-    flex: none;
+  .meta-item strong {
+    font-size: 0.75rem;
+  }
+
+  .meta-item span {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .portfolio-detail-page {
+    padding: 72px 8px 38px;
+  }
+
+  .portfolio-detail-grid {
+    padding: 14px 10px;
+    border-radius: 16px;
+    gap: 18px;
+  }
+
+  .portfolio-main-image-card {
+    min-height: 175px;
+    border-radius: 14px;
+  }
+
+  .portfolio-thumb-item {
+    width: 50px;
     height: 50px;
-    min-height: 50px;
-    max-height: 50px;
+    border-radius: 8px;
+  }
+
+  .portfolio-detail-info h1 {
+    font-size: 1.25rem;
+  }
+
+  .portfolio-category-tag {
+    font-size: 0.72rem;
+    padding: 5px 12px;
   }
 }
 

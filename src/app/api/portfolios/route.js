@@ -42,8 +42,10 @@ export async function POST(request) {
       category = "Masjid",
       location = "Indonesia",
       area = "100 m²",
+      duration = "7 Hari",
       date = "2026",
       image,
+      images = [],
       mediaType = "image",
       description = "",
     } = body;
@@ -56,6 +58,7 @@ export async function POST(request) {
     }
 
     const finalImage = image || "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800";
+    const finalImages = Array.isArray(images) && images.length > 0 ? images : [finalImage];
 
     let portfolio;
     try {
@@ -65,8 +68,10 @@ export async function POST(request) {
           category,
           location,
           area,
+          duration: duration || "7 Hari",
           date,
           image: finalImage,
+          images: finalImages,
           mediaType: mediaType || "image",
           description: description.trim(),
         },
@@ -82,8 +87,10 @@ export async function POST(request) {
             category,
             location,
             area,
+            duration: duration || "7 Hari",
             date,
             image: finalImage,
+            images: finalImages,
             mediaType: mediaType || "image",
             description: description.trim(),
           },
@@ -119,7 +126,7 @@ export async function POST(request) {
 export async function PUT(request) {
   try {
     const body = await request.json();
-    const { id, title, category, location, area, date, image, mediaType, description } = body;
+    const { id, title, category, location, area, duration, date, image, images, mediaType, description } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -133,8 +140,10 @@ export async function PUT(request) {
     if (category) updateData.category = category;
     if (location !== undefined) updateData.location = location.trim();
     if (area !== undefined) updateData.area = area.trim();
+    if (duration !== undefined) updateData.duration = duration.trim();
     if (date !== undefined) updateData.date = date.trim();
     if (image) updateData.image = image;
+    if (images !== undefined && Array.isArray(images)) updateData.images = images;
     if (mediaType) updateData.mediaType = mediaType;
     if (description !== undefined) updateData.description = description.trim();
 
