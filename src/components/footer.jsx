@@ -80,6 +80,7 @@ function Footer() {
           <Link href="/">Beranda</Link>
           <Link href="/catalog">Katalog</Link>
           <Link href="/portofolio">Portofolio</Link>
+          <Link href="/blog">Blog & Artikel</Link>
           <Link href="/cabang">Cabang Kami</Link>
         </div>
 

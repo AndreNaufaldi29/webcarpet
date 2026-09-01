@@ -193,3 +193,29 @@ model AdminSession {
 
   @@map("admin_sessions")
 }
+
+// 11. Model Artikel & Blog SEO
+model Article {
+  id              Int      @id @default(autoincrement())
+  slug            String   @unique
+  title           String
+  category        String   @default("Tips & Panduan")
+  excerpt         String   @db.Text
+  content         String   @db.Text
+  image           String   @db.Text
+  readTime        String   @default("5 Menit Baca")
+  publishedAt     String   @default("Maret 2026")
+  views           Int      @default(0)
+  tags            String[] @default([])
+  status          String   @default("Dipublikasikan") // "Dipublikasikan", "Draf", "Arsip"
+  metaTitle       String?
+  metaDescription String?  @db.Text
+  metaKeywords    String?
+  canonicalUrl    String?
+  ogImage         String?  @db.Text
+  robotsIndex     String?  @default("index, follow")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("articles")
+}

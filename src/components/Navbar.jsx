@@ -14,6 +14,7 @@ import {
   FiGrid,
   FiImage,
   FiMapPin,
+  FiBookOpen,
   FiChevronRight,
   FiMessageCircle,
 } from "react-icons/fi";
@@ -97,6 +98,7 @@ function Navbar() {
     { name: "Beranda", path: "/", icon: FiHome },
     { name: "Katalog", path: "/catalog", icon: FiGrid },
     { name: "Portofolio", path: "/portofolio", icon: FiImage },
+    { name: "Blog", path: "/blog", icon: FiBookOpen },
     { name: "Cabang", path: "/cabang", icon: FiMapPin },
   ];
 

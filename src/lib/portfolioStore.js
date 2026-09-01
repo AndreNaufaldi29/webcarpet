@@ -1,5 +1,75 @@
 // Store terpusat untuk Portofolio Proyek AB Carpet (Database Prisma + Local Storage + Realtime Event Sync)
 
+export const CATEGORY_FALLBACK_IMAGES = {
+  Masjid: [
+    "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200",
+    "https://images.unsplash.com/photo-1564769625905-50e93615e769?w=1200",
+    "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=1200",
+    "https://images.unsplash.com/photo-1542662565-7e4b66bae529?w=1200",
+    "https://images.unsplash.com/photo-1609766857041-ed402ea8069a?w=1200",
+  ],
+  Hotel: [
+    "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200",
+    "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200",
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200",
+    "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=1200",
+    "https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?w=1200",
+  ],
+  Kantor: [
+    "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200",
+    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200",
+    "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1200",
+    "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1200",
+    "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200",
+  ],
+  Rumah: [
+    "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200",
+    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200",
+    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200",
+    "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1200",
+    "https://images.unsplash.com/photo-1615873968403-89e068629265?w=1200",
+  ],
+  Custom: [
+    "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200",
+    "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200",
+    "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200",
+    "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200",
+  ],
+};
+
+export function getPortfolioGalleryImages(portfolio) {
+  if (!portfolio) return CATEGORY_FALLBACK_IMAGES["Masjid"];
+
+  // 1. If images is already an array with valid items
+  if (Array.isArray(portfolio.images) && portfolio.images.length > 0) {
+    return portfolio.images.filter(Boolean);
+  }
+
+  // 2. If media property exists (from DB JSON or media array)
+  if (Array.isArray(portfolio.media) && portfolio.media.length > 0) {
+    const extracted = portfolio.media
+      .map((m) => (typeof m === "string" ? m : m?.src))
+      .filter(Boolean);
+    if (extracted.length > 0) return extracted;
+  }
+
+  // 3. Fallback based on category with main image prioritized
+  const catKey =
+    Object.keys(CATEGORY_FALLBACK_IMAGES).find((k) =>
+      portfolio.category?.toLowerCase().includes(k.toLowerCase())
+    ) || "Masjid";
+
+  const fallbackList =
+    CATEGORY_FALLBACK_IMAGES[catKey] || CATEGORY_FALLBACK_IMAGES["Masjid"];
+
+  if (portfolio.image && typeof portfolio.image === "string") {
+    const others = fallbackList.filter((img) => img !== portfolio.image);
+    return [portfolio.image, ...others];
+  }
+
+  return fallbackList;
+}
+
 export const DEFAULT_PORTFOLIOS = [
   {
     id: 1,
@@ -9,6 +79,13 @@ export const DEFAULT_PORTFOLIOS = [
     area: "450 m²",
     date: "Januari 2026",
     image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200",
+    images: [
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200",
+      "https://images.unsplash.com/photo-1564769625905-50e93615e769?w=1200",
+      "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=1200",
+      "https://images.unsplash.com/photo-1542662565-7e4b66bae529?w=1200",
+      "https://images.unsplash.com/photo-1609766857041-ed402ea8069a?w=1200",
+    ],
     mediaType: "image",
     description: "Instalasi karpet masjid tebal 14mm custom motif shaf hijau zamrud dengan list kiblat emas.",
   },
@@ -20,6 +97,13 @@ export const DEFAULT_PORTFOLIOS = [
     area: "850 m²",
     date: "Desember 2025",
     image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200",
+    images: [
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200",
+      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200",
+      "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=1200",
+      "https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?w=1200",
+    ],
     mediaType: "image",
     description: "Karpet axminster motif klasik royal blue peredam kebisingan untuk area ballroom utama.",
   },
@@ -31,6 +115,13 @@ export const DEFAULT_PORTFOLIOS = [
     area: "620 m²",
     date: "Februari 2026",
     image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200",
+    images: [
+      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200",
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200",
+      "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1200",
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1200",
+      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200",
+    ],
     mediaType: "image",
     description: "Pemasangan karpet tile 50x50 cm warna abu-abu modern untuk ruang open space dan meeting.",
   },
@@ -42,6 +133,13 @@ export const DEFAULT_PORTFOLIOS = [
     area: "120 m²",
     date: "Maret 2026",
     image: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200",
+    images: [
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200",
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200",
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1200",
+      "https://images.unsplash.com/photo-1615873968403-89e068629265?w=1200",
+    ],
     mediaType: "image",
     description: "Karpet handtufted super soft wool untuk ruang tamu utama dan master bedroom.",
   },
@@ -67,8 +165,13 @@ export async function syncPortfoliosFromDatabase() {
     const res = await fetch("/api/portfolios");
     const json = await res.json();
     if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-      savePortfolios(json.data);
-      return json.data;
+      // Enrich with gallery images if missing
+      const enriched = json.data.map((item) => ({
+        ...item,
+        images: getPortfolioGalleryImages(item),
+      }));
+      savePortfolios(enriched);
+      return enriched;
     }
   } catch (err) {
     console.warn("Gagal sinkron database portofolio:", err);
@@ -89,7 +192,17 @@ export function getStoredPortfolios() {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
+      // Ensure each item has images array
+      const enriched = parsed.map((item) => {
+        if (!item.images || !Array.isArray(item.images) || item.images.length === 0) {
+          return {
+            ...item,
+            images: getPortfolioGalleryImages(item),
+          };
+        }
+        return item;
+      });
+      return enriched;
     }
     return DEFAULT_PORTFOLIOS;
   } catch (error) {

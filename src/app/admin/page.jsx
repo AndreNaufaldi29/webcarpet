@@ -14,6 +14,7 @@ import {
   FiGrid,
   FiImage,
   FiMessageSquare,
+  FiBookOpen,
   FiSettings,
   FiTrendingUp,
   FiUsers,
@@ -214,6 +215,14 @@ export default function AdminDashboardPage() {
                   >
                     <FiMessageSquare className="quick-link-icon blue" size={18} />
                     <span>Kelola Testimonial</span>
+                  </Link>
+
+                  <Link
+                    href="/admin/blog"
+                    className="admin-quick-link"
+                  >
+                    <FiBookOpen className="quick-link-icon blue" size={18} />
+                    <span>Kelola Blog & Artikel</span>
                   </Link>
 
                   <Link

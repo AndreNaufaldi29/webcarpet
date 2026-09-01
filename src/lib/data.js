@@ -98,6 +98,13 @@ export const INITIAL_PORTFOLIOS = [
     title: "Pemasangan Karpet Masjid Al-Hidayah",
     category: "Karpet Masjid",
     image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200",
+    images: [
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200",
+      "https://images.unsplash.com/photo-1564769625905-50e93615e769?w=1200",
+      "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=1200",
+      "https://images.unsplash.com/photo-1542662565-7e4b66bae529?w=1200",
+      "https://images.unsplash.com/photo-1609766857041-ed402ea8069a?w=1200",
+    ],
     description:
       "Pemasangan karpet premium untuk area utama masjid dengan luas lebih dari 500m² menggunakan material berkualitas tinggi dan pengerjaan terampil profesional.",
     location: "Sidoarjo",
@@ -110,6 +117,13 @@ export const INITIAL_PORTFOLIOS = [
     title: "Karpet Hotel Luxury Surabaya",
     category: "Karpet Hotel",
     image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200",
+    images: [
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200",
+      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200",
+      "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=1200",
+      "https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?w=1200",
+    ],
     description:
       "Instalasi karpet berkualitas untuk area lobby dan koridor hotel berbintang di Surabaya dengan desain khas elegan.",
     location: "Surabaya",
@@ -122,6 +136,13 @@ export const INITIAL_PORTFOLIOS = [
     title: "Karpet Kantor Modern Head Office",
     category: "Karpet Kantor",
     image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200",
+    images: [
+      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200",
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200",
+      "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1200",
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1200",
+      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200",
+    ],
     description:
       "Pemasangan karpet tile akustik di gedung perkantoran 4 lantai untuk menciptakan suasana kerja hening dan profesional.",
     location: "Surabaya",
@@ -134,6 +155,13 @@ export const INITIAL_PORTFOLIOS = [
     title: "Karpet Custom Residence Villa",
     category: "Karpet Rumah",
     image: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200",
+    images: [
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200",
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200",
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1200",
+      "https://images.unsplash.com/photo-1615873968403-89e068629265?w=1200",
+    ],
     description:
       "Proyek pemotongan dan obras karpet custom rumah tinggal mewah dengan motif geometris eksklusif.",
     location: "Sidoarjo",

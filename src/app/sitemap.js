@@ -1,4 +1,5 @@
 import { INITIAL_PRODUCTS, INITIAL_PORTFOLIOS } from "@/lib/data";
+import { ARTICLES } from "@/lib/blogData";
 import prisma from "@/lib/prisma";
 
 export default async function sitemap() {
@@ -7,6 +8,7 @@ export default async function sitemap() {
 
   let products = INITIAL_PRODUCTS;
   let portfolios = INITIAL_PORTFOLIOS;
+  let articles = ARTICLES;
 
   try {
     const dbProducts = await prisma.product.findMany({
@@ -51,6 +53,12 @@ export default async function sitemap() {
       priority: 0.85,
     },
     {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.85,
+    },
+    {
       url: `${baseUrl}/cabang`,
       lastModified: new Date(),
       changeFrequency: "monthly",
@@ -72,5 +80,17 @@ export default async function sitemap() {
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...productRoutes, ...portfolioRoutes];
+  const blogRoutes = articles.map((art) => ({
+    url: `${baseUrl}/blog/${art.slug}`,
+    lastModified: art.updatedAt ? new Date(art.updatedAt) : new Date(),
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
+
+  return [
+    ...staticRoutes,
+    ...productRoutes,
+    ...portfolioRoutes,
+    ...blogRoutes,
+  ];
 }

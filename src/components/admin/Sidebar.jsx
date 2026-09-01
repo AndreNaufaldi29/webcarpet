@@ -12,6 +12,7 @@ import {
   FiGrid,
   FiImage,
   FiMessageSquare,
+  FiBookOpen,
   FiMapPin,
   FiSettings,
   FiLogOut,
@@ -75,6 +76,11 @@ export default function Sidebar({
       name: "Testimonial",
       path: "/admin/testimonial",
       Icon: FiMessageSquare,
+    },
+    {
+      name: "Blog & Artikel",
+      path: "/admin/blog",
+      Icon: FiBookOpen,
     },
     {
       name: "Cabang",
