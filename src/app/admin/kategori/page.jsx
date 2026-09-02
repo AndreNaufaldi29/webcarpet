@@ -543,7 +543,7 @@ export default function KategoriPage() {
         <div className="admin-modal-backdrop" onClick={() => setShowAddModal(false)}>
           <div className="admin-modal-box" style={{ maxWidth: "540px" }} onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
-              <h3 style={{ margin: 0, color: "#ffffff", fontSize: "17px", fontWeight: 700 }}>Tambah Kategori Baru</h3>
+              <h3 style={{ margin: 0, fontSize: "17px", fontWeight: 700 }}>Tambah Kategori Baru</h3>
               <button
                 type="button"
                 className="admin-modal-close"
@@ -697,7 +697,7 @@ export default function KategoriPage() {
         <div className="admin-modal-backdrop" onClick={() => setShowEditModal(false)}>
           <div className="admin-modal-box" style={{ maxWidth: "540px" }} onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
-              <h3 style={{ margin: 0, color: "#ffffff", fontSize: "17px", fontWeight: 700 }}>Edit Kategori</h3>
+              <h3 style={{ margin: 0, fontSize: "17px", fontWeight: 700 }}>Edit Kategori</h3>
               <button
                 type="button"
                 className="admin-modal-close"
@@ -848,7 +848,7 @@ export default function KategoriPage() {
         <div className="admin-modal-backdrop" onClick={() => setShowDeleteModal(false)}>
           <div className="admin-modal-box" style={{ maxWidth: "450px" }} onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
-              <h3 style={{ margin: 0, color: "#ffffff", fontSize: "17px", fontWeight: 700 }}>Hapus Kategori</h3>
+              <h3 style={{ margin: 0, fontSize: "17px", fontWeight: 700 }}>Hapus Kategori</h3>
               <button
                 type="button"
                 className="admin-modal-close"
@@ -858,7 +858,7 @@ export default function KategoriPage() {
               </button>
             </div>
             <div className="admin-modal-body">
-              <p style={{ margin: 0, color: "#ffffff", fontSize: "14px", lineHeight: 1.6 }}>
+              <p style={{ margin: 0, fontSize: "14px", lineHeight: 1.6 }}>
                 Apakah Anda yakin ingin menghapus kategori <strong>{selectedCategory?.name}</strong>?
                 Tindakan ini tidak dapat dibatalkan.
               </p>

@@ -2509,6 +2509,45 @@ body.dark .card-tag-pill {
   color: #D8C2A4;
 }
 
+body.dark .article-category-tag {
+  background: rgba(216, 194, 164, 0.18);
+  color: #D8C2A4;
+  border: 1px solid rgba(216, 194, 164, 0.35);
+}
+
+body.dark .article-meta-row {
+  color: #A8B5AE;
+}
+
+body.dark .meta-divider {
+  color: rgba(216, 194, 164, 0.4);
+}
+
+body.dark .meta-text {
+  color: #D8E3DC;
+}
+
+body.dark .blog-card-meta {
+  color: #A8B5AE;
+}
+
+body.dark .featured-footer {
+  border-top-color: rgba(42, 97, 81, 0.4);
+}
+
+body.dark .article-title {
+  color: #FCF7F0;
+}
+
+body.dark .article-meta-bar {
+  border-bottom-color: rgba(42, 97, 81, 0.4);
+  color: #A8B5AE;
+}
+
+body.dark .meta-stats-block span {
+  color: #D8E3DC;
+}
+
 body.dark .blog-back-btn {
   background: #0A3B25;
   border-color: #2A6151;
@@ -2519,4 +2558,48 @@ body.dark .blog-back-btn:hover {
   background: #2A6151;
   border-color: #D8C2A4;
 }
+
+body.dark .card-read-link {
+  color: #D8C2A4;
+}
+
+body.dark .card-read-link:hover {
+  color: #FCF7F0;
+}
+
+body.dark .read-more-btn {
+  background: linear-gradient(135deg, #D8C2A4 0%, #B89A72 100%);
+  color: #072016;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+body.dark .read-more-btn:hover {
+  background: linear-gradient(135deg, #EAD7BE 0%, #C7A880 100%);
+  color: #072016;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(216, 194, 164, 0.3);
+}
+
+body.dark .article-share-section {
+  background: #061A12;
+  border-color: #2A6151;
+}
+
+body.dark .article-share-section span {
+  color: #FFFFFF !important;
+}
+
+body.dark .share-btn.copy {
+  background: #153E30;
+  color: #FFFFFF;
+  border: 1px solid #2A6151;
+}
+
+body.dark .share-btn.copy:hover {
+  background: #2A6151;
+  border-color: #D8C2A4;
+}
+
+
+
 

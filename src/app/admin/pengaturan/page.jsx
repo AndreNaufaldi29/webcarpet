@@ -881,7 +881,7 @@ export default function PengaturanPage() {
               </h3>
             </div>
             <div className="admin-modal-body">
-              <p style={{ color: "#ffffff", fontSize: "14px", lineHeight: 1.6, margin: 0 }}>
+              <p style={{ fontSize: "14px", lineHeight: 1.6, margin: 0 }}>
                 Apakah Anda yakin ingin mengembalikan semua konfigurasi website (Profil Toko, SEO Title & Description, Sosial Media, dan Promo) kembali ke pengaturan standar awal?
               </p>
             </div>
@@ -910,7 +910,7 @@ export default function PengaturanPage() {
       {showDeleteSeoModal && (
         <div className="admin-modal-backdrop" onClick={() => !isDeletingSeo && setShowDeleteSeoModal(false)}>
           <div className="admin-modal-box" style={{ maxWidth: "480px" }} onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
+            <div className="admin-modal-header danger-header">
               <h3 style={{ display: "flex", alignItems: "center", gap: "8px", color: "#dc2626" }}>
                 <FiTrash2 size={20} /> Hapus SEO & Metadata Google
               </h3>
@@ -937,21 +937,21 @@ export default function PengaturanPage() {
                 }}
               >
                 <FiAlertCircle size={18} color="#ef4444" style={{ flexShrink: 0, marginTop: "2px" }} />
-                <div style={{ fontSize: "13px", color: "#fca5a5", lineHeight: "1.5", fontWeight: "500" }}>
+                <div style={{ fontSize: "13px", color: "#ef4444", lineHeight: "1.5", fontWeight: "600" }}>
                   Data SEO & Metadata Google yang tersimpan di database Prisma & Local Storage akan dihapus dan dikosongkan.
                 </div>
               </div>
-              <p style={{ color: "#ffffff", fontSize: "14px", lineHeight: 1.6, margin: "0 0 10px 0" }}>
+              <p style={{ fontSize: "14px", lineHeight: 1.6, margin: "0 0 10px 0" }}>
                 Apakah Anda yakin ingin menghapus data konfigurasi SEO berikut?
               </p>
-              <ul style={{ margin: "0 0 14px 0", paddingLeft: "20px", fontSize: "13px", color: "#ffffff", lineHeight: "1.7" }}>
+              <ul style={{ margin: "0 0 14px 0", paddingLeft: "20px", fontSize: "13px", lineHeight: "1.7" }}>
                 <li>Default Meta Title</li>
                 <li>Default Meta Description</li>
                 <li>Kata Kunci Utama (Meta Keywords)</li>
                 <li>URL Kanonikal Utama (Canonical URL)</li>
                 <li>Banner Gambar Open Graph (OG Image)</li>
               </ul>
-              <p style={{ color: "#e2e8f0", fontSize: "12px", margin: 0, fontStyle: "italic" }}>
+              <p style={{ color: "#64748b", fontSize: "12px", margin: 0, fontStyle: "italic" }}>
                 * Website publik nantinya akan menggunakan metadata fallback default dari Profil Toko hingga Anda mengisi konfigurasi baru.
               </p>
             </div>
