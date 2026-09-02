@@ -27,24 +27,32 @@ import { FaWhatsapp, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 
 export default function BlogDetail({ initialArticle }) {
   const params = useParams() || {};
-  const slug = params.slug;
+  const slug = params.slug || initialArticle?.slug;
 
   const [article, setArticle] = useState(
-    initialArticle || getArticleBySlug(slug)
+    initialArticle || (slug ? getArticleBySlug(slug) : null)
   );
   const [scrollProgress, setScrollProgress] = useState(0);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    if (initialArticle) {
+      setArticle(initialArticle);
+    }
+  }, [initialArticle]);
+
+  useEffect(() => {
     if (slug) {
-      // 1. Get initial from store
+      // 1. Get initial from store or sync if missing
       const art = getArticleBySlug(slug);
-      if (art) {
+      if (art && !initialArticle) {
         setArticle(art);
-      } else {
+      } else if (!art && !initialArticle) {
         // Fallback sync from DB if article was freshly created
-        syncArticlesFromDatabase().then(() => {
-          const fresh = getArticleBySlug(slug);
+        syncArticlesFromDatabase().then((dbList) => {
+          const fresh = Array.isArray(dbList)
+            ? dbList.find((a) => a.slug === slug || String(a.id) === String(slug))
+            : getArticleBySlug(slug);
           if (fresh) setArticle(fresh);
         });
       }
@@ -64,7 +72,8 @@ export default function BlogDetail({ initialArticle }) {
     });
 
     return () => unsubscribe();
-  }, [slug]);
+  }, [slug, initialArticle]);
+
 
   // Track reading progress
   useEffect(() => {

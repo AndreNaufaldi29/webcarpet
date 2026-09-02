@@ -1,6 +1,6 @@
 // Store & Helper Interaktif Blog Rumah Indah Carpet
 
-import { ARTICLES, BLOG_CATEGORIES, getAllArticles, getArticleBySlug, getRelatedArticles } from "./blogData";
+import { ARTICLES, BLOG_CATEGORIES } from "./blogData";
 
 const STORAGE_KEY = "abcarpet_blog_articles_v1";
 
@@ -145,4 +145,34 @@ export async function syncArticlesFromDatabase() {
   return getStoredArticles();
 }
 
-export { ARTICLES, BLOG_CATEGORIES, getAllArticles, getArticleBySlug, getRelatedArticles };
+export function getAllArticles() {
+  return getStoredArticles();
+}
+
+export function getArticleBySlug(slug) {
+  if (!slug) return null;
+  const articles = getStoredArticles();
+  return (
+    articles.find(
+      (item) => item.slug === slug || String(item.id) === String(slug)
+    ) || null
+  );
+}
+
+export function getRelatedArticles(currentSlug, limit = 3) {
+  const articles = getStoredArticles();
+  const current = getArticleBySlug(currentSlug);
+  if (!current) return articles.slice(0, limit);
+
+  const sameCategory = articles.filter(
+    (item) => item.slug !== current.slug && item.category === current.category
+  );
+  const otherCategory = articles.filter(
+    (item) => item.slug !== current.slug && item.category !== current.category
+  );
+
+  return [...sameCategory, ...otherCategory].slice(0, limit);
+}
+
+export { ARTICLES, BLOG_CATEGORIES };
+

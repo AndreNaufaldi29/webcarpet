@@ -1,9 +1,69 @@
 import BlogDetail from "@/views/BlogDetail";
-import { getArticleBySlug, getAllArticles } from "@/lib/blogData";
+import prisma from "@/lib/prisma";
+import { getArticleBySlug as getStaticArticleBySlug, getAllArticles } from "@/lib/blogData";
+
+// Fetch article dynamically from PostgreSQL database (Prisma), with fallback to static data
+async function getArticleData(slug) {
+  if (!slug) return null;
+
+  try {
+    const numId = !isNaN(Number(slug)) && Number(slug) < 2147483647 ? Number(slug) : null;
+    const dbArticle = await prisma.article.findFirst({
+      where: {
+        OR: [
+          { slug: slug },
+          { slug: { equals: slug, mode: "insensitive" } },
+          ...(numId ? [{ id: numId }] : []),
+        ],
+      },
+    });
+
+    if (dbArticle) {
+      return {
+        ...dbArticle,
+        tags: Array.isArray(dbArticle.tags) ? dbArticle.tags : [],
+        metaTitle: dbArticle.metaTitle || `${dbArticle.title} | Rumah Indah Carpet`,
+        metaDescription: dbArticle.metaDescription || dbArticle.excerpt,
+        metaKeywords: dbArticle.metaKeywords || (Array.isArray(dbArticle.tags) ? dbArticle.tags.join(", ") : ""),
+        canonicalUrl: dbArticle.canonicalUrl || `https://webcarpet-p2id.vercel.app/blog/${dbArticle.slug}`,
+        ogImage: dbArticle.ogImage || dbArticle.image,
+        robotsIndex: dbArticle.robotsIndex || "index, follow",
+      };
+    }
+  } catch (err) {
+    console.warn("Prisma error in getArticleData:", err.message);
+  }
+
+  // Fallback to static articles
+  const staticArt = getStaticArticleBySlug(slug);
+  if (staticArt) {
+    return {
+      ...staticArt,
+      metaTitle: `${staticArt.title} | Rumah Indah Carpet`,
+      metaDescription: staticArt.excerpt,
+      metaKeywords: staticArt.tags?.join(", ") || "",
+      canonicalUrl: `https://webcarpet-p2id.vercel.app/blog/${staticArt.slug}`,
+      ogImage: staticArt.image,
+      robotsIndex: "index, follow",
+    };
+  }
+
+  return null;
+}
 
 export async function generateStaticParams() {
-  const articles = getAllArticles();
-  return articles.map((art) => ({
+  const staticArticles = getAllArticles();
+  try {
+    const dbArticles = await prisma.article.findMany({
+      select: { slug: true },
+    });
+    if (dbArticles && dbArticles.length > 0) {
+      return dbArticles.map((art) => ({ slug: art.slug }));
+    }
+  } catch (e) {
+    // ignore
+  }
+  return staticArticles.map((art) => ({
     slug: art.slug,
   }));
 }
@@ -11,7 +71,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
-  const article = getArticleBySlug(slug);
+  const article = await getArticleData(slug);
 
   if (!article) {
     return {
@@ -21,7 +81,7 @@ export async function generateMetadata({ params }) {
   }
 
   const title = article.metaTitle || `${article.title} | Rumah Indah Carpet`;
-  const description = article.metaDescription || article.excerpt;
+  const description = article.metaDescription || article.excerpt || "Baca artikel edukasi dan panduan karpet dari Rumah Indah Carpet.";
   const coverImage =
     article.ogImage ||
     article.image ||
@@ -56,9 +116,9 @@ export async function generateMetadata({ params }) {
       url: `/blog/${article.slug}`,
       siteName: "Rumah Indah Carpet",
       type: "article",
-      publishedTime: article.updatedAt,
+      publishedTime: article.updatedAt ? new Date(article.updatedAt).toISOString() : new Date().toISOString(),
       authors: ["Rumah Indah Carpet"],
-      tags: article.tags,
+      tags: Array.isArray(article.tags) ? article.tags : [],
       images: [
         {
           url: coverImage,
@@ -80,7 +140,7 @@ export async function generateMetadata({ params }) {
 export default async function BlogPostPage({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
-  const article = getArticleBySlug(slug);
+  const article = await getArticleData(slug);
 
   const jsonLd = article
     ? {
@@ -89,8 +149,8 @@ export default async function BlogPostPage({ params }) {
         headline: article.metaTitle || article.title,
         description: article.metaDescription || article.excerpt,
         image: [article.ogImage || article.image],
-        datePublished: article.updatedAt || "2026-02-28T09:00:00.000Z",
-        dateModified: article.updatedAt || "2026-02-28T09:00:00.000Z",
+        datePublished: article.createdAt ? new Date(article.createdAt).toISOString() : "2026-02-28T09:00:00.000Z",
+        dateModified: article.updatedAt ? new Date(article.updatedAt).toISOString() : "2026-02-28T09:00:00.000Z",
         publisher: {
           "@type": "Organization",
           name: "Rumah Indah Carpet",
@@ -105,7 +165,7 @@ export default async function BlogPostPage({ params }) {
           "@id": article.canonicalUrl || `https://webcarpet-p2id.vercel.app/blog/${article.slug}`,
         },
         articleSection: article.category,
-        keywords: article.metaKeywords || article.tags?.join(", "),
+        keywords: article.metaKeywords || (Array.isArray(article.tags) ? article.tags.join(", ") : ""),
       }
     : null;
 
