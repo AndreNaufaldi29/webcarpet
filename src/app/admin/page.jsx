@@ -201,7 +201,7 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* 2. MOBILE VIEW: FLUID CARD ITEMS (<= 768px) */}
-              <div className="admin-dash-prod-list" style={{ display: "none" }}>
+              <div className="admin-dash-prod-list">
                 {productsList.slice(0, 5).map((prod) => (
                   <div key={prod.id} className="admin-dash-prod-item">
                     <div className="admin-dash-prod-info">

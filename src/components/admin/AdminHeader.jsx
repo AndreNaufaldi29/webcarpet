@@ -127,7 +127,7 @@ export default function AdminHeader({
     <>
       <header className="admin-header">
         {/* LEFT: MOBILE TOGGLE & BREADCRUMB / TITLE */}
-        <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
+        <div className="admin-header-left">
           <button
             type="button"
             className="admin-mobile-toggle"
@@ -140,7 +140,7 @@ export default function AdminHeader({
 
           <div className="admin-header-title-box">
             <span className="breadcrumb">{breadcrumb}</span>
-            <h1 className="admin-page-heading-title">{title}</h1>
+            <h1 className="admin-page-heading-title" title={title}>{title}</h1>
           </div>
         </div>
 
