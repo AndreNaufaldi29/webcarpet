@@ -40,6 +40,8 @@ import {
   Upload,
   Image as ImageIcon,
   CheckCircle,
+  Layers,
+  Star,
 } from "lucide-react";
 
 export default function ProductsPage() {
@@ -84,7 +86,7 @@ export default function ProductsPage() {
     status: "Aktif",
     rating: 5,
     description: "",
-    image: "",
+    images: [],
     isFeatured: false,
     isNew: false,
     material: "Polypropylene Premium",
@@ -95,6 +97,7 @@ export default function ProductsPage() {
   };
 
   const [formData, setFormData] = useState(initialFormState);
+  const [newImageUrl, setNewImageUrl] = useState("");
 
   const fetchProductsFromDB = async (showNotification = false) => {
     setIsSyncing(true);
@@ -162,11 +165,19 @@ export default function ProductsPage() {
   ===================================================== */
   const handleOpenAdd = () => {
     setFormData(initialFormState);
+    setNewImageUrl("");
     setShowAddModal(true);
   };
 
   const handleOpenEdit = (product) => {
     setSelectedProduct(product);
+    const resolvedImages =
+      Array.isArray(product.images) && product.images.length > 0
+        ? [...product.images]
+        : product.image
+        ? [product.image]
+        : [];
+
     setFormData({
       name: product.name || "",
       category: product.category || "Karpet Masjid",
@@ -174,7 +185,7 @@ export default function ProductsPage() {
       status: product.status || "Aktif",
       rating: product.rating || 5,
       description: product.description || "",
-      image: product.images?.[0] || "",
+      images: resolvedImages,
       isFeatured: Boolean(product.isFeatured),
       isNew: Boolean(product.isNew),
       material: product.specifications?.Material || "Polypropylene Premium",
@@ -183,6 +194,7 @@ export default function ProductsPage() {
       warranty: product.specifications?.Garansi || "1 Tahun",
       size: product.specifications?.Ukuran || "Custom Sesuai Ruangan",
     });
+    setNewImageUrl("");
     setShowEditModal(true);
     setActiveDropdownId(null);
   };
@@ -207,13 +219,58 @@ export default function ProductsPage() {
   };
 
   const handleImageFileUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setFormData((prev) => ({ ...prev, image: event.target.result }));
-    };
-    reader.readAsDataURL(file);
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    files.forEach((file) => {
+      if (file.size > 25 * 1024 * 1024) {
+        showToast(`File ${file.name} melebihi batas 25MB`);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target.result;
+        setFormData((prev) => {
+          const currentList = Array.isArray(prev.images) ? prev.images : [];
+          if (!currentList.includes(dataUrl)) {
+            return { ...prev, images: [...currentList, dataUrl] };
+          }
+          return prev;
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = "";
+  };
+
+  const handleAddImageUrl = () => {
+    if (!newImageUrl.trim()) return;
+    const url = newImageUrl.trim();
+    setFormData((prev) => {
+      const currentList = Array.isArray(prev.images) ? prev.images : [];
+      if (!currentList.includes(url)) {
+        return { ...prev, images: [...currentList, url] };
+      }
+      return prev;
+    });
+    setNewImageUrl("");
+  };
+
+  const handleRemoveImage = (indexToRemove) => {
+    setFormData((prev) => {
+      const currentList = Array.isArray(prev.images) ? [...prev.images] : [];
+      currentList.splice(indexToRemove, 1);
+      return { ...prev, images: currentList };
+    });
+  };
+
+  const handleSetCoverImage = (imgUrl) => {
+    setFormData((prev) => {
+      const currentList = Array.isArray(prev.images) ? [...prev.images] : [];
+      const filtered = currentList.filter((item) => item !== imgUrl);
+      return { ...prev, images: [imgUrl, ...filtered] };
+    });
+    showToast("Foto utama (cover) berhasil diperbarui!");
   };
 
   /* =====================================================
@@ -226,6 +283,11 @@ export default function ProductsPage() {
       return;
     }
 
+    const finalImages =
+      Array.isArray(formData.images) && formData.images.length > 0
+        ? formData.images
+        : ["https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200"];
+
     const newProd = await addProduct({
       name: formData.name,
       category: formData.category,
@@ -233,7 +295,7 @@ export default function ProductsPage() {
       status: formData.status,
       rating: Number(formData.rating) || 5,
       description: formData.description,
-      images: formData.image ? [formData.image] : [],
+      images: finalImages,
       isFeatured: Boolean(formData.isFeatured),
       isNew: Boolean(formData.isNew),
       specifications: {
@@ -256,6 +318,13 @@ export default function ProductsPage() {
     e.preventDefault();
     if (!selectedProduct || !formData.name.trim()) return;
 
+    const finalImages =
+      Array.isArray(formData.images) && formData.images.length > 0
+        ? formData.images
+        : selectedProduct.images?.length > 0
+        ? selectedProduct.images
+        : ["https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200"];
+
     await updateProduct(selectedProduct.id, {
       name: formData.name,
       category: formData.category,
@@ -263,7 +332,7 @@ export default function ProductsPage() {
       status: formData.status,
       rating: Number(formData.rating) || 5,
       description: formData.description,
-      images: formData.image ? [formData.image] : selectedProduct.images,
+      images: finalImages,
       isFeatured: Boolean(formData.isFeatured),
       isNew: Boolean(formData.isNew),
       specifications: {
@@ -873,22 +942,30 @@ export default function ProductsPage() {
                   </div>
                 </div>
 
-                {/* GAMBAR PRODUK */}
-                <div className="admin-form-group">
-                  <label>URL Gambar atau Unggah Foto</label>
-                  <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-                    <input
-                      type="text"
-                      className="admin-input"
-                      placeholder="Masukkan URL Gambar (https://...)"
-                      value={formData.image}
-                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    />
-                    <label className="admin-upload-btn">
-                      <Upload size={14} />
-                      <span>Upload</span>
+                {/* GALERI FOTO PRODUK (MULTI-FOTO & URL) */}
+                <div className="portfolio-admin-gallery-box" style={{ marginBottom: "18px" }}>
+                  <div className="portfolio-admin-gallery-header">
+                    <div className="portfolio-admin-gallery-title">
+                      <Layers size={16} />
+                      <span>Galeri Foto Produk ({formData.images?.length || 0} Foto)</span>
+                    </div>
+
+                    <label
+                      className="admin-btn-secondary"
+                      style={{
+                        padding: "6px 12px",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                      }}
+                    >
+                      <Upload size={13} />
+                      <span>+ Unggah Multi-Foto</span>
                       <input
                         type="file"
+                        multiple
                         accept="image/*"
                         style={{ display: "none" }}
                         onChange={handleImageFileUpload}
@@ -896,22 +973,91 @@ export default function ProductsPage() {
                     </label>
                   </div>
 
-                  {formData.image && (
+                  {/* INPUT URL FOTO TAMBAHAN */}
+                  <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+                    <input
+                      type="text"
+                      className="admin-input"
+                      style={{ fontSize: "12.5px", padding: "7px 10px" }}
+                      placeholder="Atau tempel URL gambar (https://...)"
+                      value={newImageUrl}
+                      onChange={(e) => setNewImageUrl(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddImageUrl();
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="admin-btn-primary"
+                      style={{ padding: "0 14px", fontSize: "12px", whiteSpace: "nowrap" }}
+                      onClick={handleAddImageUrl}
+                    >
+                      + Tambah
+                    </button>
+                  </div>
+
+                  {/* THUMBNAIL PREVIEW GRID */}
+                  {formData.images && formData.images.length > 0 ? (
+                    <div className="portfolio-admin-thumbs-grid">
+                      {formData.images.map((imgUrl, idx) => {
+                        const isCover = idx === 0;
+
+                        return (
+                          <div
+                            key={idx}
+                            className={`portfolio-admin-thumb-card ${isCover ? "is-cover" : ""}`}
+                          >
+                            <img src={imgUrl} alt={`Foto ${idx + 1}`} />
+
+                            {isCover && (
+                              <span className="cover-badge">
+                                <Star size={10} /> Cover
+                              </span>
+                            )}
+
+                            <span className="index-badge">#{idx + 1}</span>
+
+                            <div className="thumb-actions">
+                              {!isCover && (
+                                <button
+                                  type="button"
+                                  className="thumb-action-btn star"
+                                  title="Jadikan Foto Utama (Cover)"
+                                  onClick={() => handleSetCoverImage(imgUrl)}
+                                >
+                                  <Star size={11} />
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                className="thumb-action-btn"
+                                title="Hapus foto dari galeri"
+                                onClick={() => handleRemoveImage(idx)}
+                              >
+                                <Trash2 size={11} />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
                     <div
                       style={{
-                        width: "100%",
-                        height: "140px",
-                        borderRadius: "10px",
-                        overflow: "hidden",
-                        border: "1px solid #e2e8f0",
-                        background: "#0f172a",
+                        textAlign: "center",
+                        padding: "20px 10px",
+                        background: "rgba(255, 255, 255, 0.03)",
+                        borderRadius: "8px",
+                        border: "1px dashed rgba(226, 232, 240, 0.2)",
                       }}
                     >
-                      <img
-                        src={formData.image}
-                        alt="Pratinjau Foto Produk"
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      />
+                      <ImageIcon size={28} color="#94a3b8" style={{ marginBottom: "6px" }} />
+                      <p style={{ margin: 0, fontSize: "12px", color: "#94a3b8" }}>
+                        Belum ada foto produk. Unggah beberapa foto atau tempel URL di atas.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -1135,22 +1281,30 @@ export default function ProductsPage() {
                   </div>
                 </div>
 
-                {/* GAMBAR PRODUK */}
-                <div className="admin-form-group">
-                  <label>URL Gambar atau Unggah Foto</label>
-                  <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-                    <input
-                      type="text"
-                      className="admin-input"
-                      placeholder="Masukkan URL Gambar (https://...)"
-                      value={formData.image}
-                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    />
-                    <label className="admin-upload-btn">
-                      <Upload size={14} />
-                      <span>Upload</span>
+                {/* GALERI FOTO PRODUK (MULTI-FOTO & URL) */}
+                <div className="portfolio-admin-gallery-box" style={{ marginBottom: "18px" }}>
+                  <div className="portfolio-admin-gallery-header">
+                    <div className="portfolio-admin-gallery-title">
+                      <Layers size={16} />
+                      <span>Galeri Foto Produk ({formData.images?.length || 0} Foto)</span>
+                    </div>
+
+                    <label
+                      className="admin-btn-secondary"
+                      style={{
+                        padding: "6px 12px",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                      }}
+                    >
+                      <Upload size={13} />
+                      <span>+ Unggah Multi-Foto</span>
                       <input
                         type="file"
+                        multiple
                         accept="image/*"
                         style={{ display: "none" }}
                         onChange={handleImageFileUpload}
@@ -1158,22 +1312,91 @@ export default function ProductsPage() {
                     </label>
                   </div>
 
-                  {formData.image && (
+                  {/* INPUT URL FOTO TAMBAHAN */}
+                  <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+                    <input
+                      type="text"
+                      className="admin-input"
+                      style={{ fontSize: "12.5px", padding: "7px 10px" }}
+                      placeholder="Atau tempel URL gambar (https://...)"
+                      value={newImageUrl}
+                      onChange={(e) => setNewImageUrl(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddImageUrl();
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="admin-btn-primary"
+                      style={{ padding: "0 14px", fontSize: "12px", whiteSpace: "nowrap" }}
+                      onClick={handleAddImageUrl}
+                    >
+                      + Tambah
+                    </button>
+                  </div>
+
+                  {/* THUMBNAIL PREVIEW GRID */}
+                  {formData.images && formData.images.length > 0 ? (
+                    <div className="portfolio-admin-thumbs-grid">
+                      {formData.images.map((imgUrl, idx) => {
+                        const isCover = idx === 0;
+
+                        return (
+                          <div
+                            key={idx}
+                            className={`portfolio-admin-thumb-card ${isCover ? "is-cover" : ""}`}
+                          >
+                            <img src={imgUrl} alt={`Foto ${idx + 1}`} />
+
+                            {isCover && (
+                              <span className="cover-badge">
+                                <Star size={10} /> Cover
+                              </span>
+                            )}
+
+                            <span className="index-badge">#{idx + 1}</span>
+
+                            <div className="thumb-actions">
+                              {!isCover && (
+                                <button
+                                  type="button"
+                                  className="thumb-action-btn star"
+                                  title="Jadikan Foto Utama (Cover)"
+                                  onClick={() => handleSetCoverImage(imgUrl)}
+                                >
+                                  <Star size={11} />
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                className="thumb-action-btn"
+                                title="Hapus foto dari galeri"
+                                onClick={() => handleRemoveImage(idx)}
+                              >
+                                <Trash2 size={11} />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
                     <div
                       style={{
-                        width: "100%",
-                        height: "140px",
-                        borderRadius: "10px",
-                        overflow: "hidden",
-                        border: "1px solid #e2e8f0",
-                        background: "#0f172a",
+                        textAlign: "center",
+                        padding: "20px 10px",
+                        background: "rgba(255, 255, 255, 0.03)",
+                        borderRadius: "8px",
+                        border: "1px dashed rgba(226, 232, 240, 0.2)",
                       }}
                     >
-                      <img
-                        src={formData.image}
-                        alt="Pratinjau Foto Produk"
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      />
+                      <ImageIcon size={28} color="#94a3b8" style={{ marginBottom: "6px" }} />
+                      <p style={{ margin: 0, fontSize: "12px", color: "#94a3b8" }}>
+                        Belum ada foto produk. Unggah beberapa foto atau tempel URL di atas.
+                      </p>
                     </div>
                   )}
                 </div>
