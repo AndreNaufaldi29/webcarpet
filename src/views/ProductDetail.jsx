@@ -191,6 +191,41 @@ export default function ProductDetail() {
   const currentActiveIdx = galleryImages.indexOf(activeImage);
   const activeImgIdx = currentActiveIdx >= 0 ? currentActiveIdx : 0;
 
+  // Touch swipe gesture support for mobile image navigation
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchStartY, setTouchStartY] = useState(null);
+
+  const handleTouchStart = (e) => {
+    if (e.touches && e.touches.length === 1) {
+      setTouchStartX(e.touches[0].clientX);
+      setTouchStartY(e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX === null || touchStartY === null) return;
+    if (zoomScale > 1) {
+      setTouchStartX(null);
+      setTouchStartY(null);
+      return;
+    }
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const diffX = touchStartX - touchEndX;
+    const diffY = touchStartY - touchEndY;
+
+    // Horizontal swipe detection with threshold 40px
+    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX > 0) {
+        handleNextImage();
+      } else {
+        handlePrevImage();
+      }
+    }
+    setTouchStartX(null);
+    setTouchStartY(null);
+  };
+
   return (
     <div className="product-detail-page-wrapper">
       <section className="product-detail-page">
@@ -344,12 +379,30 @@ export default function ProductDetail() {
             className="product-image-modal-dialog animate-scale-up"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* MODAL HEADER */}
+            {/* MODAL HEADER: TWO-TIER RESPONSIVE LAYOUT */}
             <div className="product-image-modal-header">
-              <div className="modal-header-left">
-                <h3>{product.name}</h3>
+              {/* ROW 1: TITLE & CLOSE BUTTON */}
+              <div className="modal-header-top">
+                <div className="modal-header-title-wrap">
+                  <h3 title={product.name}>{product.name}</h3>
+                </div>
+                <button
+                  type="button"
+                  className="modal-close-btn"
+                  onClick={closeModal}
+                  title="Tutup Preview (Esc)"
+                  aria-label="Tutup"
+                >
+                  <FiX size={18} />
+                </button>
+              </div>
+
+              {/* ROW 2: CATEGORY, COUNTER & ZOOM CONTROLS */}
+              <div className="modal-header-sub">
                 <div className="modal-header-meta">
-                  <span className="modal-cat-badge">{product.category}</span>
+                  <span className="modal-cat-badge">
+                    {product.category ? product.category.toUpperCase() : "KARPET"}
+                  </span>
                   {galleryImages.length > 1 && (
                     <span className="modal-counter">
                       <FiImage size={13} />
@@ -357,10 +410,7 @@ export default function ProductDetail() {
                     </span>
                   )}
                 </div>
-              </div>
 
-              <div className="modal-header-actions">
-                {/* ZOOM CONTROLS */}
                 <div className="modal-zoom-controls">
                   <button
                     type="button"
@@ -369,7 +419,7 @@ export default function ProductDetail() {
                     className="modal-tool-btn"
                     title="Perkecil Foto (-)"
                   >
-                    <FiZoomOut size={17} />
+                    <FiZoomOut size={16} />
                   </button>
                   <span className="zoom-indicator">
                     {Math.round(zoomScale * 100)}%
@@ -381,7 +431,7 @@ export default function ProductDetail() {
                     className="modal-tool-btn"
                     title="Perbesar Foto (+)"
                   >
-                    <FiZoomIn size={17} />
+                    <FiZoomIn size={16} />
                   </button>
                   {zoomScale > 1 && (
                     <button
@@ -390,25 +440,19 @@ export default function ProductDetail() {
                       className="modal-tool-btn reset"
                       title="Reset Ukuran (0)"
                     >
-                      <FiRefreshCw size={15} />
+                      <FiRefreshCw size={14} />
                     </button>
                   )}
                 </div>
-
-                <button
-                  type="button"
-                  className="modal-close-btn"
-                  onClick={closeModal}
-                  title="Tutup Preview (Esc)"
-                  aria-label="Tutup"
-                >
-                  <FiX size={22} />
-                </button>
               </div>
             </div>
 
-            {/* MODAL IMAGE VIEWER */}
-            <div className="product-image-modal-body">
+            {/* MODAL IMAGE VIEWER WITH TOUCH SWIPE */}
+            <div
+              className="product-image-modal-body"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
               {galleryImages.length > 1 && (
                 <button
                   type="button"
@@ -417,7 +461,7 @@ export default function ProductDetail() {
                   title="Foto Sebelumnya (Panah Kiri)"
                   aria-label="Foto Sebelumnya"
                 >
-                  <FiChevronLeft size={28} />
+                  <FiChevronLeft size={24} />
                 </button>
               )}
 
@@ -448,7 +492,7 @@ export default function ProductDetail() {
                   title="Foto Selanjutnya (Panah Kanan)"
                   aria-label="Foto Selanjutnya"
                 >
-                  <FiChevronRight size={28} />
+                  <FiChevronRight size={24} />
                 </button>
               )}
             </div>

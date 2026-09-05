@@ -190,6 +190,41 @@ export default function PortfolioDetail() {
     setZoomScale((prev) => (prev > 1 ? 1 : 2));
   };
 
+  // Touch swipe gesture support for mobile image navigation
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchStartY, setTouchStartY] = useState(null);
+
+  const handleTouchStart = (e) => {
+    if (e.touches && e.touches.length === 1) {
+      setTouchStartX(e.touches[0].clientX);
+      setTouchStartY(e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX === null || touchStartY === null) return;
+    if (zoomScale > 1) {
+      setTouchStartX(null);
+      setTouchStartY(null);
+      return;
+    }
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const diffX = touchStartX - touchEndX;
+    const diffY = touchStartY - touchEndY;
+
+    // Horizontal swipe detection with threshold 40px
+    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX > 0) {
+        handleModalNext();
+      } else {
+        handleModalPrev();
+      }
+    }
+    setTouchStartX(null);
+    setTouchStartY(null);
+  };
+
   // Scroll active thumbnail into view
   useEffect(() => {
     if (thumbRefs.current[activeIndex] && thumbTrackRef.current) {
@@ -498,10 +533,26 @@ export default function PortfolioDetail() {
             className="product-image-modal-dialog animate-scale-up"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* MODAL HEADER */}
+            {/* MODAL HEADER: TWO-TIER RESPONSIVE LAYOUT */}
             <div className="product-image-modal-header">
-              <div className="modal-header-left">
-                <h3>{portfolio.title}</h3>
+              {/* ROW 1: TITLE & CLOSE BUTTON */}
+              <div className="modal-header-top">
+                <div className="modal-header-title-wrap">
+                  <h3 title={portfolio.title}>{portfolio.title}</h3>
+                </div>
+                <button
+                  type="button"
+                  className="modal-close-btn"
+                  onClick={closeModal}
+                  title="Tutup Preview (Esc)"
+                  aria-label="Tutup"
+                >
+                  <FiX size={18} />
+                </button>
+              </div>
+
+              {/* ROW 2: CATEGORY, COUNTER & ZOOM CONTROLS */}
+              <div className="modal-header-sub">
                 <div className="modal-header-meta">
                   <span className="modal-cat-badge">{portfolio.category}</span>
                   {galleryImages.length > 1 && (
@@ -511,9 +562,7 @@ export default function PortfolioDetail() {
                     </span>
                   )}
                 </div>
-              </div>
 
-              <div className="modal-header-actions">
                 {/* ZOOM CONTROLS (ONLY FOR IMAGES) */}
                 {!isVideoMedia(galleryImages[modalImageIndex]) && (
                   <div className="modal-zoom-controls">
@@ -524,7 +573,7 @@ export default function PortfolioDetail() {
                       className="modal-tool-btn"
                       title="Perkecil Foto (-)"
                     >
-                      <FiZoomOut size={17} />
+                      <FiZoomOut size={16} />
                     </button>
                     <span className="zoom-indicator">
                       {Math.round(zoomScale * 100)}%
@@ -536,7 +585,7 @@ export default function PortfolioDetail() {
                       className="modal-tool-btn"
                       title="Perbesar Foto (+)"
                     >
-                      <FiZoomIn size={17} />
+                      <FiZoomIn size={16} />
                     </button>
                     {zoomScale > 1 && (
                       <button
@@ -545,26 +594,20 @@ export default function PortfolioDetail() {
                         className="modal-tool-btn reset"
                         title="Reset Ukuran (0)"
                       >
-                        <FiRefreshCw size={15} />
+                        <FiRefreshCw size={14} />
                       </button>
                     )}
                   </div>
                 )}
-
-                <button
-                  type="button"
-                  className="modal-close-btn"
-                  onClick={closeModal}
-                  title="Tutup Preview (Esc)"
-                  aria-label="Tutup"
-                >
-                  <FiX size={22} />
-                </button>
               </div>
             </div>
 
-            {/* MODAL MEDIA VIEWER */}
-            <div className="product-image-modal-body">
+            {/* MODAL MEDIA VIEWER WITH TOUCH SWIPE */}
+            <div
+              className="product-image-modal-body"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
               {galleryImages.length > 1 && (
                 <button
                   type="button"
@@ -573,7 +616,7 @@ export default function PortfolioDetail() {
                   title="Foto Sebelumnya (Panah Kiri)"
                   aria-label="Foto Sebelumnya"
                 >
-                  <FiChevronLeft size={28} />
+                  <FiChevronLeft size={24} />
                 </button>
               )}
 
@@ -621,7 +664,7 @@ export default function PortfolioDetail() {
                   title="Foto Selanjutnya (Panah Kanan)"
                   aria-label="Foto Selanjutnya"
                 >
-                  <FiChevronRight size={28} />
+                  <FiChevronRight size={24} />
                 </button>
               )}
             </div>

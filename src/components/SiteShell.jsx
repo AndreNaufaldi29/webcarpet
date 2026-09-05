@@ -10,6 +10,7 @@ import PageLoader from "./PageLoader";
 import ScrollReveal from "./ScrollReveal";
 import SEOManager from "./SEOManager";
 import PromoBanner from "./PromoBanner";
+import FloatingWhatsApp from "./FloatingWhatsApp";
 
 export default function SiteShell({ children }) {
   const pathname = usePathname();
@@ -39,6 +40,7 @@ export default function SiteShell({ children }) {
       <Navbar />
       <main>{children}</main>
       <Footer />
+      <FloatingWhatsApp />
     </div>
   );
 }

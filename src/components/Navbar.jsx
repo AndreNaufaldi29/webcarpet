@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getStoredSettings, subscribeSettings, DEFAULT_SETTINGS } from "@/lib/settingsStore";
 import {
-  FiFileText,
   FiSun,
   FiMoon,
   FiMenu,
@@ -134,11 +133,6 @@ function Navbar() {
 
           {/* Desktop Right Actions */}
           <div className="navbar-actions">
-            <button className="quote-btn" onClick={handleRequestQuote}>
-              <FiFileText />
-              <span>Minta Penawaran</span>
-            </button>
-
             <button
               className="theme-btn"
               onClick={toggleTheme}
@@ -151,15 +145,6 @@ function Navbar() {
 
           {/* Mobile Right Controls */}
           <div className="navbar-mobile-header-actions">
-            <button
-              className="mobile-quick-quote-btn"
-              onClick={handleRequestQuote}
-              aria-label="Minta Penawaran via WhatsApp"
-              title="Minta Penawaran"
-            >
-              <FiMessageCircle />
-            </button>
-
             <button
               className={`menu-toggle ${menuOpen ? "active" : ""}`}
               onClick={() => setMenuOpen(!menuOpen)}
