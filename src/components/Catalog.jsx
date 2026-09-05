@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   FiSearch,
   FiGrid,
@@ -29,12 +30,21 @@ const DEFAULT_CATEGORIES = [
 ];
 
 function Catalog() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+
+  const normalizeCat = useCallback(
+    (cat) => (cat || "").toLowerCase().replace(/^karpet\s+/i, "").trim(),
+    []
+  );
 
   // Load products & categories from Database Prisma
   useEffect(() => {
@@ -70,7 +80,62 @@ function Catalog() {
     return () => unsubscribe();
   }, []);
 
-  const normalizeCat = (cat) => (cat || "").toLowerCase().replace(/^karpet\s+/i, "").trim();
+  // Sync state with URL search parameters (from Beranda HeroSearch or Direct Link)
+  useEffect(() => {
+    const urlSearch = searchParams?.get("search") || "";
+    const urlCat = searchParams?.get("category") || "";
+
+    setSearchTerm(urlSearch);
+
+    if (urlCat) {
+      const normUrlCat = normalizeCat(urlCat);
+      const foundCat = categories.find(
+        (c) => normalizeCat(c) === normUrlCat || normUrlCat.includes(normalizeCat(c))
+      );
+      if (foundCat) {
+        setSelectedCategory(foundCat);
+      } else {
+        setSelectedCategory(urlCat);
+      }
+    } else {
+      setSelectedCategory("Semua");
+    }
+
+    setCurrentPage(1);
+  }, [searchParams, categories, normalizeCat]);
+
+  // Update browser URL query params gracefully
+  const updateUrl = (newSearch, newCat) => {
+    const params = new URLSearchParams();
+    if (newSearch && newSearch.trim()) {
+      params.set("search", newSearch.trim());
+    }
+    if (newCat && newCat !== "Semua") {
+      params.set("category", normalizeCat(newCat));
+    }
+    const qs = params.toString();
+    const targetUrl = `${pathname}${qs ? `?${qs}` : ""}`;
+    window.history.replaceState(null, "", targetUrl);
+  };
+
+  const handleCategoryChange = (cat) => {
+    setSelectedCategory(cat);
+    setCurrentPage(1);
+    updateUrl(searchTerm, cat);
+  };
+
+  const handleSearchChange = (val) => {
+    setSearchTerm(val);
+    setCurrentPage(1);
+    updateUrl(val, selectedCategory);
+  };
+
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setSelectedCategory("Semua");
+    setCurrentPage(1);
+    window.history.replaceState(null, "", pathname);
+  };
 
   const filteredCarpets = products.filter((item) => {
     const itemCatNorm = normalizeCat(item.category);
@@ -79,24 +144,28 @@ function Catalog() {
     const matchCategory =
       selectedCategory === "Semua" ||
       itemCatNorm === selectedCatNorm ||
-      item.category === selectedCategory;
+      itemCatNorm.includes(selectedCatNorm) ||
+      selectedCatNorm.includes(itemCatNorm) ||
+      (item.category || "").toLowerCase() === selectedCategory.toLowerCase();
 
-    const matchSearch =
-      (item.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (item.category || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (item.description || "").toLowerCase().includes(searchTerm.toLowerCase());
+    if (!matchCategory) return false;
 
-    return matchCategory && matchSearch;
+    if (!searchTerm.trim()) return true;
+
+    const q = searchTerm.toLowerCase().trim();
+    const matchName = (item.name || "").toLowerCase().includes(q);
+    const matchCategoryName = (item.category || "").toLowerCase().includes(q);
+    const matchDesc = (item.description || "").toLowerCase().includes(q);
+    const matchSpecs = Object.values(item.specifications || {}).some((spec) =>
+      String(spec).toLowerCase().includes(q)
+    );
+
+    return matchName || matchCategoryName || matchDesc || matchSpecs;
   });
 
   const totalPages = Math.ceil(filteredCarpets.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = filteredCarpets.slice(startIndex, startIndex + itemsPerPage);
-
-  const handleCategoryChange = (cat) => {
-    setSelectedCategory(cat);
-    setCurrentPage(1);
-  };
 
   return (
     <section className="catalog-section">
@@ -123,17 +192,14 @@ function Catalog() {
             type="text"
             placeholder="Cari karpet berdasarkan nama, motif, atau kategori..."
             value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
 
           {searchTerm && (
             <button
               type="button"
               className="catalog-clear-btn"
-              onClick={() => setSearchTerm("")}
+              onClick={() => handleSearchChange("")}
               aria-label="Bersihkan pencarian"
             >
               <FiX />
@@ -174,7 +240,27 @@ function Catalog() {
             <span>
               Menampilkan <strong>{filteredCarpets.length}</strong> produk
               {selectedCategory !== "Semua" && ` kategori "${selectedCategory}"`}
+              {searchTerm && ` dengan kata kunci "${searchTerm}"`}
             </span>
+            {(selectedCategory !== "Semua" || searchTerm) && (
+              <button
+                type="button"
+                className="catalog-reset-link"
+                onClick={handleResetFilters}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#2A6151",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  fontSize: "0.88rem",
+                  textDecoration: "underline",
+                  marginLeft: "auto",
+                }}
+              >
+                Reset Filter
+              </button>
+            )}
           </div>
 
           {currentItems.length > 0 ? (
@@ -213,16 +299,17 @@ function Catalog() {
             <div className="catalog-empty-state">
               <FiSearch size={40} className="empty-icon" />
               <h3>Produk tidak ditemukan</h3>
-              <p>Coba kata kunci pencarian lain atau pilih kategori yang berbeda.</p>
+              <p>
+                {searchTerm
+                  ? `Tidak ada karpet yang cocok dengan pencarian "${searchTerm}".`
+                  : "Coba kata kunci pencarian lain atau pilih kategori yang berbeda."}
+              </p>
               <button
                 type="button"
                 className="btn-reset-filter"
-                onClick={() => {
-                  setSearchTerm("");
-                  setSelectedCategory("Semua");
-                }}
+                onClick={handleResetFilters}
               >
-                Reset Semua Filter
+                Reset Semua Filter & Pencarian
               </button>
             </div>
           )}

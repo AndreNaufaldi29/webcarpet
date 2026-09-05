@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
@@ -20,6 +20,14 @@ import {
   FiShield,
   FiTruck,
   FiGrid,
+  FiMaximize2,
+  FiZoomIn,
+  FiZoomOut,
+  FiRefreshCw,
+  FiX,
+  FiChevronLeft,
+  FiChevronRight,
+  FiImage,
 } from "react-icons/fi";
 import { FaWhatsapp, FaStar } from "react-icons/fa";
 
@@ -30,6 +38,11 @@ export default function ProductDetail() {
   const [products, setProducts] = useState(DEFAULT_PRODUCTS);
   const [dbProduct, setDbProduct] = useState(null);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+
+  // Lightbox / Image detail modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImageIndex, setModalImageIndex] = useState(0);
+  const [zoomScale, setZoomScale] = useState(1);
 
   useEffect(() => {
     setSettings(getStoredSettings());
@@ -68,15 +81,86 @@ export default function ProductDetail() {
     products[0] ||
     DEFAULT_PRODUCTS[0];
 
-  const [activeImage, setActiveImage] = useState(
-    product.images?.[0] || product.image || "/carpet-placeholder.jpg"
-  );
+  const galleryImages =
+    Array.isArray(product.images) && product.images.length > 0
+      ? product.images
+      : [product.image || "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200"];
+
+  const [activeImage, setActiveImage] = useState(galleryImages[0]);
 
   useEffect(() => {
-    if (product.images?.[0]) {
-      setActiveImage(product.images[0]);
+    if (galleryImages[0]) {
+      setActiveImage(galleryImages[0]);
     }
   }, [product]);
+
+  // Modal open & navigation handlers
+  const openModal = (index = 0) => {
+    setModalImageIndex(index);
+    setZoomScale(1);
+    setIsModalOpen(true);
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = "hidden";
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setZoomScale(1);
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = "auto";
+    }
+  };
+
+  const handleNextImage = useCallback(() => {
+    setModalImageIndex((prev) => (prev < galleryImages.length - 1 ? prev + 1 : 0));
+    setZoomScale(1);
+  }, [galleryImages.length]);
+
+  const handlePrevImage = useCallback(() => {
+    setModalImageIndex((prev) => (prev > 0 ? prev - 1 : galleryImages.length - 1));
+    setZoomScale(1);
+  }, [galleryImages.length]);
+
+  const handleZoomIn = () => {
+    setZoomScale((prev) => Math.min(prev + 0.5, 3));
+  };
+
+  const handleZoomOut = () => {
+    setZoomScale((prev) => Math.max(prev - 0.5, 1));
+  };
+
+  const handleResetZoom = () => {
+    setZoomScale(1);
+  };
+
+  const handleToggleZoom = () => {
+    setZoomScale((prev) => (prev > 1 ? 1 : 2));
+  };
+
+  // Keyboard navigation inside modal
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+      } else if (e.key === "ArrowLeft") {
+        handlePrevImage();
+      } else if (e.key === "ArrowRight") {
+        handleNextImage();
+      } else if (e.key === "+" || e.key === "=") {
+        handleZoomIn();
+      } else if (e.key === "-") {
+        handleZoomOut();
+      } else if (e.key === "0") {
+        handleResetZoom();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isModalOpen, handlePrevImage, handleNextImage]);
 
   const handleWhatsApp = () => {
     const cleanWhatsapp = (settings.whatsapp || "08212128701").replace(/[^0-9]/g, "");
@@ -104,6 +188,9 @@ export default function ProductDetail() {
       ? product.specifications
       : defaultSpecs;
 
+  const currentActiveIdx = galleryImages.indexOf(activeImage);
+  const activeImgIdx = currentActiveIdx >= 0 ? currentActiveIdx : 0;
+
   return (
     <div className="product-detail-page-wrapper">
       <section className="product-detail-page">
@@ -119,13 +206,24 @@ export default function ProductDetail() {
         <div className="product-detail-card">
           {/* GALLERY SECTION */}
           <div className="product-gallery">
-            <div className="product-main-image">
+            <div
+              className="product-main-image clickable"
+              onClick={() => openModal(activeImgIdx)}
+              title="Klik gambar untuk memperbesar detail tekstur dan motif karpet"
+            >
               <img src={activeImage} alt={product.name} />
+
+              <div className="product-image-zoom-overlay">
+                <div className="product-image-zoom-badge">
+                  <FiMaximize2 size={16} />
+                  <span>Lihat Detail Foto</span>
+                </div>
+              </div>
             </div>
 
-            {product.images?.length > 1 && (
+            {galleryImages.length > 1 && (
               <div className="product-thumb-list">
-                {product.images.map((img, idx) => (
+                {galleryImages.map((img, idx) => (
                   <button
                     key={idx}
                     type="button"
@@ -133,6 +231,7 @@ export default function ProductDetail() {
                     className={`product-thumb ${
                       activeImage === img ? "active" : ""
                     }`}
+                    title={`Lihat foto ${idx + 1}`}
                   >
                     <img
                       src={img}
@@ -234,6 +333,153 @@ export default function ProductDetail() {
           </div>
         </div>
       </section>
+
+      {/* FULL IMAGE LIGHTBOX DETAIL MODAL */}
+      {isModalOpen && (
+        <div
+          className="product-image-modal-overlay animate-fade-in"
+          onClick={closeModal}
+        >
+          <div
+            className="product-image-modal-dialog animate-scale-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* MODAL HEADER */}
+            <div className="product-image-modal-header">
+              <div className="modal-header-left">
+                <h3>{product.name}</h3>
+                <div className="modal-header-meta">
+                  <span className="modal-cat-badge">{product.category}</span>
+                  {galleryImages.length > 1 && (
+                    <span className="modal-counter">
+                      <FiImage size={13} />
+                      Foto {modalImageIndex + 1} dari {galleryImages.length}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="modal-header-actions">
+                {/* ZOOM CONTROLS */}
+                <div className="modal-zoom-controls">
+                  <button
+                    type="button"
+                    onClick={handleZoomOut}
+                    disabled={zoomScale <= 1}
+                    className="modal-tool-btn"
+                    title="Perkecil Foto (-)"
+                  >
+                    <FiZoomOut size={17} />
+                  </button>
+                  <span className="zoom-indicator">
+                    {Math.round(zoomScale * 100)}%
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleZoomIn}
+                    disabled={zoomScale >= 3}
+                    className="modal-tool-btn"
+                    title="Perbesar Foto (+)"
+                  >
+                    <FiZoomIn size={17} />
+                  </button>
+                  {zoomScale > 1 && (
+                    <button
+                      type="button"
+                      onClick={handleResetZoom}
+                      className="modal-tool-btn reset"
+                      title="Reset Ukuran (0)"
+                    >
+                      <FiRefreshCw size={15} />
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  className="modal-close-btn"
+                  onClick={closeModal}
+                  title="Tutup Preview (Esc)"
+                  aria-label="Tutup"
+                >
+                  <FiX size={22} />
+                </button>
+              </div>
+            </div>
+
+            {/* MODAL IMAGE VIEWER */}
+            <div className="product-image-modal-body">
+              {galleryImages.length > 1 && (
+                <button
+                  type="button"
+                  className="modal-nav-btn prev"
+                  onClick={handlePrevImage}
+                  title="Foto Sebelumnya (Panah Kiri)"
+                  aria-label="Foto Sebelumnya"
+                >
+                  <FiChevronLeft size={28} />
+                </button>
+              )}
+
+              <div
+                className={`modal-image-viewport ${zoomScale > 1 ? "zoomed" : ""}`}
+                onClick={handleToggleZoom}
+                title={
+                  zoomScale === 1
+                    ? "Klik untuk memperbesar 2x"
+                    : "Klik untuk kembali ke ukuran normal"
+                }
+              >
+                <img
+                  src={galleryImages[modalImageIndex] || activeImage}
+                  alt={`${product.name} detail`}
+                  style={{
+                    transform: `scale(${zoomScale})`,
+                  }}
+                  className="modal-main-img"
+                />
+              </div>
+
+              {galleryImages.length > 1 && (
+                <button
+                  type="button"
+                  className="modal-nav-btn next"
+                  onClick={handleNextImage}
+                  title="Foto Selanjutnya (Panah Kanan)"
+                  aria-label="Foto Selanjutnya"
+                >
+                  <FiChevronRight size={28} />
+                </button>
+              )}
+            </div>
+
+            {/* MODAL THUMBNAIL FILMSTRIP */}
+            {galleryImages.length > 1 && (
+              <div className="product-image-modal-footer">
+                <div className="modal-thumb-strip">
+                  {galleryImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setModalImageIndex(idx);
+                        setZoomScale(1);
+                      }}
+                      className={`modal-thumb-item ${
+                        modalImageIndex === idx ? "active" : ""
+                      }`}
+                      title={`Pilih foto ${idx + 1}`}
+                    >
+                      <img src={img} alt={`thumb-${idx + 1}`} />
+                      <span className="modal-thumb-num">{idx + 1}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

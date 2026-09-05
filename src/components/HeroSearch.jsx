@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -10,12 +10,18 @@ import {
   FiArrowRight,
   FiStar,
   FiX,
+  FiLayers,
 } from "react-icons/fi";
 import {
   getStoredCategories,
   subscribeCategories,
   syncCategoriesFromDatabase,
 } from "@/lib/categoryStore";
+import {
+  getStoredProducts,
+  subscribeProducts,
+  syncProductsFromDatabase,
+} from "@/lib/productStore";
 
 const slides = [
   {
@@ -56,13 +62,18 @@ const DEFAULT_CATEGORY_NAMES = [
 
 function HeroSearch() {
   const router = useRouter();
+  const searchContainerRef = useRef(null);
+  const inputRef = useRef(null);
+
   const [current, setCurrent] = useState(0);
   const [categories, setCategories] = useState(DEFAULT_CATEGORY_NAMES);
+  const [products, setProducts] = useState([]);
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [query, setQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Sync category pills from Prisma PostgreSQL database
+  // Sync categories & products from database
   useEffect(() => {
     // 1. Initial cached categories
     const initialCats = getStoredCategories().filter((c) => c.status !== "Nonaktif");
@@ -70,7 +81,7 @@ function HeroSearch() {
       setCategories(["Semua", ...initialCats.map((c) => c.name)]);
     }
 
-    // 2. Fetch fresh categories from Prisma DB
+    // 2. Fetch fresh categories
     syncCategoriesFromDatabase().then((dbCategories) => {
       if (Array.isArray(dbCategories) && dbCategories.length > 0) {
         const activeCats = dbCategories.filter((c) => c.status !== "Nonaktif");
@@ -78,13 +89,31 @@ function HeroSearch() {
       }
     });
 
-    // 3. Subscribe to realtime category updates
-    const unsubscribe = subscribeCategories((updated) => {
+    // 3. Subscribe categories
+    const unsubCats = subscribeCategories((updated) => {
       const activeCats = updated.filter((c) => c.status !== "Nonaktif");
       setCategories(["Semua", ...activeCats.map((c) => c.name)]);
     });
 
-    return () => unsubscribe();
+    // 4. Initial cached products
+    setProducts(getStoredProducts().filter((p) => p.status !== "Nonaktif"));
+
+    // 5. Fetch fresh products
+    syncProductsFromDatabase().then((dbProducts) => {
+      if (Array.isArray(dbProducts) && dbProducts.length > 0) {
+        setProducts(dbProducts.filter((p) => p.status !== "Nonaktif"));
+      }
+    });
+
+    // 6. Subscribe products
+    const unsubProds = subscribeProducts((updated) => {
+      setProducts(updated.filter((p) => p.status !== "Nonaktif"));
+    });
+
+    return () => {
+      unsubCats();
+      unsubProds();
+    };
   }, []);
 
   // Slide rotation timer
@@ -96,6 +125,31 @@ function HeroSearch() {
     return () => clearInterval(timer);
   }, []);
 
+  // Close dropdown on click outside or escape key
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   const handleSlideChange = (updater) => {
     setIsTransitioning(true);
     setCurrent(updater);
@@ -104,14 +158,55 @@ function HeroSearch() {
     }, 500);
   };
 
+  // Helper normalization
+  const normalize = (str) => (str || "").toLowerCase().trim();
+  const normalizeCat = (cat) => normalize(cat).replace(/^karpet\s+/i, "");
+
+  // Instant matching products calculation
+  const matchingProducts = useMemo(() => {
+    if (!products || products.length === 0) return [];
+
+    const activeNorm = normalizeCat(activeCategory);
+    const q = normalize(query);
+
+    return products.filter((item) => {
+      if (item.status === "Nonaktif") return false;
+
+      // Category filter
+      if (activeCategory && activeCategory !== "Semua") {
+        const itemCatNorm = normalizeCat(item.category);
+        const matchCategory =
+          itemCatNorm === activeNorm ||
+          itemCatNorm.includes(activeNorm) ||
+          activeNorm.includes(itemCatNorm) ||
+          normalize(item.category) === normalize(activeCategory);
+        if (!matchCategory) return false;
+      }
+
+      // Query filter
+      if (!q) return true;
+
+      const nameMatch = normalize(item.name).includes(q);
+      const categoryMatch = normalize(item.category).includes(q);
+      const descMatch = normalize(item.description).includes(q);
+      const specsMatch = Object.values(item.specifications || {}).some((val) =>
+        normalize(String(val)).includes(q)
+      );
+
+      return nameMatch || categoryMatch || descMatch || specsMatch;
+    });
+  }, [products, query, activeCategory]);
+
   const handleSearch = (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
+    setIsDropdownOpen(false);
+
     const params = new URLSearchParams();
     if (query.trim()) {
       params.set("search", query.trim());
     }
     if (activeCategory && activeCategory !== "Semua") {
-      params.set("category", activeCategory.replace(/^Karpet\s+/i, ""));
+      params.set("category", normalizeCat(activeCategory));
     }
     const queryString = params.toString();
     router.push(`/catalog${queryString ? `?${queryString}` : ""}`);
@@ -119,15 +214,40 @@ function HeroSearch() {
 
   const handleCategoryClick = (item) => {
     setActiveCategory(item);
-    const params = new URLSearchParams();
+    // If query has text, keep user on home page with refreshed dropdown
     if (query.trim()) {
-      params.set("search", query.trim());
+      setIsDropdownOpen(true);
+    } else {
+      // If no query typed, navigate directly to catalog of that category
+      const params = new URLSearchParams();
+      if (item !== "Semua") {
+        params.set("category", normalizeCat(item));
+      }
+      const queryString = params.toString();
+      router.push(`/catalog${queryString ? `?${queryString}` : ""}`);
     }
-    if (item !== "Semua") {
-      params.set("category", item.replace(/^Karpet\s+/i, ""));
+  };
+
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    setQuery(val);
+    if (val.trim()) {
+      setIsDropdownOpen(true);
+    } else {
+      setIsDropdownOpen(false);
     }
-    const queryString = params.toString();
-    router.push(`/catalog${queryString ? `?${queryString}` : ""}`);
+  };
+
+  const handleInputFocus = () => {
+    if (query.trim()) {
+      setIsDropdownOpen(true);
+    }
+  };
+
+  const handleClearQuery = () => {
+    setQuery("");
+    setIsDropdownOpen(false);
+    if (inputRef.current) inputRef.current.focus();
   };
 
   return (
@@ -211,35 +331,136 @@ function HeroSearch() {
       </div>
 
       {/* SEARCH FLOATING BOX */}
-      <form className="search-box animate-float-search" onSubmit={handleSearch}>
-        <div className="search-row">
-          <div className="search-input-wrap">
-            <FiSearch className="search-icon-inside" />
-            <input
-              type="text"
-              placeholder="Cari nama karpet, warna, bahan, atau kebutuhan..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              aria-label="Cari Karpet"
-            />
-            {query && (
-              <button
-                type="button"
-                className="search-clear-btn"
-                onClick={() => setQuery("")}
-                aria-label="Hapus pencarian"
-              >
-                <FiX />
-              </button>
-            )}
-          </div>
+      <div className="search-box animate-float-search" ref={searchContainerRef}>
+        <form onSubmit={handleSearch}>
+          <div className="search-row">
+            <div className="search-input-wrap">
+              <FiSearch className="search-icon-inside" />
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Cari nama karpet, warna, bahan, atau kebutuhan..."
+                value={query}
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
+                aria-label="Cari Karpet"
+                autoComplete="off"
+              />
+              {query && (
+                <button
+                  type="button"
+                  className="search-clear-btn"
+                  onClick={handleClearQuery}
+                  aria-label="Hapus pencarian"
+                >
+                  <FiX />
+                </button>
+              )}
 
-          <button type="submit" className="search-btn" aria-label="Cari Produk">
-            <FiSearch className="search-btn-icon" />
-            <span className="search-btn-text-desktop">Cari Produk</span>
-            <span className="search-btn-text-mobile">Cari</span>
-          </button>
-        </div>
+              {/* LIVE SEARCH AUTOCOMPLETE DROPDOWN */}
+              {isDropdownOpen && query.trim() && (
+                <div className="hero-search-dropdown animate-dropdown-pop">
+                  <div className="hero-dropdown-header">
+                    <span>
+                      Hasil pencarian untuk <strong>&quot;{query}&quot;</strong>
+                      {activeCategory !== "Semua" && (
+                        <> di kategori <em>{activeCategory}</em></>
+                      )}
+                    </span>
+                    <span className="hero-dropdown-count">
+                      {matchingProducts.length} Karpet
+                    </span>
+                  </div>
+
+                  {matchingProducts.length > 0 ? (
+                    <>
+                      <div className="hero-dropdown-list">
+                        {matchingProducts.slice(0, 5).map((item) => {
+                          const thumb =
+                            item.images?.[0] ||
+                            item.image ||
+                            "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=300";
+
+                          const specSummary =
+                            item.specifications?.Material ||
+                            item.specifications?.Ketebalan ||
+                            (item.description
+                              ? item.description.slice(0, 55) + "..."
+                              : "Karpet kualitas premium");
+
+                          return (
+                            <Link
+                              key={item.id}
+                              href={`/product/${item.id}`}
+                              className="hero-dropdown-item"
+                              onClick={() => setIsDropdownOpen(false)}
+                            >
+                              <div className="hero-dropdown-img">
+                                <img src={thumb} alt={item.name} />
+                              </div>
+                              <div className="hero-dropdown-info">
+                                <div className="hero-dropdown-top">
+                                  <span className="hero-dropdown-title">
+                                    {item.name}
+                                  </span>
+                                  <span className="hero-dropdown-badge">
+                                    {item.category}
+                                  </span>
+                                </div>
+                                <span className="hero-dropdown-desc">
+                                  {specSummary}
+                                </span>
+                              </div>
+                              <FiArrowRight className="hero-dropdown-arrow" />
+                            </Link>
+                          );
+                        })}
+                      </div>
+
+                      <button
+                        type="button"
+                        className="hero-dropdown-footer-btn"
+                        onClick={handleSearch}
+                      >
+                        <span>
+                          Lihat semua {matchingProducts.length} hasil di Katalog
+                        </span>
+                        <FiArrowRight />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="hero-dropdown-empty">
+                      <div className="hero-dropdown-empty-icon">
+                        <FiSearch size={22} />
+                      </div>
+                      <p className="empty-main">
+                        Tidak ditemukan karpet untuk &quot;{query}&quot;
+                        {activeCategory !== "Semua" && ` pada kategori ${activeCategory}`}.
+                      </p>
+                      <p className="empty-sub">
+                        Coba periksa ejaan kata atau jelajahi katalog lengkap kami.
+                      </p>
+                      <button
+                        type="button"
+                        className="hero-dropdown-view-all"
+                        onClick={handleSearch}
+                      >
+                        <FiLayers size={14} />
+                        <span>Buka Katalog Lengkap</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <button type="submit" className="search-btn" aria-label="Cari Produk">
+              <FiSearch className="search-btn-icon" />
+              <span className="search-btn-text-desktop">Cari Produk</span>
+              <span className="search-btn-text-mobile">Cari</span>
+            </button>
+          </div>
+        </form>
 
         {/* DYNAMIC CATEGORY FILTER PILLS UNDER SEARCH */}
         <div className="category-filter-wrap">
@@ -258,7 +479,7 @@ function HeroSearch() {
             ))}
           </div>
         </div>
-      </form>
+      </div>
     </section>
   );
 }

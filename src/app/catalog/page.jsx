@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Catalog from "../../components/Catalog";
 import prisma from "@/lib/prisma";
 import { DEFAULT_SETTINGS } from "@/lib/settingsStore";
@@ -56,5 +57,25 @@ export async function generateMetadata() {
 }
 
 export default function CatalogPage() {
-  return <Catalog />;
+  return (
+    <Suspense
+      fallback={
+        <div
+          style={{
+            minHeight: "60vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#0A3B25",
+            fontWeight: 600,
+            fontSize: "1.1rem",
+          }}
+        >
+          Memuat Katalog Karpet...
+        </div>
+      }
+    >
+      <Catalog />
+    </Suspense>
+  );
 }

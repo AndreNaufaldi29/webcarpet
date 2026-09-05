@@ -27,6 +27,11 @@ import {
   FiImage,
   FiPlay,
   FiCheckCircle,
+  FiMaximize2,
+  FiZoomIn,
+  FiZoomOut,
+  FiRefreshCw,
+  FiX,
 } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
 
@@ -38,6 +43,14 @@ export default function PortfolioDetail() {
   const [dbPortfolio, setDbPortfolio] = useState(null);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // Dynamic orientation state for flexible portrait / landscape / square view
+  const [mediaOrientation, setMediaOrientation] = useState("landscape");
+
+  // Lightbox / Detail Zoom Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImageIndex, setModalImageIndex] = useState(0);
+  const [zoomScale, setZoomScale] = useState(1);
 
   const thumbTrackRef = useRef(null);
   const thumbRefs = useRef([]);
@@ -87,8 +100,38 @@ export default function PortfolioDetail() {
     setActiveIndex(0);
   }, [portfolio?.id]);
 
-  const currentMedia = galleryImages[activeIndex] || portfolio.image || "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200";
+  const currentMedia =
+    galleryImages[activeIndex] ||
+    portfolio.image ||
+    "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200";
   const isVideo = isVideoMedia(currentMedia, portfolio.mediaType);
+
+  // Detect image natural dimensions for flexible portrait / landscape layout
+  const handleMediaLoad = (e) => {
+    const { naturalWidth, naturalHeight } = e.target;
+    if (naturalWidth && naturalHeight) {
+      if (naturalHeight > naturalWidth * 1.08) {
+        setMediaOrientation("portrait");
+      } else if (naturalWidth > naturalHeight * 1.08) {
+        setMediaOrientation("landscape");
+      } else {
+        setMediaOrientation("square");
+      }
+    }
+  };
+
+  const handleVideoMetadata = (e) => {
+    const { videoWidth, videoHeight } = e.target;
+    if (videoWidth && videoHeight) {
+      if (videoHeight > videoWidth * 1.08) {
+        setMediaOrientation("portrait");
+      } else if (videoWidth > videoHeight * 1.08) {
+        setMediaOrientation("landscape");
+      } else {
+        setMediaOrientation("square");
+      }
+    }
+  };
 
   // Slide navigation handlers
   const handlePrev = useCallback(() => {
@@ -101,6 +144,50 @@ export default function PortfolioDetail() {
 
   const handleSelectImage = (index) => {
     setActiveIndex(index);
+  };
+
+  // Modal open & navigation handlers
+  const openModal = (index = 0) => {
+    setModalImageIndex(index);
+    setZoomScale(1);
+    setIsModalOpen(true);
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = "hidden";
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setZoomScale(1);
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = "auto";
+    }
+  };
+
+  const handleModalNext = useCallback(() => {
+    setModalImageIndex((prev) => (prev < galleryImages.length - 1 ? prev + 1 : 0));
+    setZoomScale(1);
+  }, [galleryImages.length]);
+
+  const handleModalPrev = useCallback(() => {
+    setModalImageIndex((prev) => (prev > 0 ? prev - 1 : galleryImages.length - 1));
+    setZoomScale(1);
+  }, [galleryImages.length]);
+
+  const handleZoomIn = () => {
+    setZoomScale((prev) => Math.min(prev + 0.5, 3));
+  };
+
+  const handleZoomOut = () => {
+    setZoomScale((prev) => Math.max(prev - 0.5, 1));
+  };
+
+  const handleResetZoom = () => {
+    setZoomScale(1);
+  };
+
+  const handleToggleZoom = () => {
+    setZoomScale((prev) => (prev > 1 ? 1 : 2));
   };
 
   // Scroll active thumbnail into view
@@ -125,19 +212,35 @@ export default function PortfolioDetail() {
     }
   };
 
-  // Keyboard navigation (Left / Right keys)
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (galleryImages.length <= 1) return;
-      if (e.key === "ArrowLeft") {
-        handlePrev();
-      } else if (e.key === "ArrowRight") {
-        handleNext();
+      if (isModalOpen) {
+        if (e.key === "Escape") {
+          closeModal();
+        } else if (e.key === "ArrowLeft") {
+          handleModalPrev();
+        } else if (e.key === "ArrowRight") {
+          handleModalNext();
+        } else if (e.key === "+" || e.key === "=") {
+          handleZoomIn();
+        } else if (e.key === "-") {
+          handleZoomOut();
+        } else if (e.key === "0") {
+          handleResetZoom();
+        }
+      } else {
+        if (galleryImages.length <= 1) return;
+        if (e.key === "ArrowLeft") {
+          handlePrev();
+        } else if (e.key === "ArrowRight") {
+          handleNext();
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handlePrev, handleNext, galleryImages.length]);
+  }, [isModalOpen, handleModalPrev, handleModalNext, handlePrev, handleNext, galleryImages.length]);
 
   const handleWhatsApp = () => {
     const cleanWhatsapp = (settings.whatsapp || "08212128701").replace(/[^0-9]/g, "");
@@ -159,7 +262,7 @@ export default function PortfolioDetail() {
         <div className="product-back-wrapper">
           <Link href="/portofolio" className="portfolio-back-btn">
             <FiArrowLeft />
-            Kembali ke Portofolio
+            <span>Kembali ke Portofolio</span>
           </Link>
         </div>
 
@@ -167,8 +270,12 @@ export default function PortfolioDetail() {
         <div className="portfolio-detail-grid">
           {/* GALLERY SECTION (MAIN IMAGE + SLIDER + THUMBNAILS) */}
           <div className="portfolio-gallery">
-            {/* MAIN IMAGE CARD */}
-            <div className="portfolio-main-image-card">
+            {/* MAIN IMAGE CARD (DYNAMIC FLEXIBLE ORIENTATION) */}
+            <div
+              className={`portfolio-main-image-card clickable is-${mediaOrientation}`}
+              onClick={() => openModal(activeIndex)}
+              title="Klik gambar untuk melihat detail foto proyek"
+            >
               {isVideo ? (
                 <video
                   key={currentMedia}
@@ -176,6 +283,7 @@ export default function PortfolioDetail() {
                   controls
                   playsInline
                   autoPlay
+                  onLoadedMetadata={handleVideoMetadata}
                   className="portfolio-main-media"
                 />
               ) : (
@@ -183,16 +291,28 @@ export default function PortfolioDetail() {
                   key={currentMedia}
                   src={currentMedia}
                   alt={`${portfolio.title} - Foto ${activeIndex + 1}`}
+                  onLoad={handleMediaLoad}
                   className="portfolio-main-media animate-fade-in"
                 />
               )}
+
+              {/* ZOOM HOVER OVERLAY BADGE */}
+              <div className="product-image-zoom-overlay">
+                <div className="product-image-zoom-badge">
+                  <FiMaximize2 size={16} />
+                  <span>Lihat Detail Foto</span>
+                </div>
+              </div>
 
               {/* SLIDE BUTTONS OVER MAIN IMAGE (IF MULTIPLE PHOTOS) */}
               {galleryImages.length > 1 && (
                 <>
                   <button
                     type="button"
-                    onClick={handlePrev}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePrev();
+                    }}
                     className="portfolio-slide-btn prev"
                     aria-label="Foto sebelumnya"
                     title="Foto sebelumnya (Panah Kiri)"
@@ -201,7 +321,10 @@ export default function PortfolioDetail() {
                   </button>
                   <button
                     type="button"
-                    onClick={handleNext}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNext();
+                    }}
                     className="portfolio-slide-btn next"
                     aria-label="Foto selanjutnya"
                     title="Foto selanjutnya (Panah Kanan)"
@@ -346,6 +469,16 @@ export default function PortfolioDetail() {
                 <span>Konsultasi Proyek Serupa</span>
               </button>
 
+              <button
+                type="button"
+                className="portfolio-zoom-action-btn"
+                onClick={() => openModal(activeIndex)}
+                title="Buka foto resolusi penuh & zoom"
+              >
+                <FiMaximize2 size={18} />
+                <span>Lihat Detail Foto</span>
+              </button>
+
               <Link href="/portofolio" className="portfolio-back-outline-btn">
                 <FiLayers size={18} />
                 <span>Lihat Proyek Lainnya</span>
@@ -354,6 +487,190 @@ export default function PortfolioDetail() {
           </div>
         </div>
       </div>
+
+      {/* FULL IMAGE / MEDIA LIGHTBOX DETAIL MODAL */}
+      {isModalOpen && (
+        <div
+          className="product-image-modal-overlay animate-fade-in"
+          onClick={closeModal}
+        >
+          <div
+            className="product-image-modal-dialog animate-scale-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* MODAL HEADER */}
+            <div className="product-image-modal-header">
+              <div className="modal-header-left">
+                <h3>{portfolio.title}</h3>
+                <div className="modal-header-meta">
+                  <span className="modal-cat-badge">{portfolio.category}</span>
+                  {galleryImages.length > 1 && (
+                    <span className="modal-counter">
+                      <FiImage size={13} />
+                      Foto {modalImageIndex + 1} dari {galleryImages.length}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="modal-header-actions">
+                {/* ZOOM CONTROLS (ONLY FOR IMAGES) */}
+                {!isVideoMedia(galleryImages[modalImageIndex]) && (
+                  <div className="modal-zoom-controls">
+                    <button
+                      type="button"
+                      onClick={handleZoomOut}
+                      disabled={zoomScale <= 1}
+                      className="modal-tool-btn"
+                      title="Perkecil Foto (-)"
+                    >
+                      <FiZoomOut size={17} />
+                    </button>
+                    <span className="zoom-indicator">
+                      {Math.round(zoomScale * 100)}%
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleZoomIn}
+                      disabled={zoomScale >= 3}
+                      className="modal-tool-btn"
+                      title="Perbesar Foto (+)"
+                    >
+                      <FiZoomIn size={17} />
+                    </button>
+                    {zoomScale > 1 && (
+                      <button
+                        type="button"
+                        onClick={handleResetZoom}
+                        className="modal-tool-btn reset"
+                        title="Reset Ukuran (0)"
+                      >
+                        <FiRefreshCw size={15} />
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className="modal-close-btn"
+                  onClick={closeModal}
+                  title="Tutup Preview (Esc)"
+                  aria-label="Tutup"
+                >
+                  <FiX size={22} />
+                </button>
+              </div>
+            </div>
+
+            {/* MODAL MEDIA VIEWER */}
+            <div className="product-image-modal-body">
+              {galleryImages.length > 1 && (
+                <button
+                  type="button"
+                  className="modal-nav-btn prev"
+                  onClick={handleModalPrev}
+                  title="Foto Sebelumnya (Panah Kiri)"
+                  aria-label="Foto Sebelumnya"
+                >
+                  <FiChevronLeft size={28} />
+                </button>
+              )}
+
+              <div
+                className={`modal-image-viewport ${zoomScale > 1 ? "zoomed" : ""}`}
+                onClick={
+                  isVideoMedia(galleryImages[modalImageIndex])
+                    ? undefined
+                    : handleToggleZoom
+                }
+                title={
+                  isVideoMedia(galleryImages[modalImageIndex])
+                    ? undefined
+                    : zoomScale === 1
+                    ? "Klik untuk memperbesar 2x"
+                    : "Klik untuk kembali ke ukuran normal"
+                }
+              >
+                {isVideoMedia(galleryImages[modalImageIndex]) ? (
+                  <video
+                    src={galleryImages[modalImageIndex]}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="modal-main-img"
+                    style={{ maxHeight: "75vh" }}
+                  />
+                ) : (
+                  <img
+                    src={galleryImages[modalImageIndex] || currentMedia}
+                    alt={`${portfolio.title} detail`}
+                    style={{
+                      transform: `scale(${zoomScale})`,
+                    }}
+                    className="modal-main-img"
+                  />
+                )}
+              </div>
+
+              {galleryImages.length > 1 && (
+                <button
+                  type="button"
+                  className="modal-nav-btn next"
+                  onClick={handleModalNext}
+                  title="Foto Selanjutnya (Panah Kanan)"
+                  aria-label="Foto Selanjutnya"
+                >
+                  <FiChevronRight size={28} />
+                </button>
+              )}
+            </div>
+
+            {/* MODAL THUMBNAIL FILMSTRIP */}
+            {galleryImages.length > 1 && (
+              <div className="product-image-modal-footer">
+                <div className="modal-thumb-strip">
+                  {galleryImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setModalImageIndex(idx);
+                        setActiveIndex(idx);
+                        setZoomScale(1);
+                      }}
+                      className={`modal-thumb-item ${
+                        modalImageIndex === idx ? "active" : ""
+                      }`}
+                      title={`Pilih foto ${idx + 1}`}
+                    >
+                      {isVideoMedia(img) ? (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            background: "#0A3B25",
+                            color: "#FCF7F0",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          <FiPlay size={16} />
+                        </div>
+                      ) : (
+                        <img src={img} alt={`thumb-${idx + 1}`} />
+                      )}
+                      <span className="modal-thumb-num">{idx + 1}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
