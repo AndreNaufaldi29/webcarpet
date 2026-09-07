@@ -82,7 +82,6 @@ export default function ProductsPage() {
   const initialFormState = {
     name: "",
     category: "Karpet Masjid",
-    stock: 10,
     status: "Aktif",
     rating: 5,
     description: "",
@@ -181,7 +180,6 @@ export default function ProductsPage() {
     setFormData({
       name: product.name || "",
       category: product.category || "Karpet Masjid",
-      stock: product.stock !== undefined ? product.stock : 10,
       status: product.status || "Aktif",
       rating: product.rating || 5,
       description: product.description || "",
@@ -291,7 +289,7 @@ export default function ProductsPage() {
     const newProd = await addProduct({
       name: formData.name,
       category: formData.category,
-      stock: Number(formData.stock) || 0,
+      stock: 10,
       status: formData.status,
       rating: Number(formData.rating) || 5,
       description: formData.description,
@@ -328,7 +326,7 @@ export default function ProductsPage() {
     await updateProduct(selectedProduct.id, {
       name: formData.name,
       category: formData.category,
-      stock: Number(formData.stock) || 0,
+      stock: selectedProduct.stock !== undefined ? selectedProduct.stock : 10,
       status: formData.status,
       rating: Number(formData.rating) || 5,
       description: formData.description,
@@ -367,12 +365,11 @@ export default function ProductsPage() {
       return;
     }
 
-    const headers = ["ID", "Nama Produk", "Kategori", "Stok", "Status", "Rating", "Material", "Ketebalan"];
+    const headers = ["ID", "Nama Produk", "Kategori", "Status", "Rating", "Material", "Ketebalan"];
     const rows = filteredProducts.map((p) => [
       p.id,
       `"${(p.name || "").replace(/"/g, '""')}"`,
       `"${p.category || ""}"`,
-      p.stock,
       p.status,
       p.rating || 5,
       `"${p.specifications?.Material || ""}"`,
@@ -410,8 +407,7 @@ export default function ProductsPage() {
     const matchStatus =
       statusFilter === "Semua Status" ||
       (statusFilter === "Aktif" && product.status === "Aktif") ||
-      (statusFilter === "Nonaktif" && product.status === "Nonaktif") ||
-      (statusFilter === "Stok Menipis" && Number(product.stock) <= 10);
+      (statusFilter === "Nonaktif" && product.status === "Nonaktif");
 
     return matchSearch && matchCategory && matchStatus;
   });
@@ -419,7 +415,7 @@ export default function ProductsPage() {
   // Calculate stats
   const totalProducts = products.length;
   const activeProducts = products.filter((p) => p.status === "Aktif").length;
-  const lowStockProducts = products.filter((p) => Number(p.stock) <= 10).length;
+  const featuredProducts = products.filter((p) => p.isFeatured).length;
   const uniqueCategories = new Set(products.map((p) => p.category)).size;
 
   return (
@@ -522,14 +518,14 @@ export default function ProductsPage() {
               </div>
             </div>
 
-            {/* STOK MENIPIS */}
+            {/* PRODUK UNGGULAN */}
             <div className="stat-card">
-              <div className="stat-icon orange">
-                <AlertTriangle size={21} />
+              <div className="stat-icon yellow">
+                <Star size={21} />
               </div>
               <div>
-                <span>Stok Menipis (≤10)</span>
-                <strong>{lowStockProducts}</strong>
+                <span>Produk Unggulan</span>
+                <strong>{featuredProducts}</strong>
               </div>
             </div>
 
@@ -573,10 +569,11 @@ export default function ProductsPage() {
             ================================================= */}
             <div className="product-toolbar" style={{ flexWrap: "wrap", gap: "12px" }}>
               {/* SEARCH */}
-              <div className="search-box" style={{ flex: "1 1 260px" }}>
-                <Search size={17} />
+              <div className="admin-search-input-wrapper" style={{ flex: "1 1 260px" }}>
+                <Search size={16} />
                 <input
                   type="text"
+                  className="admin-search-input"
                   placeholder="Cari nama produk atau ID..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -587,7 +584,7 @@ export default function ProductsPage() {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="category-select"
+                className="admin-select-filter"
               >
                 <option value="Semua Kategori">Semua Kategori</option>
                 {categoriesList.map((cat) => (
@@ -601,12 +598,11 @@ export default function ProductsPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="category-select"
+                className="admin-select-filter"
               >
                 <option value="Semua Status">Semua Status</option>
                 <option value="Aktif">✓ Status Aktif</option>
                 <option value="Nonaktif">Status Nonaktif</option>
-                <option value="Stok Menipis">⚠️ Stok Menipis (≤10)</option>
               </select>
             </div>
 
@@ -619,7 +615,6 @@ export default function ProductsPage() {
                   <tr>
                     <th>Produk</th>
                     <th>Kategori</th>
-                    <th>Stok</th>
                     <th>Status</th>
                     <th style={{ textAlign: "center" }}>Aksi</th>
                   </tr>
@@ -628,7 +623,6 @@ export default function ProductsPage() {
                 <tbody>
                   {filteredProducts.length > 0 ? (
                     filteredProducts.map((product) => {
-                      const isLowStock = Number(product.stock) <= 10;
                       const isDropdownOpen = activeDropdownId === product.id;
                       const coverImg = product.images?.[0];
 
@@ -681,16 +675,6 @@ export default function ProductsPage() {
                             <span className="category-badge">
                               {product.category}
                             </span>
-                          </td>
-
-                          {/* STOK */}
-                          <td>
-                            <strong className={`product-stock-text ${isLowStock ? "low-stock" : ""}`}>
-                              {product.stock} unit
-                              {isLowStock && (
-                                <AlertTriangle size={13} className="low-stock-icon" title="Stok menipis" />
-                              )}
-                            </strong>
                           </td>
 
                           {/* STATUS */}
@@ -800,7 +784,7 @@ export default function ProductsPage() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="5" style={{ textAlign: "center", padding: "40px" }}>
+                      <td colSpan="4" style={{ textAlign: "center", padding: "40px" }}>
                         <Package size={36} color="#94a3b8" style={{ marginBottom: "10px" }} />
                         <h4 style={{ margin: "0 0 6px" }}>Tidak ada produk ditemukan</h4>
                         <p style={{ margin: 0, color: "#64748b", fontSize: "13px" }}>
@@ -854,36 +838,20 @@ export default function ProductsPage() {
                   />
                 </div>
 
-                {/* KATEGORI & STOK */}
-                <div className="admin-form-row">
-                  <div className="admin-form-group">
-                    <label>Kategori Karpet</label>
-                    <select
-                      className="admin-select"
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    >
-                      {categoriesList.map((cat) => (
-                        <option key={cat.id || cat.name} value={cat.name}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="admin-form-group">
-                    <label>
-                      Jumlah Stok (Unit / Roll) <span className="required">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      className="admin-input"
-                      required
-                      value={formData.stock}
-                      onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                    />
-                  </div>
+                {/* KATEGORI */}
+                <div className="admin-form-group">
+                  <label>Kategori Karpet</label>
+                  <select
+                    className="admin-select"
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  >
+                    {categoriesList.map((cat) => (
+                      <option key={cat.id || cat.name} value={cat.name}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* STATUS & RATING */}
@@ -1193,36 +1161,20 @@ export default function ProductsPage() {
                   />
                 </div>
 
-                {/* KATEGORI & STOK */}
-                <div className="admin-form-row">
-                  <div className="admin-form-group">
-                    <label>Kategori Karpet</label>
-                    <select
-                      className="admin-select"
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    >
-                      {categoriesList.map((cat) => (
-                        <option key={cat.id || cat.name} value={cat.name}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="admin-form-group">
-                    <label>
-                      Jumlah Stok (Unit / Roll) <span className="required">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      className="admin-input"
-                      required
-                      value={formData.stock}
-                      onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                    />
-                  </div>
+                {/* KATEGORI */}
+                <div className="admin-form-group">
+                  <label>Kategori Karpet</label>
+                  <select
+                    className="admin-select"
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  >
+                    {categoriesList.map((cat) => (
+                      <option key={cat.id || cat.name} value={cat.name}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* STATUS & RATING */}

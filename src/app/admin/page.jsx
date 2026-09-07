@@ -173,7 +173,6 @@ export default function AdminDashboardPage() {
                     <tr>
                       <th>Nama Produk</th>
                       <th>Kategori</th>
-                      <th>Stok</th>
                       <th>Status</th>
                     </tr>
                   </thead>
@@ -184,7 +183,6 @@ export default function AdminDashboardPage() {
                         <td>
                           <span className="badge-role">{prod.category}</span>
                         </td>
-                        <td>{prod.stock} unit</td>
                         <td>
                           <span
                             className={`badge-status ${
@@ -210,8 +208,12 @@ export default function AdminDashboardPage() {
                         <span className="badge-role" style={{ fontSize: "10.5px", padding: "2px 6px" }}>
                           {prod.category}
                         </span>
-                        <span>•</span>
-                        <span>Stok: {prod.stock} unit</span>
+                        {prod.isFeatured && (
+                          <>
+                            <span>•</span>
+                            <span style={{ color: "#eab308", fontWeight: 600, fontSize: "11px" }}>⭐ Unggulan</span>
+                          </>
+                        )}
                       </div>
                     </div>
                     <span

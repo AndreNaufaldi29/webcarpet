@@ -225,7 +225,37 @@ body.dark .theme-btn:hover {
 .navbar-mobile-header-actions {
   display: none;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+}
+
+.mobile-theme-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #DCE4DF;
+  background: #F4F7F5;
+  color: #0A3B25;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobile-theme-btn:hover {
+  background: #E8EFEA;
+}
+
+body.dark .mobile-theme-btn {
+  background: #0D2C1E;
+  border-color: #2A6151;
+  color: #D8C2A4;
+}
+
+body.dark .mobile-theme-btn:hover {
+  background: #174230;
+  border-color: #D8C2A4;
 }
 
 .mobile-quick-quote-btn {
@@ -300,7 +330,7 @@ body.dark .menu-toggle.active {
   background: rgba(4, 18, 12, 0.65);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
-  z-index: 1000;
+  z-index: 99998;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
@@ -323,7 +353,7 @@ body.dark .menu-toggle.active {
   height: 100vh;
   height: 100dvh;
   background: #FFFFFF;
-  z-index: 1001;
+  z-index: 99999;
   display: flex;
   flex-direction: column;
   box-shadow: -10px 0 36px rgba(0, 0, 0, 0.22);
@@ -574,12 +604,13 @@ body.dark .drawer-info-contact {
 
 /* Drawer Footer Actions */
 .drawer-footer {
-  padding: 14px 18px 22px;
+  padding: 14px 18px calc(24px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid #EEF3F0;
   display: flex;
   flex-direction: column;
   gap: 10px;
   background: inherit;
+  margin-top: auto;
 }
 
 body.dark .drawer-footer {
@@ -7429,6 +7460,15 @@ body.dark .floating-whatsapp-status-dot {
   .floating-whatsapp-label {
     display: none;
   }
+}
+
+/* Hide floating WhatsApp completely when mobile drawer menu is open */
+body.drawer-open .floating-whatsapp-wrapper {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: scale(0.7) translateY(20px) !important;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease !important;
 }
 
 

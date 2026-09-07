@@ -300,41 +300,77 @@ body.dark .logo-box {
 ========================= */
 
 .admin-header {
-  height: 82px;
-
-  background: white;
-
+  height: 74px;
+  background: #ffffff;
   border-bottom: 1px solid #e8ebf2;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  padding: 0 34px;
+  padding: 0 28px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  box-sizing: border-box;
 }
 
-.breadcrumb {
+body.dark .admin-header {
+  background: #061A12;
+  border-bottom-color: #173E2C;
+}
+
+.admin-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.admin-header-title-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  flex: 1;
+}
+
+.breadcrumb,
+.admin-header-title-box .breadcrumb {
   display: block;
-
   font-size: 11px;
-
-  color: #94a3b8;
-
-  margin-bottom: 3px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #84998E;
+  margin: 0 0 2px;
+  line-height: 1.2;
 }
 
-.admin-header h1 {
-  margin: 0;
+body.dark .breadcrumb,
+body.dark .admin-header-title-box .breadcrumb {
+  color: #92AA9D;
+}
 
-  font-size: 20px;
-  font-weight: 700;
+.admin-header h1,
+.admin-page-heading-title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  color: #072016;
+  line-height: 1.25;
+}
+
+body.dark .admin-header h1,
+body.dark .admin-page-heading-title {
+  color: #FCF7F0;
 }
 
 .header-right {
   display: flex;
   align-items: center;
-
-  gap: 22px;
+  gap: 14px;
+  flex-shrink: 0;
 }
 
 .notification-button {
@@ -535,6 +571,11 @@ body.dark .logo-box {
 .stat-icon.purple {
   background: #f3e8ff;
   color: #9333ea;
+}
+
+.stat-icon.yellow {
+  background: #fef9c3;
+  color: #ca8a04;
 }
 
 .stat-card span {
@@ -1031,37 +1072,12 @@ body.dark .logo-box {
 
 @media (max-width: 480px) {
   .admin-header {
-    padding: 0 14px;
-    height: 62px;
-  }
-
-  .admin-header h1 {
-    font-size: 15px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 175px;
+    padding: 0 12px;
+    height: 64px;
   }
 
   .header-right {
-    gap: 8px;
-  }
-
-  .profile-avatar {
-    width: 34px;
-    height: 34px;
-    font-size: 13px;
-  }
-
-  .notification-button {
-    width: 34px;
-    height: 34px;
-  }
-
-  .admin-mobile-toggle,
-  .admin-mobile-menu {
-    width: 34px !important;
-    height: 34px !important;
+    gap: 6px;
   }
 }
 
@@ -6321,51 +6337,81 @@ body.dark .portfolio-admin-thumb-card {
 @media (max-width: 768px) {
   /* Admin Header */
   .admin-header {
-    height: 60px !important;
-    padding: 0 12px !important;
-    gap: 8px !important;
+    height: 68px !important;
+    padding: 0 14px !important;
+    gap: 10px !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 90 !important;
   }
 
   .admin-header-left {
-    gap: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
     min-width: 0 !important;
     flex: 1 1 auto !important;
     overflow: hidden !important;
   }
 
+  .admin-mobile-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    border-radius: 9px !important;
+    font-size: 18px !important;
+    flex-shrink: 0 !important;
+  }
+
   .admin-header-title-box {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
     min-width: 0 !important;
     flex: 1 1 auto !important;
     overflow: hidden !important;
   }
 
   .admin-header-title-box .breadcrumb {
-    font-size: 9.5px !important;
+    font-size: 10px !important;
+    letter-spacing: 0.05em !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     margin-bottom: 2px !important;
+    line-height: 1.15 !important;
   }
 
   .admin-page-heading-title {
-    font-size: 14px !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     max-width: 100% !important;
+    line-height: 1.25 !important;
   }
 
   .header-right {
-    gap: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
     flex-shrink: 0 !important;
   }
 
   .admin-theme-toggle-btn {
-    width: 36px !important;
-    height: 36px !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
     padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
     justify-content: center !important;
-    border-radius: 8px !important;
+    border-radius: 9px !important;
+    flex-shrink: 0 !important;
   }
 
   .admin-theme-toggle-btn .theme-text {
@@ -6373,19 +6419,26 @@ body.dark .portfolio-admin-thumb-card {
   }
 
   .notification-button {
-    width: 36px !important;
-    height: 36px !important;
-    border-radius: 8px !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 9px !important;
+    flex-shrink: 0 !important;
   }
 
   .admin-profile {
     padding: 0 !important;
+    flex-shrink: 0 !important;
   }
 
   .profile-avatar {
-    width: 36px !important;
-    height: 36px !important;
-    font-size: 13px !important;
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 14px !important;
+    flex-shrink: 0 !important;
   }
 
   .profile-info {
@@ -6492,6 +6545,42 @@ body.dark .portfolio-admin-thumb-card {
 }
 
 @media (max-width: 480px) {
+  .admin-header {
+    height: 64px !important;
+    padding: 0 10px !important;
+    gap: 8px !important;
+  }
+
+  .admin-header-left {
+    gap: 8px !important;
+  }
+
+  .admin-mobile-toggle {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+  }
+
+  .admin-page-heading-title {
+    font-size: 14px !important;
+  }
+
+  .admin-header-title-box .breadcrumb {
+    font-size: 9px !important;
+  }
+
+  .header-right {
+    gap: 6px !important;
+  }
+
+  .admin-theme-toggle-btn,
+  .notification-button,
+  .profile-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+  }
+
   .admin-quick-links-grid {
     grid-template-columns: 1fr 1fr !important;
     gap: 6px !important;

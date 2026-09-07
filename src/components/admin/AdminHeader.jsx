@@ -44,7 +44,6 @@ export default function AdminHeader({
 
   // Realtime Data for Notifications
   const [pendingTestimonials, setPendingTestimonials] = useState([]);
-  const [lowStockProducts, setLowStockProducts] = useState([]);
   const [hasUnread, setHasUnread] = useState(true);
 
   const notifRef = useRef(null);
@@ -84,19 +83,13 @@ export default function AdminHeader({
       const testimonials = getStoredTestimonials();
       const pending = testimonials.filter((t) => t.status === "Menunggu Persetujuan");
       setPendingTestimonials(pending);
-
-      const prods = getStoredProducts();
-      const lowStock = prods.filter((p) => Number(p.stock) <= 10);
-      setLowStockProducts(lowStock);
     };
 
     updateNotifs();
     const unsubTesti = subscribeTestimonials(updateNotifs);
-    const unsubProds = subscribeProducts(updateNotifs);
 
     return () => {
       unsubTesti();
-      unsubProds();
     };
   }, []);
 
@@ -114,7 +107,7 @@ export default function AdminHeader({
     return () => window.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
-  const totalAlerts = pendingTestimonials.length + lowStockProducts.length;
+  const totalAlerts = pendingTestimonials.length;
 
   const handleLogout = async () => {
     setShowLogoutModal(false);
@@ -228,27 +221,7 @@ export default function AdminHeader({
                     </Link>
                   )}
 
-                  {/* LOW STOCK NOTIF */}
-                  {lowStockProducts.length > 0 && (
-                    <Link
-                      href="/admin/produk"
-                      className="popover-item warning"
-                      onClick={() => setShowNotifications(false)}
-                    >
-                      <div className="popover-item-icon yellow">
-                        <FiAlertTriangle size={16} />
-                      </div>
-                      <div className="popover-item-content">
-                        <strong>
-                          {lowStockProducts.length} Produk Karpet Stok Menipis (≤10)
-                        </strong>
-                        <p>
-                          "{lowStockProducts[0]?.name}" sisa {lowStockProducts[0]?.stock} unit.
-                        </p>
-                        <span className="popover-time">Katalog Produk</span>
-                      </div>
-                    </Link>
-                  )}
+
 
                   {/* SYSTEM HEALTH NOTIF */}
                   <div className="popover-item info">

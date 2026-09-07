@@ -46,11 +46,14 @@ function Navbar() {
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = "hidden";
+      document.body.classList.add("drawer-open");
     } else {
       document.body.style.overflow = "";
+      document.body.classList.remove("drawer-open");
     }
     return () => {
       document.body.style.overflow = "";
+      document.body.classList.remove("drawer-open");
     };
   }, [menuOpen]);
 
@@ -145,6 +148,14 @@ function Navbar() {
 
           {/* Mobile Right Controls */}
           <div className="navbar-mobile-header-actions">
+            <button
+              className="theme-btn mobile-theme-btn"
+              onClick={toggleTheme}
+              aria-label="Toggle Theme"
+              title={darkMode ? "Ganti ke mode terang" : "Ganti ke mode gelap"}
+            >
+              {darkMode ? <FiSun /> : <FiMoon />}
+            </button>
             <button
               className={`menu-toggle ${menuOpen ? "active" : ""}`}
               onClick={() => setMenuOpen(!menuOpen)}
