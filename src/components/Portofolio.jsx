@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   FiArrowRight,
   FiMapPin,
-  FiStar,
   FiPlay,
 } from "react-icons/fi";
 import {
@@ -78,7 +77,6 @@ function Portofolio() {
     <section className="portfolio-section">
       <div className="portfolio-header">
         <span className="section-badge animate-badge-pop">
-          <FiStar size={12} />
           <span>PORTOFOLIO PROYEK TERBAIK</span>
         </span>
 

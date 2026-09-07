@@ -89,7 +89,6 @@ function Category() {
     <section className="category-section" id="kategori">
       <div className="section-header">
         <span className="section-badge animate-badge-pop">
-          <FiStar size={12} />
           <span>KATEGORI PRODUK</span>
         </span>
 

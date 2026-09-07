@@ -8,7 +8,6 @@ import {
   FiGrid,
   FiArrowRight,
   FiX,
-  FiStar,
   FiChevronLeft,
   FiChevronRight,
   FiCheck,
@@ -172,7 +171,6 @@ function Catalog() {
       {/* HEADER WITH SHIMMER BADGE */}
       <div className="catalog-header">
         <span className="section-badge animate-badge-pop">
-          <FiStar size={12} />
           <span>KATALOG PRODUK LENGKAP</span>
         </span>
 

@@ -8,7 +8,6 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiArrowRight,
-  FiStar,
   FiX,
   FiLayers,
 } from "react-icons/fi";
@@ -273,7 +272,6 @@ function HeroSearch() {
 
         <div className="hero-content">
           <div className="hero-badge animate-badge-pop">
-            <FiStar className="badge-sparkle-icon" />
             <span>{slides[current].badge || "KARPET BERKUALITAS PREMIUM"}</span>
           </div>
 

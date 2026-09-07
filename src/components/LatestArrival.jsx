@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   FiArrowRight,
   FiGrid,
-  FiStar,
 } from "react-icons/fi";
 import {
   getStoredProducts,
@@ -45,7 +44,6 @@ function LatestArrival() {
     <section className="arrival-section">
       <div className="arrival-header">
         <span className="section-badge animate-badge-pop">
-          <FiStar size={12} />
           <span>PRODUK TERBARU</span>
         </span>
 

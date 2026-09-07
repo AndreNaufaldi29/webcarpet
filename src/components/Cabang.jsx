@@ -12,7 +12,6 @@ import {
   FiMapPin,
   FiPhone,
   FiNavigation,
-  FiStar,
   FiCheckCircle,
   FiAward,
   FiSearch,
@@ -140,7 +139,6 @@ function Cabang() {
       {/* HEADER WITH SHIMMER BADGE */}
       <div className="branch-header">
         <span className="section-badge animate-badge-pop">
-          <FiStar size={12} />
           <span>JARINGAN & SHOWROOM RESMI</span>
         </span>
 

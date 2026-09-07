@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiArrowRight, FiStar } from "react-icons/fi";
+import { FiArrowRight } from "react-icons/fi";
 import {
   getStoredProducts,
   subscribeProducts,
@@ -41,7 +41,6 @@ function FeaturedCollection() {
     <section className="featured-section">
       <div className="featured-header">
         <span className="section-badge animate-badge-pop">
-          <FiStar size={12} />
           <span>KOLEKSI UNGGULAN</span>
         </span>
 
