@@ -2,6 +2,8 @@ import Portofolio from "../../components/Portofolio";
 import prisma from "@/lib/prisma";
 import { DEFAULT_SETTINGS } from "@/lib/settingsStore";
 
+export const revalidate = 180;
+
 export async function generateMetadata() {
   let settings = DEFAULT_SETTINGS;
 

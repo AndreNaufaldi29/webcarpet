@@ -79,19 +79,40 @@ export function getCategoryColor(cat, index = 0) {
   return COLOR_PALETTE[index % 6];
 }
 
-export async function syncCategoriesFromDatabase() {
+let inFlightCategoriesPromise = null;
+let lastCategoriesSyncTime = 0;
+const CACHE_TTL_MS = 60000;
+
+export async function syncCategoriesFromDatabase(force = false) {
   if (typeof window === "undefined") return DEFAULT_CATEGORIES;
-  try {
-    const res = await fetch("/api/categories");
-    const json = await res.json();
-    if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-      saveCategories(json.data);
-      return json.data;
-    }
-  } catch (err) {
-    console.warn("Gagal sinkron database kategori:", err);
+
+  const now = Date.now();
+  if (!force && now - lastCategoriesSyncTime < CACHE_TTL_MS) {
+    return getStoredCategories();
   }
-  return getStoredCategories();
+
+  if (inFlightCategoriesPromise) {
+    return inFlightCategoriesPromise;
+  }
+
+  inFlightCategoriesPromise = (async () => {
+    try {
+      const res = await fetch("/api/categories");
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        lastCategoriesSyncTime = Date.now();
+        saveCategories(json.data);
+        return json.data;
+      }
+    } catch (err) {
+      console.warn("Gagal sinkron database kategori:", err);
+    } finally {
+      inFlightCategoriesPromise = null;
+    }
+    return getStoredCategories();
+  })();
+
+  return inFlightCategoriesPromise;
 }
 
 export function getStoredCategories() {

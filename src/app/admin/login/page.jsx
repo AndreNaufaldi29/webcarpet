@@ -7,7 +7,6 @@ import Link from "next/link";
 import BrandLogo from "@/components/BrandLogo";
 import {
   login,
-  DEFAULT_ADMIN_ACCOUNTS,
   isAuthenticated,
 } from "@/lib/authStore";
 import {
@@ -24,7 +23,6 @@ import {
   FiArrowLeft,
   FiHelpCircle,
   FiCheck,
-  FiUserCheck,
 } from "react-icons/fi";
 
 function LoginFormInner() {
@@ -41,6 +39,10 @@ function LoginFormInner() {
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [showHelpModal, setShowHelpModal] = useState(false);
+
+  // Rate Limit / Lockout states
+  const [lockoutSeconds, setLockoutSeconds] = useState(0);
+  const [remainingAttempts, setRemainingAttempts] = useState(null);
 
   // Dark mode state
   const [darkMode, setDarkMode] = useState(false);
@@ -59,6 +61,24 @@ function LoginFormInner() {
     }
   }, [router, redirectTarget]);
 
+  // Interval countdown untuk masa lockout
+  useEffect(() => {
+    if (lockoutSeconds <= 0) return;
+
+    const timer = setInterval(() => {
+      setLockoutSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setErrorMsg("");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [lockoutSeconds]);
+
   const toggleTheme = () => {
     const nextDark = !darkMode;
     setDarkMode(nextDark);
@@ -66,8 +86,16 @@ function LoginFormInner() {
     localStorage.setItem("theme", nextDark ? "dark" : "light");
   };
 
+  const formatLockTime = (totalSeconds) => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (lockoutSeconds > 0) return;
+
     setErrorMsg("");
     setSuccessMsg("");
     setLoading(true);
@@ -76,11 +104,23 @@ function LoginFormInner() {
       const res = await login(email, password, rememberMe);
       if (res.success) {
         setSuccessMsg(res.message || "Login berhasil! Memuat dashboard...");
+        setRemainingAttempts(null);
+        setLockoutSeconds(0);
         setTimeout(() => {
           router.replace(redirectTarget);
         }, 500);
       } else {
-        setErrorMsg(res.message || "Email atau kata sandi tidak sesuai.");
+        if (res.isLocked || (res.lockRemainingSeconds && res.lockRemainingSeconds > 0)) {
+          setLockoutSeconds(res.lockRemainingSeconds || 900);
+          setErrorMsg(
+            res.message || "Akses login sementara dikunci demi keamanan sistem."
+          );
+        } else {
+          setErrorMsg(res.message || "Email atau kata sandi tidak sesuai.");
+          if (typeof res.remainingAttempts === "number") {
+            setRemainingAttempts(res.remainingAttempts);
+          }
+        }
         setLoading(false);
       }
     } catch (err) {
@@ -89,11 +129,7 @@ function LoginFormInner() {
     }
   };
 
-  const handleFillDemo = (acc) => {
-    setEmail(acc.email);
-    setPassword(acc.password);
-    setErrorMsg("");
-  };
+  const isFormLocked = lockoutSeconds > 0 || loading;
 
   return (
     <div className="admin-login-wrapper">
@@ -141,12 +177,29 @@ function LoginFormInner() {
         </div>
 
         {/* NOTIFICATIONS / ERROR ALERT */}
-        {errorMsg && (
+        {lockoutSeconds > 0 ? (
+          <div className="admin-login-alert error" role="alert" style={{ borderLeft: "4px solid #ef4444" }}>
+            <FiAlertCircle size={20} className="alert-icon" style={{ color: "#ef4444" }} />
+            <div className="alert-text">
+              <strong>Akses Dikunci Sementara (Anti Brute-Force)</strong>
+              <div style={{ marginTop: "4px", fontSize: "13px" }}>
+                Terlalu banyak percobaan gagal. Silakan tunggu <strong>{formatLockTime(lockoutSeconds)}</strong> sebelum mencoba kembali.
+              </div>
+            </div>
+          </div>
+        ) : errorMsg ? (
           <div className="admin-login-alert error" role="alert">
             <FiAlertCircle size={18} className="alert-icon" />
-            <div className="alert-text">{errorMsg}</div>
+            <div className="alert-text">
+              <div>{errorMsg}</div>
+              {remainingAttempts !== null && remainingAttempts <= 3 && remainingAttempts > 0 && (
+                <div style={{ marginTop: "4px", fontSize: "12px", opacity: 0.9, fontWeight: 600 }}>
+                  ⚠️ Peringatan: Sisa {remainingAttempts} percobaan sebelum akun dikunci 15 menit.
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        ) : null}
 
         {successMsg && (
           <div className="admin-login-alert success" role="alert">
@@ -171,7 +224,7 @@ function LoginFormInner() {
                 placeholder="admin@abcarpet.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
+                disabled={isFormLocked}
                 autoComplete="email"
               />
             </div>
@@ -200,7 +253,7 @@ function LoginFormInner() {
                 placeholder="Masukkan kata sandi..."
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
+                disabled={isFormLocked}
                 autoComplete="current-password"
               />
               <button
@@ -210,6 +263,7 @@ function LoginFormInner() {
                 tabIndex={-1}
                 title={showPassword ? "Sembunyikan sandi" : "Tampilkan sandi"}
                 aria-label="Toggle password visibility"
+                disabled={isFormLocked}
               >
                 {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
               </button>
@@ -223,7 +277,7 @@ function LoginFormInner() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                disabled={loading}
+                disabled={isFormLocked}
               />
               <span className="checkbox-custom">
                 {rememberMe && <FiCheck size={12} />}
@@ -235,13 +289,19 @@ function LoginFormInner() {
           {/* SUBMIT BUTTON */}
           <button
             type="submit"
-            className={`admin-login-submit-btn ${loading ? "loading" : ""}`}
-            disabled={loading}
+            className={`admin-login-submit-btn ${loading ? "loading" : ""} ${lockoutSeconds > 0 ? "locked" : ""}`}
+            disabled={isFormLocked}
+            style={lockoutSeconds > 0 ? { opacity: 0.6, cursor: "not-allowed" } : {}}
           >
             {loading ? (
               <>
                 <span className="login-btn-spinner" />
                 <span>Memverifikasi Akses...</span>
+              </>
+            ) : lockoutSeconds > 0 ? (
+              <>
+                <FiLock size={17} />
+                <span>Terkunci ({formatLockTime(lockoutSeconds)})</span>
               </>
             ) : (
               <>
@@ -251,34 +311,6 @@ function LoginFormInner() {
             )}
           </button>
         </form>
-
-        {/* DEMO ACCOUNTS QUICK SELECTOR */}
-        <div className="admin-login-demo-section">
-          <div className="demo-section-header">
-            <span className="demo-badge">AKSES CEPAT PENGUJIAN</span>
-            <span className="demo-desc">Pilih akun untuk mengisi otomatis:</span>
-          </div>
-
-          <div className="admin-login-demo-grid">
-            {DEFAULT_ADMIN_ACCOUNTS.map((acc) => (
-              <button
-                key={acc.id}
-                type="button"
-                className={`demo-pill-btn ${
-                  email === acc.email ? "active" : ""
-                }`}
-                onClick={() => handleFillDemo(acc)}
-                title={`Gunakan akun ${acc.name} (${acc.role})`}
-              >
-                <div className="demo-pill-avatar">{acc.avatar}</div>
-                <div className="demo-pill-text">
-                  <strong>{acc.name}</strong>
-                  <span>{acc.role}</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* FOOTER INFO */}
         <div className="admin-login-card-footer">

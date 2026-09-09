@@ -131,6 +131,14 @@ model Setting {
   promoActive     Boolean  @default(true)
   promoText       String?  @db.Text
   promoLink       String?
+  // Layanan Survei & Konsultasi Cabang
+  surveyActive      Boolean  @default(true)
+  surveyBadge       String?  @default("LAYANAN SURVEI & KONSULTASI GRATIS")
+  surveyTitle       String?  @default("Ingin Tim Kami Datang Langsung ke Lokasi Anda?")
+  surveyDescription String?  @db.Text
+  surveyButtonText  String?  @default("Jadwalkan Survei Sekarang")
+  surveyWhatsapp    String?  @default("08212128701")
+  surveyMessage     String?  @db.Text
   updatedAt       DateTime @updatedAt
 
   @@map("settings")

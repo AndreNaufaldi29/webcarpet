@@ -163,24 +163,45 @@ export function isVideoMedia(url = "", mediaType = "") {
   );
 }
 
-export async function syncPortfoliosFromDatabase() {
+let inFlightPortfoliosPromise = null;
+let lastPortfoliosSyncTime = 0;
+const CACHE_TTL_MS = 60000;
+
+export async function syncPortfoliosFromDatabase(force = false) {
   if (typeof window === "undefined") return DEFAULT_PORTFOLIOS;
-  try {
-    const res = await fetch("/api/portfolios");
-    const json = await res.json();
-    if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-      // Enrich with gallery images if missing
-      const enriched = json.data.map((item) => ({
-        ...item,
-        images: getPortfolioGalleryImages(item),
-      }));
-      savePortfolios(enriched);
-      return enriched;
-    }
-  } catch (err) {
-    console.warn("Gagal sinkron database portofolio:", err);
+
+  const now = Date.now();
+  if (!force && now - lastPortfoliosSyncTime < CACHE_TTL_MS) {
+    return getStoredPortfolios();
   }
-  return getStoredPortfolios();
+
+  if (inFlightPortfoliosPromise) {
+    return inFlightPortfoliosPromise;
+  }
+
+  inFlightPortfoliosPromise = (async () => {
+    try {
+      const res = await fetch("/api/portfolios");
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        lastPortfoliosSyncTime = Date.now();
+        // Enrich with gallery images if missing
+        const enriched = json.data.map((item) => ({
+          ...item,
+          images: getPortfolioGalleryImages(item),
+        }));
+        savePortfolios(enriched);
+        return enriched;
+      }
+    } catch (err) {
+      console.warn("Gagal sinkron database portofolio:", err);
+    } finally {
+      inFlightPortfoliosPromise = null;
+    }
+    return getStoredPortfolios();
+  })();
+
+  return inFlightPortfoliosPromise;
 }
 
 export function getStoredPortfolios() {

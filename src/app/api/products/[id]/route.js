@@ -16,7 +16,14 @@ export async function GET(request, { params }) {
       );
     }
 
-    return NextResponse.json({ success: true, data: product });
+    return NextResponse.json(
+      { success: true, data: product },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching product:", error);
     return NextResponse.json(

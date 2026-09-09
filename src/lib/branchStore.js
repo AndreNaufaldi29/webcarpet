@@ -38,19 +38,40 @@ export const DEFAULT_BRANCHES = [
 
 const STORAGE_KEY = "rumahindah_branches_data_v3";
 
-export async function syncBranchesFromDatabase() {
+let inFlightBranchesPromise = null;
+let lastBranchesSyncTime = 0;
+const CACHE_TTL_MS = 60000;
+
+export async function syncBranchesFromDatabase(force = false) {
   if (typeof window === "undefined") return DEFAULT_BRANCHES;
-  try {
-    const res = await fetch("/api/branches");
-    const json = await res.json();
-    if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-      saveBranches(json.data);
-      return json.data;
-    }
-  } catch (err) {
-    console.warn("Gagal sinkron database cabang:", err);
+
+  const now = Date.now();
+  if (!force && now - lastBranchesSyncTime < CACHE_TTL_MS) {
+    return getStoredBranches();
   }
-  return getStoredBranches();
+
+  if (inFlightBranchesPromise) {
+    return inFlightBranchesPromise;
+  }
+
+  inFlightBranchesPromise = (async () => {
+    try {
+      const res = await fetch("/api/branches");
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        lastBranchesSyncTime = Date.now();
+        saveBranches(json.data);
+        return json.data;
+      }
+    } catch (err) {
+      console.warn("Gagal sinkron database cabang:", err);
+    } finally {
+      inFlightBranchesPromise = null;
+    }
+    return getStoredBranches();
+  })();
+
+  return inFlightBranchesPromise;
 }
 
 export function getStoredBranches() {

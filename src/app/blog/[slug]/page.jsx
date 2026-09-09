@@ -2,6 +2,9 @@ import BlogDetail from "@/views/BlogDetail";
 import prisma from "@/lib/prisma";
 import { getArticleBySlug as getStaticArticleBySlug, getAllArticles } from "@/lib/blogData";
 
+export const revalidate = 180;
+export const dynamicParams = true;
+
 // Fetch article dynamically from PostgreSQL database (Prisma), with fallback to static data
 async function getArticleData(slug) {
   if (!slug) return null;

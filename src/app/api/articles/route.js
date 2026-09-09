@@ -95,10 +95,24 @@ export async function GET(request) {
             a.content.toLowerCase().includes(q)
         );
       }
-      return NextResponse.json({ success: true, data: filtered, isFallback: true });
+      return NextResponse.json(
+        { success: true, data: filtered, isFallback: true },
+        {
+          headers: {
+            "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600",
+          },
+        }
+      );
     }
 
-    return NextResponse.json({ success: true, data: articles });
+    return NextResponse.json(
+      { success: true, data: articles },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching articles:", error);
     return NextResponse.json(

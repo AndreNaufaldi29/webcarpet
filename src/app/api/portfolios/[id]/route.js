@@ -15,7 +15,14 @@ export async function GET(request, { params }) {
       );
     }
 
-    return NextResponse.json({ success: true, data: portfolio });
+    return NextResponse.json(
+      { success: true, data: portfolio },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching portfolio by ID:", error);
     return NextResponse.json(

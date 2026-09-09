@@ -449,32 +449,38 @@ function Cabang() {
       )}
 
       {/* CONSULTATION & ON-SITE SURVEY CTA BANNER */}
-      <div className="branch-cta-banner">
-        <div className="cta-content">
-          <span className="cta-badge">
-            <FiCalendar size={13} />
-            <span>LAYANAN SURVEI & KONSULTASI GRATIS</span>
-          </span>
-          <h3>Ingin Tim Kami Datang Langsung ke Lokasi Anda?</h3>
-          <p>
-            Dapatkan layanan ukur lokasi presisi, estimasi kebutuhan karpet, dan bawa ratusan sampel bahan langsung ke masjid, kantor, atau kediaman Anda di seluruh Jawa Timur.
-          </p>
+      {(settings.surveyActive === true || settings.surveyActive === "true" || settings.surveyActive === undefined) && (
+        <div className="branch-cta-banner">
+          <div className="cta-content">
+            <span className="cta-badge">
+              <FiCalendar size={13} />
+              <span>{settings.surveyBadge || "LAYANAN SURVEI & KONSULTASI GRATIS"}</span>
+            </span>
+            <h3>{settings.surveyTitle || "Ingin Tim Kami Datang Langsung ke Lokasi Anda?"}</h3>
+            <p>
+              {settings.surveyDescription ||
+                "Dapatkan layanan ukur lokasi presisi, estimasi kebutuhan karpet, dan bawa ratusan sampel bahan langsung ke masjid, kantor, atau kediaman Anda di seluruh Jawa Timur."}
+            </p>
+          </div>
+          <div className="cta-action">
+            <button
+              type="button"
+              className="cta-wa-btn"
+              onClick={() => {
+                const targetWa = (settings.surveyWhatsapp || settings.whatsapp || "0821-2128-701").replace(/[^0-9]/g, "");
+                const msg =
+                  settings.surveyMessage ||
+                  `Halo ${settings.companyName || "Rumah Indah Carpet"}, saya ingin mengajukan jadwal survei lokasi dan konsultasi sampel karpet.`;
+                const num = targetWa.startsWith("0") ? "62" + targetWa.slice(1) : targetWa;
+                window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, "_blank");
+              }}
+            >
+              <FaWhatsapp size={18} />
+              <span>{settings.surveyButtonText || "Jadwalkan Survei Sekarang"}</span>
+            </button>
+          </div>
         </div>
-        <div className="cta-action">
-          <button
-            type="button"
-            className="cta-wa-btn"
-            onClick={() => {
-              const msg = `Halo ${settings.companyName || "Rumah Indah Carpet"}, saya ingin mengajukan jadwal survei lokasi dan konsultasi sampel karpet.`;
-              const num = cleanWhatsapp.startsWith("0") ? "62" + cleanWhatsapp.slice(1) : cleanWhatsapp;
-              window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, "_blank");
-            }}
-          >
-            <FaWhatsapp size={18} />
-            <span>Jadwalkan Survei Sekarang</span>
-          </button>
-        </div>
-      </div>
+      )}
     </section>
   );
 }

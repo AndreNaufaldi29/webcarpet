@@ -1007,7 +1007,13 @@ export default function AdminUserPage() {
                   <div className="admin-current-password-box">
                     <div className="admin-password-display">
                       <FiLock style={{ color: "#64748b" }} />
-                      <span>{showOldPassword ? (selectedUser.password || "password123") : "••••••••"}</span>
+                      <span>
+                        {showOldPassword
+                          ? (selectedUser.password?.startsWith("pbkdf2:")
+                              ? "Terenkripsi PBKDF2 (Aman)"
+                              : (selectedUser.password || "password123"))
+                          : "••••••••"}
+                      </span>
                     </div>
                     <button
                       type="button"
@@ -1168,7 +1174,13 @@ export default function AdminUserPage() {
                         <span>{showViewPassword ? "Sembunyikan" : "Lihat"}</span>
                       </button>
                     </div>
-                    <strong>{showViewPassword ? (selectedUser.password || "password123") : "••••••••"}</strong>
+                    <strong>
+                      {showViewPassword
+                        ? (selectedUser.password?.startsWith("pbkdf2:")
+                            ? "Terenkripsi PBKDF2 (Aman)"
+                            : (selectedUser.password || "password123"))
+                        : "••••••••"}
+                    </strong>
                   </div>
                 </div>
 

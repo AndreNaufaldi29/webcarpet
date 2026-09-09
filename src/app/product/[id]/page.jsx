@@ -2,6 +2,9 @@ import ProductDetail from "../../../views/ProductDetail";
 import { INITIAL_PRODUCTS } from "@/lib/data";
 import prisma from "@/lib/prisma";
 
+export const revalidate = 180;
+export const dynamicParams = true;
+
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const productId = Number(resolvedParams?.id);

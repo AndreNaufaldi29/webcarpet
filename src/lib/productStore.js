@@ -134,22 +134,43 @@ const CATEGORY_DEFAULT_IMAGES = {
   "Aksesoris": "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=1200",
 };
 
+let inFlightProductsPromise = null;
+let lastProductsSyncTime = 0;
+const CACHE_TTL_MS = 60000;
+
 /**
  * Fetch data produk dari Prisma API dan simpan ke local cache
  */
-export async function syncProductsFromDatabase() {
+export async function syncProductsFromDatabase(force = false) {
   if (typeof window === "undefined") return DEFAULT_PRODUCTS;
-  try {
-    const res = await fetch("/api/products");
-    const json = await res.json();
-    if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-      saveProducts(json.data);
-      return json.data;
-    }
-  } catch (err) {
-    console.warn("Gagal sinkron database produk:", err);
+
+  const now = Date.now();
+  if (!force && now - lastProductsSyncTime < CACHE_TTL_MS) {
+    return getStoredProducts();
   }
-  return getStoredProducts();
+
+  if (inFlightProductsPromise) {
+    return inFlightProductsPromise;
+  }
+
+  inFlightProductsPromise = (async () => {
+    try {
+      const res = await fetch("/api/products");
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        lastProductsSyncTime = Date.now();
+        saveProducts(json.data);
+        return json.data;
+      }
+    } catch (err) {
+      console.warn("Gagal sinkron database produk:", err);
+    } finally {
+      inFlightProductsPromise = null;
+    }
+    return getStoredProducts();
+  })();
+
+  return inFlightProductsPromise;
 }
 
 /**

@@ -2,6 +2,9 @@ import PortfolioDetail from "../../../views/PortfolioDetail";
 import { INITIAL_PORTFOLIOS } from "@/lib/data";
 import prisma from "@/lib/prisma";
 
+export const revalidate = 180;
+export const dynamicParams = true;
+
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const portfolioId = Number(resolvedParams?.id);

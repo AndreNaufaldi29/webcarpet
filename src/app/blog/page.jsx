@@ -1,6 +1,8 @@
 import BlogList from "@/views/BlogList";
 import { ARTICLES } from "@/lib/blogData";
 
+export const revalidate = 180;
+
 export const metadata = {
   title: "Blog & Panduan Karpet Masjid, Hotel & Kantor | Rumah Indah Carpet",
   description:

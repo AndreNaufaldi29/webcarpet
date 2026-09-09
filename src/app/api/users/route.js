@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { hashPassword } from "@/lib/security";
 
 export async function GET() {
   try {
@@ -54,13 +55,16 @@ export async function POST(request) {
       );
     }
 
+    const rawPassword = password && password.trim() !== "" ? password.trim() : "password123";
+    const securePassword = hashPassword(rawPassword);
+
     let user;
     try {
       user = await prisma.user.create({
         data: {
           name: name.trim(),
           email: cleanEmail,
-          password: password || "password123",
+          password: securePassword,
           role,
           status,
           phone: phone || "-",
@@ -88,7 +92,7 @@ export async function POST(request) {
           data: {
             name: name.trim(),
             email: cleanEmail,
-            password: password || "password123",
+            password: securePassword,
             role,
             status,
             phone: phone || "-",
@@ -155,7 +159,7 @@ export async function PUT(request) {
     if (phone !== undefined) updateData.phone = phone;
     if (avatar) updateData.avatar = avatar;
     if (password && password.trim() !== "") {
-      updateData.password = password.trim();
+      updateData.password = hashPassword(password.trim());
     }
 
     const user = await prisma.user.update({

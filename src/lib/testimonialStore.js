@@ -107,21 +107,6 @@ const AVATAR_COLORS = [
   "#0284c7",
 ];
 
-export async function syncTestimonialsFromDatabase() {
-  if (typeof window === "undefined") return DEFAULT_TESTIMONIALS;
-  try {
-    const res = await fetch("/api/testimonials");
-    const json = await res.json();
-    if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-      saveTestimonials(json.data);
-      return json.data;
-    }
-  } catch (err) {
-    console.warn("Gagal sinkron database testimoni:", err);
-  }
-  return getStoredTestimonials();
-}
-
 export function getStoredTestimonials() {
   if (typeof window === "undefined") {
     return DEFAULT_TESTIMONIALS;
@@ -156,6 +141,42 @@ export function saveTestimonials(testimonials) {
   } catch (error) {
     console.error("Gagal menyimpan data testimonial:", error);
   }
+}
+
+let inFlightTestimonialsPromise = null;
+let lastTestimonialsSyncTime = 0;
+const CACHE_TTL_MS = 60000;
+
+export async function syncTestimonialsFromDatabase(force = false) {
+  if (typeof window === "undefined") return DEFAULT_TESTIMONIALS;
+
+  const now = Date.now();
+  if (!force && now - lastTestimonialsSyncTime < CACHE_TTL_MS) {
+    return getStoredTestimonials();
+  }
+
+  if (inFlightTestimonialsPromise) {
+    return inFlightTestimonialsPromise;
+  }
+
+  inFlightTestimonialsPromise = (async () => {
+    try {
+      const res = await fetch("/api/testimonials");
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        lastTestimonialsSyncTime = Date.now();
+        saveTestimonials(json.data);
+        return json.data;
+      }
+    } catch (err) {
+      console.warn("Gagal sinkron database testimoni:", err);
+    } finally {
+      inFlightTestimonialsPromise = null;
+    }
+    return getStoredTestimonials();
+  })();
+
+  return inFlightTestimonialsPromise;
 }
 
 export async function addTestimonial({

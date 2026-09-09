@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -255,18 +256,22 @@ function HeroSearch() {
       <div
         key={current}
         className={`hero-slide ${isTransitioning ? "slide-fade" : "slide-active"}`}
-        style={{
-          backgroundImage: `
-          linear-gradient(
-            90deg,
-            rgba(0,11,88,.92) 0%,
-            rgba(0,11,88,.65) 50%,
-            rgba(0,11,88,.25) 100%
-          ),
-          url(${slides[current].image})
-          `,
-        }}
       >
+        <Image
+          src={slides[current].image}
+          alt={slides[current].title}
+          fill
+          priority={current === 0}
+          fetchPriority={current === 0 ? "high" : "auto"}
+          quality={80}
+          sizes="100vw"
+          style={{
+            objectFit: "cover",
+            objectPosition: "center",
+            zIndex: 0,
+          }}
+        />
+
         {/* AMBIENT FLOATING LIGHTS */}
         <div className="hero-ambient-glow" />
 

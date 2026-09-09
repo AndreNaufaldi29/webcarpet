@@ -253,6 +253,15 @@ export default function PengaturanPage() {
 
             <button
               type="button"
+              className={`admin-tab-btn ${activeTab === "survey" ? "active" : ""}`}
+              onClick={() => setActiveTab("survey")}
+            >
+              <FiCalendar size={16} />
+              <span>Layanan Survei & Konsultasi</span>
+            </button>
+
+            <button
+              type="button"
               className="admin-tab-btn"
               onClick={() => fetchSettingsFromDB(true)}
               disabled={isSyncing}
@@ -841,6 +850,195 @@ export default function PengaturanPage() {
                     <span className="helper-text">
                       Kosongkan untuk otomatis mengarahkan ke kontak WhatsApp resmi.
                     </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* =========================================================
+                TAB 5: LAYANAN SURVEI & KONSULTASI GRATIS
+            ========================================================= */}
+            {activeTab === "survey" && (
+              <div className="admin-settings-card">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "12px", marginBottom: "20px" }}>
+                  <div>
+                    <h3 className="admin-settings-section-title">
+                      Banner Layanan Survei & Konsultasi Cabang
+                    </h3>
+                    <p className="admin-settings-section-subtitle" style={{ marginBottom: 0 }}>
+                      Konfigurasi banner ajakan survei on-site, estimasi karpet presisi, dan sampel gratis yang tampil di halaman <code>/cabang</code>.
+                    </p>
+                  </div>
+                </div>
+
+                {/* LIVE PREVIEW BANNER */}
+                <div style={{ marginBottom: "28px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                    <span style={{ fontSize: "13px", fontWeight: 600, color: "#94a3b8", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                      <FiEye size={14} color="#38bdf8" />
+                      <span>Pratinjau Live Banner di Website Publik:</span>
+                    </span>
+                    {(settings.surveyActive === false || settings.surveyActive === "false") && (
+                      <span style={{ fontSize: "12px", color: "#f87171", fontWeight: 600 }}>
+                        ⚠️ Banner berstatus NONAKTIF (tersembunyi di web publik)
+                      </span>
+                    )}
+                  </div>
+
+                  <div
+                    style={{
+                      background: "linear-gradient(135deg, rgba(42, 97, 81, 0.45) 0%, rgba(20, 50, 42, 0.65) 100%)",
+                      border: "1px solid rgba(42, 97, 81, 0.5)",
+                      borderRadius: "16px",
+                      padding: "32px 36px",
+                      opacity: (settings.surveyActive === false || settings.surveyActive === "false") ? 0.6 : 1,
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "24px" }}>
+                      <div style={{ flex: "1 1 500px" }}>
+                        <span
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            background: "rgba(255, 255, 255, 0.15)",
+                            padding: "5px 12px",
+                            borderRadius: "20px",
+                            fontSize: "11px",
+                            fontWeight: 700,
+                            color: "#86efac",
+                            letterSpacing: "0.5px",
+                            textTransform: "uppercase",
+                            marginBottom: "12px",
+                          }}
+                        >
+                          <FiCalendar size={13} />
+                          <span>{settings.surveyBadge || "LAYANAN SURVEI & KONSULTASI GRATIS"}</span>
+                        </span>
+
+                        <h3 style={{ fontSize: "22px", fontWeight: 700, color: "#ffffff", margin: "0 0 10px 0", lineHeight: 1.3 }}>
+                          {settings.surveyTitle || "Ingin Tim Kami Datang Langsung ke Lokasi Anda?"}
+                        </h3>
+
+                        <p style={{ fontSize: "14px", color: "#cbd5e1", lineHeight: 1.6, margin: 0, maxWidth: "680px" }}>
+                          {settings.surveyDescription ||
+                            "Dapatkan layanan ukur lokasi presisi, estimasi kebutuhan karpet, dan bawa ratusan sampel bahan langsung ke masjid, kantor, atau kediaman Anda di seluruh Jawa Timur."}
+                        </p>
+                      </div>
+
+                      <div style={{ flexShrink: 0 }}>
+                        <div
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            background: "#fef08a",
+                            color: "#1e293b",
+                            fontWeight: 700,
+                            fontSize: "14px",
+                            padding: "12px 22px",
+                            borderRadius: "10px",
+                          }}
+                        >
+                          <FaWhatsapp size={18} color="#16a34a" />
+                          <span>{settings.surveyButtonText || "Jadwalkan Survei Sekarang"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="admin-settings-grid">
+                  {/* TOGGLE VISIBILITAS BANNER */}
+                  <div className="admin-form-group">
+                    <label>Status Tampilkan Banner di Halaman Cabang</label>
+                    <select
+                      name="surveyActive"
+                      className="admin-select"
+                      value={settings.surveyActive ?? "true"}
+                      onChange={handleChange}
+                    >
+                      <option value="true">Aktif — Tampilkan Banner di Halaman Cabang</option>
+                      <option value="false">Nonaktif — Sembunyikan Banner</option>
+                    </select>
+                  </div>
+
+                  {/* TEKS BADGE */}
+                  <div className="admin-form-group">
+                    <label>Teks Badge Tag</label>
+                    <input
+                      type="text"
+                      name="surveyBadge"
+                      className="admin-input"
+                      placeholder="LAYANAN SURVEI & KONSULTASI GRATIS"
+                      value={settings.surveyBadge || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  {/* JUDUL UTAMA */}
+                  <div className="admin-form-group">
+                    <label>Judul Utama Banner <span className="required">*</span></label>
+                    <input
+                      type="text"
+                      name="surveyTitle"
+                      className="admin-input"
+                      placeholder="Ingin Tim Kami Datang Langsung ke Lokasi Anda?"
+                      value={settings.surveyTitle || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  {/* DESKRIPSI */}
+                  <div className="admin-form-group">
+                    <label>Deskripsi Layanan</label>
+                    <textarea
+                      name="surveyDescription"
+                      className="admin-textarea"
+                      rows={3}
+                      value={settings.surveyDescription || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="admin-form-row">
+                    {/* TEKS TOMBOL */}
+                    <div className="admin-form-group">
+                      <label>Teks Tombol WhatsApp</label>
+                      <input
+                        type="text"
+                        name="surveyButtonText"
+                        className="admin-input"
+                        value={settings.surveyButtonText || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    {/* NOMOR WHATSAPP */}
+                    <div className="admin-form-group">
+                      <label>Nomor WhatsApp Tujuan</label>
+                      <input
+                        type="text"
+                        name="surveyWhatsapp"
+                        className="admin-input"
+                        placeholder="Contoh: 0821-2128-701"
+                        value={settings.surveyWhatsapp || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  {/* TEMPLATE PESAN WA */}
+                  <div className="admin-form-group">
+                    <label>Template Pesan WhatsApp Otomatis</label>
+                    <textarea
+                      name="surveyMessage"
+                      className="admin-textarea"
+                      rows={2}
+                      value={settings.surveyMessage || ""}
+                      onChange={handleChange}
+                    />
                   </div>
                 </div>
               </div>

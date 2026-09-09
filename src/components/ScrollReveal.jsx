@@ -7,8 +7,7 @@ export default function ScrollReveal() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Beri sedikit delay untuk memastikan DOM komponen selesai ter-mount
-    const timeout = setTimeout(() => {
+    const rafId = requestAnimationFrame(() => {
       const observerCallback = (entries, observer) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
@@ -57,9 +56,9 @@ export default function ScrollReveal() {
         }
         observer.observe(el);
       });
-    }, 100);
+    });
 
-    return () => clearTimeout(timeout);
+    return () => cancelAnimationFrame(rafId);
   }, [pathname]);
 
   return null;

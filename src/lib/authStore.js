@@ -179,8 +179,6 @@ export async function login(email, password, rememberMe = true) {
 
       if (typeof window !== "undefined") {
         localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
-        const expiryDays = rememberMe ? 30 : 1;
-        setCookie(COOKIE_NAME, JSON.stringify(authPayload), expiryDays);
         window.dispatchEvent(new CustomEvent("abcarpet:auth_changed", { detail: authPayload }));
       }
 
@@ -189,10 +187,14 @@ export async function login(email, password, rememberMe = true) {
         user: data.user,
         message: data.message || `Selamat datang kembali, ${data.user.name}!`,
       };
-    } else if (res.status === 401 || res.status === 403 || res.status === 400) {
+    } else {
+      // Jika server merespons (400, 401, 403, 429, 500), teruskan pesan dan data rate limit
       return {
         success: false,
         message: data.error || "Email atau kata sandi yang Anda masukkan salah!",
+        isLocked: data.isLocked || false,
+        remainingAttempts: data.remainingAttempts,
+        lockRemainingSeconds: data.lockRemainingSeconds || 0,
       };
     }
   } catch (err) {

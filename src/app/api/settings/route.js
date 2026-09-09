@@ -37,11 +37,27 @@ export async function GET() {
           promoActive: true,
           promoText: "🎉 Dapatkan Diskon Spesial Karpet Masjid & Free Obras dari Rumah Indah Carpet! Hubungi Kami Sekarang.",
           promoLink: "https://wa.me/628212128701",
+          surveyActive: true,
+          surveyBadge: "LAYANAN SURVEI & KONSULTASI GRATIS",
+          surveyTitle: "Ingin Tim Kami Datang Langsung ke Lokasi Anda?",
+          surveyDescription:
+            "Dapatkan layanan ukur lokasi presisi, estimasi kebutuhan karpet, dan bawa ratusan sampel bahan langsung ke masjid, kantor, atau kediaman Anda di seluruh Jawa Timur.",
+          surveyButtonText: "Jadwalkan Survei Sekarang",
+          surveyWhatsapp: "08212128701",
+          surveyMessage:
+            "Halo Rumah Indah Carpet, saya ingin mengajukan jadwal survei lokasi dan konsultasi sampel karpet.",
         },
       });
     }
 
-    return NextResponse.json({ success: true, data: setting });
+    return NextResponse.json(
+      { success: true, data: setting },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching settings:", error);
     return NextResponse.json(
@@ -78,10 +94,19 @@ export async function POST(request) {
       promoActive,
       promoText,
       promoLink,
+      surveyActive,
+      surveyBadge,
+      surveyTitle,
+      surveyDescription,
+      surveyButtonText,
+      surveyWhatsapp,
+      surveyMessage,
     } = body;
 
     const isPromoActive =
       promoActive === true || promoActive === "true";
+    const isSurveyActive =
+      surveyActive === true || surveyActive === "true";
 
     const setting = await prisma.setting.upsert({
       where: { id: 1 },
@@ -109,6 +134,13 @@ export async function POST(request) {
         promoActive: isPromoActive,
         promoText,
         promoLink,
+        surveyActive: isSurveyActive,
+        surveyBadge,
+        surveyTitle,
+        surveyDescription,
+        surveyButtonText,
+        surveyWhatsapp,
+        surveyMessage,
       },
       create: {
         id: 1,
@@ -135,6 +167,13 @@ export async function POST(request) {
         promoActive: isPromoActive,
         promoText,
         promoLink,
+        surveyActive: isSurveyActive,
+        surveyBadge,
+        surveyTitle,
+        surveyDescription,
+        surveyButtonText,
+        surveyWhatsapp,
+        surveyMessage,
       },
     });
 

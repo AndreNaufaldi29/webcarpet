@@ -34,36 +34,69 @@ export const DEFAULT_SETTINGS = {
   promoActive: "true",
   promoText: "🎉 Dapatkan Diskon Spesial Karpet Masjid & Free Obras dari Rumah Indah Carpet! Hubungi Kami Sekarang.",
   promoLink: "https://wa.me/628212128701",
+
+  // Layanan Survei & Konsultasi Cabang
+  surveyActive: "true",
+  surveyBadge: "LAYANAN SURVEI & KONSULTASI GRATIS",
+  surveyTitle: "Ingin Tim Kami Datang Langsung ke Lokasi Anda?",
+  surveyDescription:
+    "Dapatkan layanan ukur lokasi presisi, estimasi kebutuhan karpet, dan bawa ratusan sampel bahan langsung ke masjid, kantor, atau kediaman Anda di seluruh Jawa Timur.",
+  surveyButtonText: "Jadwalkan Survei Sekarang",
+  surveyWhatsapp: "08212128701",
+  surveyMessage:
+    "Halo Rumah Indah Carpet, saya ingin mengajukan jadwal survei lokasi dan konsultasi sampel karpet.",
 };
 
 const STORAGE_KEY = "rumahindah_website_settings_v3";
 
+let inFlightSettingsPromise = null;
+let lastSettingsSyncTime = 0;
+const CACHE_TTL_MS = 60000;
+
 /**
  * Fetch pengaturan terbaru dari database Prisma
  */
-export async function syncSettingsFromDatabase() {
+export async function syncSettingsFromDatabase(force = false) {
   if (typeof window === "undefined") return DEFAULT_SETTINGS;
-  try {
-    const res = await fetch("/api/settings");
-    const json = await res.json();
-    if (json.success && json.data) {
-      const merged = {
-        ...DEFAULT_SETTINGS,
-        ...json.data,
-        promoActive: String(json.data.promoActive),
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-      window.dispatchEvent(
-        new CustomEvent("abcarpet:settings_updated", {
-          detail: merged,
-        })
-      );
-      return merged;
-    }
-  } catch (err) {
-    console.warn("Gagal sinkron database pengaturan:", err);
+
+  const now = Date.now();
+  if (!force && now - lastSettingsSyncTime < CACHE_TTL_MS) {
+    return getStoredSettings();
   }
-  return getStoredSettings();
+
+  if (inFlightSettingsPromise) {
+    return inFlightSettingsPromise;
+  }
+
+  inFlightSettingsPromise = (async () => {
+    try {
+      const res = await fetch("/api/settings");
+      const json = await res.json();
+      if (json.success && json.data) {
+        lastSettingsSyncTime = Date.now();
+        const merged = {
+          ...DEFAULT_SETTINGS,
+          ...json.data,
+          promoActive: String(json.data.promoActive),
+          surveyActive: String(json.data.surveyActive ?? true),
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        window.dispatchEvent(
+          new CustomEvent("abcarpet:settings_updated", {
+            detail: merged,
+          })
+        );
+        return merged;
+      }
+    } catch (err) {
+      console.warn("Gagal sinkron database pengaturan:", err);
+    } finally {
+      inFlightSettingsPromise = null;
+    }
+    return getStoredSettings();
+  })();
+
+  return inFlightSettingsPromise;
 }
 
 /**
@@ -198,6 +231,7 @@ export async function deleteSeoSettings() {
         ...cleared,
         ...result.data,
         promoActive: String(result.data.promoActive),
+        surveyActive: String(result.data.surveyActive ?? true),
       };
       if (typeof window !== "undefined") {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));

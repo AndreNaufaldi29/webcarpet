@@ -20,7 +20,14 @@ export async function GET(request) {
       orderBy: { id: "asc" },
     });
 
-    return NextResponse.json({ success: true, data: branches });
+    return NextResponse.json(
+      { success: true, data: branches },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching branches:", error);
     return NextResponse.json(

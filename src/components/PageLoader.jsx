@@ -13,7 +13,7 @@ export default function PageLoader() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 450); // slight smooth delay for seamless transition feel
+    }, 80);
 
     return () => clearTimeout(timer);
   }, [pathname, searchParams]);

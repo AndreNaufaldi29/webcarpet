@@ -1,21 +1,32 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { verifySessionToken } from "@/lib/security";
 
 export async function POST(request) {
   try {
     const sessionCookie = request.cookies.get("abcarpet_admin_session")?.value;
     if (sessionCookie) {
       try {
-        const parsed = JSON.parse(sessionCookie);
-        if (parsed?.user?.id) {
+        let user = null;
+        const verified = verifySessionToken(sessionCookie);
+        if (verified?.uid) {
+          user = { id: verified.uid, name: verified.name, role: verified.role };
+        } else {
+          try {
+            const parsed = JSON.parse(sessionCookie);
+            if (parsed?.user?.id) user = parsed.user;
+          } catch {}
+        }
+
+        if (user?.id) {
           await prisma.adminLog.create({
             data: {
-              userId: parsed.user.id,
-              userName: parsed.user.name || "Admin",
-              userRole: parsed.user.role || "Admin",
+              userId: user.id,
+              userName: user.name || "Admin",
+              userRole: user.role || "Admin",
               action: "LOGOUT",
               module: "Auth",
-              description: `${parsed.user.role || "Admin"} ${parsed.user.name || ""} berhasil keluar dari Admin Panel`,
+              description: `${user.role || "Admin"} ${user.name || ""} berhasil keluar dari Admin Panel`,
               ipAddress: "127.0.0.1",
             },
           });
@@ -37,6 +48,7 @@ export async function POST(request) {
       path: "/",
       maxAge: 0,
       expires: new Date(0),
+      httpOnly: true,
       sameSite: "lax",
     });
 
@@ -50,8 +62,10 @@ export async function POST(request) {
       path: "/",
       maxAge: 0,
       expires: new Date(0),
+      httpOnly: true,
       sameSite: "lax",
     });
     return response;
   }
 }
+

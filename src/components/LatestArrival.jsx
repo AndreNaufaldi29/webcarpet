@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
@@ -61,7 +62,7 @@ function LatestArrival() {
           const coverImage =
             (Array.isArray(item.images) && item.images[0]) ||
             item.image ||
-            "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200";
+            "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=600";
 
           return (
             <div
@@ -70,10 +71,14 @@ function LatestArrival() {
               style={{ animationDelay: `${index * 0.08}s` }}
             >
               <div className="arrival-image">
-                <img
+                <Image
                   src={coverImage}
                   alt={item.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  quality={75}
                   loading="lazy"
+                  style={{ objectFit: "cover" }}
                 />
 
                 <span className="arrival-badge">

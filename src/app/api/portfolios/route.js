@@ -24,7 +24,14 @@ export async function GET(request) {
       orderBy: { id: "asc" },
     });
 
-    return NextResponse.json({ success: true, data: portfolios });
+    return NextResponse.json(
+      { success: true, data: portfolios },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching portfolios:", error);
     return NextResponse.json(
