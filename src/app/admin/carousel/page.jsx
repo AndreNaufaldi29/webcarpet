@@ -546,51 +546,20 @@ export default function CarouselAdminPage() {
           </div>
 
           {/* LIVE HERO PREVIEW SECTION */}
-          <div
-            style={{
-              background: "#0A3B25",
-              border: "1px solid #2A6151",
-              borderRadius: "20px",
-              padding: "24px",
-              marginBottom: "28px",
-              color: "#FCF7F0",
-              boxShadow: "0 12px 35px rgba(10, 59, 37, 0.2)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "18px",
-                flexWrap: "wrap",
-                gap: "12px",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <FiEye size={20} color="#D8C2A4" />
-                <h3 style={{ margin: 0, fontSize: "17px", fontWeight: 700, color: "#FCF7F0" }}>
+          <div className="admin-carousel-preview-card">
+            <div className="admin-carousel-preview-header">
+              <div className="admin-carousel-preview-title-wrap">
+                <FiEye size={20} className="admin-carousel-preview-title-icon" />
+                <h3 className="admin-carousel-preview-title">
                   Live Preview Banner Hero (Tampilan Pengunjung)
                 </h3>
               </div>
 
-              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <div className="admin-carousel-preview-actions">
                 <button
                   type="button"
                   onClick={() => setPreviewDevice("desktop")}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    padding: "6px 14px",
-                    borderRadius: "8px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    border: "1px solid #2A6151",
-                    background: previewDevice === "desktop" ? "#2A6151" : "transparent",
-                    color: previewDevice === "desktop" ? "#FCF7F0" : "#B2B7AA",
-                    cursor: "pointer",
-                  }}
+                  className={`admin-carousel-device-btn ${previewDevice === "desktop" ? "active" : ""}`}
                 >
                   <FiMonitor size={14} />
                   <span>Desktop</span>
@@ -599,19 +568,7 @@ export default function CarouselAdminPage() {
                 <button
                   type="button"
                   onClick={() => setPreviewDevice("mobile")}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    padding: "6px 14px",
-                    borderRadius: "8px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    border: "1px solid #2A6151",
-                    background: previewDevice === "mobile" ? "#2A6151" : "transparent",
-                    color: previewDevice === "mobile" ? "#FCF7F0" : "#B2B7AA",
-                    cursor: "pointer",
-                  }}
+                  className={`admin-carousel-device-btn ${previewDevice === "mobile" ? "active" : ""}`}
                 >
                   <FiSmartphone size={14} />
                   <span>Mobile</span>
@@ -620,19 +577,7 @@ export default function CarouselAdminPage() {
                 <Link
                   href="/"
                   target="_blank"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    padding: "6px 14px",
-                    borderRadius: "8px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    background: "rgba(216, 194, 164, 0.15)",
-                    color: "#D8C2A4",
-                    border: "1px solid rgba(216, 194, 164, 0.3)",
-                    textDecoration: "none",
-                  }}
+                  className="admin-carousel-ext-link"
                 >
                   <span>Buka Website Asli</span>
                   <FiExternalLink size={12} />
@@ -642,18 +587,11 @@ export default function CarouselAdminPage() {
 
             {/* PREVIEW FRAME */}
             <div
+              className="admin-carousel-preview-frame"
               style={{
                 maxWidth: previewDevice === "mobile" ? "380px" : "100%",
-                margin: "0 auto",
-                borderRadius: "16px",
-                overflow: "hidden",
-                position: "relative",
                 aspectRatio: previewDevice === "mobile" ? "9 / 12" : "16 / 7",
                 minHeight: previewDevice === "mobile" ? "460px" : "320px",
-                background: "#061A12",
-                boxShadow: "0 10px 30px rgba(0, 0, 0, 0.4)",
-                border: "1px solid #2A6151",
-                transition: "all 0.3s ease",
               }}
             >
               {/* Background image */}
@@ -980,23 +918,10 @@ export default function CarouselAdminPage() {
             <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
               <button
                 type="button"
-                className="admin-btn-secondary"
+                className="admin-carousel-sync-btn"
                 onClick={() => fetchSlidesFromDB(true)}
                 disabled={isSyncing}
                 title="Sinkronkan dengan Database PostgreSQL"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "9px 15px",
-                  background: "rgba(59, 130, 246, 0.12)",
-                  border: "1px solid rgba(59, 130, 246, 0.3)",
-                  color: "#60a5fa",
-                  borderRadius: "8px",
-                  fontWeight: 600,
-                  fontSize: "13px",
-                  cursor: isSyncing ? "not-allowed" : "pointer",
-                }}
               >
                 <FiRefreshCw className={isSyncing ? "spin-icon" : ""} />
                 <span>{isSyncing ? "Menyinkronkan..." : "Sinkron DB"}</span>
@@ -1004,22 +929,9 @@ export default function CarouselAdminPage() {
 
               <button
                 type="button"
-                className="admin-btn-secondary"
+                className="admin-carousel-reset-btn"
                 onClick={() => setShowResetModal(true)}
                 title="Kembalikan ke slide bawaan"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "9px 15px",
-                  background: "rgba(239, 68, 68, 0.1)",
-                  border: "1px solid rgba(239, 68, 68, 0.25)",
-                  color: "#ef4444",
-                  borderRadius: "8px",
-                  fontWeight: 600,
-                  fontSize: "13px",
-                  cursor: "pointer",
-                }}
               >
                 <span>Reset Bawaan</span>
               </button>
@@ -1065,16 +977,7 @@ export default function CarouselAdminPage() {
                       <FiArrowUp size={14} />
                     </button>
 
-                    <span
-                      style={{
-                        fontSize: "12px",
-                        fontWeight: 800,
-                        color: "#2A6151",
-                        background: "rgba(42, 97, 81, 0.12)",
-                        padding: "2px 8px",
-                        borderRadius: "6px",
-                      }}
-                    >
+                    <span className="admin-carousel-order-badge">
                       #{idx + 1}
                     </span>
 
@@ -1210,16 +1113,9 @@ export default function CarouselAdminPage() {
                       type="button"
                       onClick={() => handleToggleStatus(slide)}
                       title={slide.status === "Aktif" ? "Nonaktifkan Slide" : "Aktifkan Slide"}
-                      style={{
-                        padding: "7px 12px",
-                        borderRadius: "8px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        border: slide.status === "Aktif" ? "1px solid #fde68a" : "1px solid #a7f3d0",
-                        background: slide.status === "Aktif" ? "rgba(245, 158, 11, 0.15)" : "rgba(16, 185, 129, 0.15)",
-                        color: slide.status === "Aktif" ? "#d97706" : "#10b981",
-                        cursor: "pointer",
-                      }}
+                      className={`admin-carousel-action-btn ${
+                        slide.status === "Aktif" ? "status-active" : "status-inactive"
+                      }`}
                     >
                       {slide.status === "Aktif" ? "Nonaktifkan" : "Aktifkan"}
                     </button>
@@ -1228,19 +1124,7 @@ export default function CarouselAdminPage() {
                       type="button"
                       onClick={() => handleOpenEdit(slide)}
                       title="Edit Slide"
-                      style={{
-                        padding: "7px 12px",
-                        borderRadius: "8px",
-                        border: "1px solid #D8C2A4",
-                        background: "rgba(216, 194, 164, 0.15)",
-                        color: "#D8C2A4",
-                        fontWeight: 600,
-                        fontSize: "12px",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        cursor: "pointer",
-                      }}
+                      className="admin-carousel-action-btn edit"
                     >
                       <FiEdit2 size={14} />
                       <span>Edit</span>
@@ -1250,14 +1134,7 @@ export default function CarouselAdminPage() {
                       type="button"
                       onClick={() => handleOpenDelete(slide)}
                       title="Hapus Slide"
-                      style={{
-                        padding: "7px 10px",
-                        borderRadius: "8px",
-                        border: "1px solid rgba(239, 68, 68, 0.3)",
-                        background: "rgba(239, 68, 68, 0.1)",
-                        color: "#ef4444",
-                        cursor: "pointer",
-                      }}
+                      className="admin-carousel-action-btn delete"
                     >
                       <FiTrash2 size={15} />
                     </button>

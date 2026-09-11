@@ -6819,6 +6819,357 @@ body.dark .admin-carousel-empty-state p {
   color: #B2B7AA !important;
 }
 
+/* =========================================================
+   CAROUSEL LIVE PREVIEW & ACTION BUTTONS (WHITE & DARK MODE)
+   ========================================================= */
+.admin-carousel-preview-card {
+  background: #ffffff;
+  border: 1px solid #E5EAF1;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+}
+
+body.dark .admin-carousel-preview-card {
+  background: #0A3B25;
+  border-color: #2A6151;
+  color: #FCF7F0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.admin-carousel-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-carousel-preview-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-carousel-preview-title-icon {
+  color: #2A6151;
+  transition: color 0.2s ease;
+}
+
+body.dark .admin-carousel-preview-title-icon {
+  color: #D8C2A4;
+}
+
+.admin-carousel-preview-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0A3B25;
+}
+
+body.dark .admin-carousel-preview-title {
+  color: #FCF7F0;
+}
+
+.admin-carousel-preview-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-carousel-device-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid #D8DED9;
+  background: #F4F7F5;
+  color: #5A6D63;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-carousel-device-btn:hover {
+  background: #EEF3F0;
+  color: #0A3B25;
+  border-color: #cbd5e1;
+}
+
+.admin-carousel-device-btn.active {
+  background: #0A3B25;
+  color: #FCF7F0;
+  border-color: #0A3B25;
+  box-shadow: 0 2px 6px rgba(10, 59, 37, 0.2);
+}
+
+body.dark .admin-carousel-device-btn {
+  background: #072016;
+  border-color: #2A6151;
+  color: #B2B7AA;
+}
+
+body.dark .admin-carousel-device-btn:hover {
+  background: #0d3625;
+  color: #FCF7F0;
+  border-color: #3b826b;
+}
+
+body.dark .admin-carousel-device-btn.active {
+  background: #2A6151;
+  color: #FCF7F0;
+  border-color: #D8C2A4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.admin-carousel-ext-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(42, 97, 81, 0.08);
+  color: #2A6151;
+  border: 1px solid rgba(42, 97, 81, 0.25);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.admin-carousel-ext-link:hover {
+  background: rgba(42, 97, 81, 0.15);
+  color: #0A3B25;
+  border-color: #2A6151;
+}
+
+body.dark .admin-carousel-ext-link {
+  background: rgba(216, 194, 164, 0.15);
+  color: #D8C2A4;
+  border-color: rgba(216, 194, 164, 0.35);
+}
+
+body.dark .admin-carousel-ext-link:hover {
+  background: rgba(216, 194, 164, 0.25);
+  color: #FCF7F0;
+  border-color: #D8C2A4;
+}
+
+.admin-carousel-preview-frame {
+  margin: 0 auto;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  background: #061A12;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  border: 1px solid #D8DED9;
+  transition: all 0.3s ease;
+}
+
+body.dark .admin-carousel-preview-frame {
+  border-color: #2A6151;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+}
+
+/* Slide Action Buttons */
+.admin-carousel-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.admin-carousel-action-btn.edit {
+  background: #F4F7F5;
+  color: #1b4332;
+  border-color: #cbd5e1;
+}
+
+.admin-carousel-action-btn.edit:hover {
+  background: #E2EBE5;
+  color: #08281b;
+  border-color: #2A6151;
+}
+
+body.dark .admin-carousel-action-btn.edit {
+  background: rgba(216, 194, 164, 0.12);
+  color: #D8C2A4;
+  border-color: rgba(216, 194, 164, 0.3);
+}
+
+body.dark .admin-carousel-action-btn.edit:hover {
+  background: rgba(216, 194, 164, 0.22);
+  color: #FCF7F0;
+  border-color: #D8C2A4;
+}
+
+.admin-carousel-action-btn.status-active {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.admin-carousel-action-btn.status-active:hover {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fcd34d;
+}
+
+body.dark .admin-carousel-action-btn.status-active {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+body.dark .admin-carousel-action-btn.status-active:hover {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fef3c7;
+}
+
+.admin-carousel-action-btn.status-inactive {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.admin-carousel-action-btn.status-inactive:hover {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #6ee7b7;
+}
+
+body.dark .admin-carousel-action-btn.status-inactive {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+body.dark .admin-carousel-action-btn.status-inactive:hover {
+  background: rgba(16, 185, 129, 0.25);
+  color: #ecfdf5;
+}
+
+.admin-carousel-action-btn.delete {
+  background: #fef2f2;
+  color: #ef4444;
+  border-color: #fecaca;
+  padding: 7px 11px;
+}
+
+.admin-carousel-action-btn.delete:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #f87171;
+}
+
+body.dark .admin-carousel-action-btn.delete {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+body.dark .admin-carousel-action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  border-color: #ef4444;
+}
+
+.admin-carousel-order-badge {
+  font-size: 12px;
+  font-weight: 800;
+  color: #2A6151;
+  background: rgba(42, 97, 81, 0.12);
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+body.dark .admin-carousel-order-badge {
+  color: #D8C2A4;
+  background: rgba(216, 194, 164, 0.12);
+}
+
+.admin-carousel-sync-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 15px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #2563eb;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-carousel-sync-btn:hover {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+}
+
+.admin-carousel-sync-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+body.dark .admin-carousel-sync-btn {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+}
+
+body.dark .admin-carousel-sync-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+
+.admin-carousel-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 15px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-carousel-reset-btn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+body.dark .admin-carousel-reset-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+}
+
+body.dark .admin-carousel-reset-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
 /* Modals Dark Mode Support */
 body.dark .admin-modal-box {
   background: #0A3B25 !important;
