@@ -115,10 +115,19 @@ export async function middleware(request) {
 
   // Kasus 1: Pengguna mengakses halaman login
   if (pathname === "/admin/login") {
-    // Jika sudah login valid, langsung alihkan ke dashboard admin
+    // Jika sudah login valid, langsung alihkan ke redirect target atau dashboard admin
     if (hasValidSession) {
-      const adminUrl = new URL("/admin", request.url);
-      return applySecurityHeaders(NextResponse.redirect(adminUrl));
+      const redirectTarget = request.nextUrl.searchParams.get("redirect") || "/admin";
+      let targetUrl;
+      try {
+        targetUrl = new URL(redirectTarget, request.url);
+        if (!targetUrl.pathname.startsWith("/admin") || targetUrl.pathname === "/admin/login") {
+          targetUrl = new URL("/admin", request.url);
+        }
+      } catch {
+        targetUrl = new URL("/admin", request.url);
+      }
+      return applySecurityHeaders(NextResponse.redirect(targetUrl));
     }
     // Jika belum login, izinkan akses ke halaman login
     return applySecurityHeaders(NextResponse.next());

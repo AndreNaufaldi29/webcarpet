@@ -79,28 +79,30 @@ export function getStoredAuth() {
 
   try {
     const raw = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (!raw) {
-      // Coba periksa cookie jika localStorage kosong
-      const cookieSession = getCookie(COOKIE_NAME);
-      if (cookieSession) {
-        try {
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.email && parsed.token) {
+        return parsed;
+      }
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+      return null;
+    }
+
+    // Coba periksa cookie jika localStorage kosong
+    const cookieSession = getCookie(COOKIE_NAME);
+    if (cookieSession) {
+      try {
+        if (cookieSession.startsWith("{")) {
           const parsedCookie = JSON.parse(cookieSession);
           if (parsedCookie && parsedCookie.email && parsedCookie.token) {
             localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(parsedCookie));
             return parsedCookie;
           }
-        } catch {
-          deleteCookie(COOKIE_NAME);
-          return null;
         }
+      } catch {
+        // Abaikan jika cookie berformat raw token string (bukan JSON)
       }
-      return null;
     }
-    const parsed = JSON.parse(raw);
-    if (parsed && parsed.email && parsed.token) {
-      return parsed;
-    }
-    localStorage.removeItem(AUTH_STORAGE_KEY);
     return null;
   } catch {
     return null;

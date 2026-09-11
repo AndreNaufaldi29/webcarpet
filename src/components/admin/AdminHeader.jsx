@@ -336,11 +336,10 @@ export default function AdminHeader({
 
                   <Link
                     href="/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="profile-dropdown-link"
-                    onClick={() => {
-                      setShowProfileMenu(false);
-                      logout();
-                    }}
+                    onClick={() => setShowProfileMenu(false)}
                   >
                     <FiExternalLink size={15} />
                     <span>Kunjungi Website Publik</span>

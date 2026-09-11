@@ -35,6 +35,8 @@ import {
   FiTrash2,
   FiX,
   FiUpload,
+  FiCalendar,
+  FiEye,
 } from "react-icons/fi";
 import { FaTiktok, FaWhatsapp, FaYoutube } from "react-icons/fa";
 

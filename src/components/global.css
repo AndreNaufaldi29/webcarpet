@@ -5191,11 +5191,14 @@ body.dark .portfolio-grid {
   display: flex;
   gap: 10px;
   margin-top: auto;
-  align-items: center;
+  align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .location-btn {
   flex: 1 1 0;
+  min-width: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -5210,6 +5213,13 @@ body.dark .portfolio-grid {
   cursor: pointer;
   transition: all 0.25s ease;
   text-decoration: none;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.location-btn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -5223,6 +5233,7 @@ body.dark .portfolio-grid {
 
 .wa-btn {
   flex: 1 1 0;
+  min-width: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -5237,8 +5248,15 @@ body.dark .portfolio-grid {
   cursor: pointer;
   transition: all 0.25s ease;
   text-decoration: none;
-  white-space: nowrap;
   box-shadow: 0 4px 14px rgba(10, 59, 37, 0.2);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.wa-btn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .wa-btn:hover {
@@ -7062,53 +7080,6 @@ body.dark .branch-type-badge {
 
 .branch-card:hover .branch-info .info-icon {
   transform: scale(1.2);
-}
-
-/* Branch Buttons */
-.location-btn,
-.wa-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 18px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 13.5px;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  border: none;
-}
-
-.location-btn {
-  background: #F4F7F5;
-  color: #0A3B25;
-  border: 1px solid #D8DED9;
-}
-
-.location-btn:hover {
-  background: #0A3B25;
-  color: #FCF7F0;
-  border-color: #D8C2A4;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(10, 59, 37, 0.25);
-}
-
-.location-btn:hover .nav-btn-icon {
-  animation: animArrowWobble 0.6s ease-in-out infinite;
-}
-
-.wa-btn {
-  background: linear-gradient(135deg, #0A3B25 0%, #2A6151 100%);
-  color: #FCF7F0 !important;
-  border: 1px solid #D8C2A4;
-  box-shadow: 0 4px 14px rgba(10, 59, 37, 0.2);
-}
-
-.wa-btn:hover {
-  background: linear-gradient(135deg, #2A6151 0%, #0A3B25 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(10, 59, 37, 0.3);
 }
 
 /* Branch Map Container */

@@ -18,11 +18,6 @@ export default function SiteShell({ children }) {
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-
-    // Jika pengguna keluar dari admin menuju halaman lain, otomatis logout sesi admin
-    if (!pathname?.startsWith("/admin") && isAuthenticated()) {
-      logout();
-    }
   }, [pathname]);
 
   if (isAdmin) {

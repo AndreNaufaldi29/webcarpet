@@ -9,12 +9,6 @@ import {
   subscribeBranches,
 } from "@/lib/branchStore";
 import {
-  getStoredSettings,
-  saveSettings,
-  subscribeSettings,
-  DEFAULT_SETTINGS,
-} from "@/lib/settingsStore";
-import {
   FiPlus as LucidePlus,
   FiMapPin as LucideMapPin,
   FiEdit2 as LucideEdit,
@@ -25,16 +19,13 @@ import {
   FiCheckCircle as LucideCheck,
   FiX as LucideX,
   FiHome as LucideHome,
-  FiCalendar,
-  FiSettings,
-  FiSave,
-  FiRotateCcw,
-  FiEye,
   FiCheck,
   FiAlertCircle,
   FiLayers,
+  FiUpload,
+  FiImage,
 } from "react-icons/fi";
-import { FaStore, FaWhatsapp } from "react-icons/fa";
+import { FaStore } from "react-icons/fa";
 
 const initialBranches = [
   {
@@ -76,18 +67,11 @@ export default function CabangPage() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Tab Navigation: 'branches' | 'survey'
-  const [activeTab, setActiveTab] = useState("branches");
-
   // Branches state
   const [branches, setBranches] = useState(initialBranches);
   const [search, setSearch] = useState("");
   const [cityFilter, setCityFilter] = useState("Semua");
   const [isSyncing, setIsSyncing] = useState(false);
-
-  // Survey & Consultation Settings state
-  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
-  const [isSavingSurvey, setIsSavingSurvey] = useState(false);
 
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -137,44 +121,45 @@ export default function CabangPage() {
     }
   };
 
-  const fetchSettingsFromDB = async () => {
-    try {
-      const res = await fetch("/api/settings");
-      const json = await res.json();
-      if (json.success && json.data) {
-        setSettings((prev) => ({
-          ...prev,
-          ...json.data,
-          promoActive: String(json.data.promoActive),
-          surveyActive: String(json.data.surveyActive ?? true),
-        }));
-      }
-    } catch (err) {
-      console.warn("Gagal sinkron settings survei:", err);
-    }
-  };
-
   // Load from database on mount & subscribe to realtime updates
   useEffect(() => {
     setBranches(getStoredBranches());
     fetchBranchesFromDB(false);
 
-    setSettings(getStoredSettings());
-    fetchSettingsFromDB();
-
     const unsubBranches = subscribeBranches((updated) => {
       setBranches(updated);
     });
 
-    const unsubSettings = subscribeSettings((updated) => {
-      setSettings(updated);
-    });
-
     return () => {
       unsubBranches();
-      unsubSettings();
     };
   }, []);
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      showToast("Format tidak didukung. Silakan pilih file gambar (JPG, PNG, WebP).");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      showToast("Ukuran gambar maksimal adalah 10MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target.result;
+      setFormData((prev) => ({
+        ...prev,
+        image: dataUrl,
+      }));
+      showToast("Foto tempat lokasi berhasil diunggah!");
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleOpenAdd = () => {
     setFormData({
@@ -184,7 +169,7 @@ export default function CabangPage() {
       address: "",
       phone: "0812-5223-5800",
       mapsUrl: "https://maps.google.com/?q=AB+Carpet",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200",
+      image: "",
       status: "Aktif",
     });
     setShowAddModal(true);
@@ -316,45 +301,6 @@ export default function CabangPage() {
     showToast(`Cabang "${selectedBranch.name}" berhasil dihapus dari Database.`);
   };
 
-  // Survey & Consultation Handlers
-  const handleSurveyChange = (e) => {
-    const { name, value } = e.target;
-    setSettings((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSaveSurvey = async (e) => {
-    e.preventDefault();
-    setIsSavingSurvey(true);
-    try {
-      await saveSettings(settings);
-      showToast("Banner Layanan Survei & Konsultasi berhasil disimpan ke Database Prisma!");
-    } catch (err) {
-      console.error("Gagal simpan pengaturan survei:", err);
-      showToast("Gagal menyimpan ke database, pengaturan disimpan lokal.");
-    } finally {
-      setIsSavingSurvey(false);
-    }
-  };
-
-  const handleResetSurvey = () => {
-    setSettings((prev) => ({
-      ...prev,
-      surveyActive: "true",
-      surveyBadge: "LAYANAN SURVEI & KONSULTASI GRATIS",
-      surveyTitle: "Ingin Tim Kami Datang Langsung ke Lokasi Anda?",
-      surveyDescription:
-        "Dapatkan layanan ukur lokasi presisi, estimasi kebutuhan karpet, dan bawa ratusan sampel bahan langsung ke masjid, kantor, atau kediaman Anda di seluruh Jawa Timur.",
-      surveyButtonText: "Jadwalkan Survei Sekarang",
-      surveyWhatsapp: prev.whatsapp || "08212128701",
-      surveyMessage:
-        "Halo Rumah Indah Carpet, saya ingin mengajukan jadwal survei lokasi dan konsultasi sampel karpet.",
-    }));
-    showToast("Template banner survei di-reset ke nilai standar!");
-  };
-
   // Unique cities list for filter
   const uniqueCities = ["Semua", ...Array.from(new Set(branches.map((b) => b.city).filter(Boolean)))];
 
@@ -373,8 +319,6 @@ export default function CabangPage() {
   const activeBranches = branches.filter((b) => b.status === "Aktif").length;
   const totalCities = new Set(branches.map((b) => b.city)).size;
 
-  const isSurveyActive = settings.surveyActive === true || settings.surveyActive === "true";
-
   return (
     <div className="admin-layout">
       {/* SIDEBAR */}
@@ -389,53 +333,14 @@ export default function CabangPage() {
       <main className={`admin-main ${collapsed ? "sidebar-collapsed" : ""}`}>
         {/* HEADER */}
         <AdminHeader
-          title="Manajemen Cabang & Layanan Survei"
-          breadcrumb="ADMIN PANEL / JARINGAN TOKO & SURVEI"
+          title="Manajemen Cabang & Showroom"
+          breadcrumb="ADMIN PANEL / JARINGAN CABANG"
           setMobileOpen={setMobileOpen}
         />
 
         <div className="admin-content">
-          {/* TAB SWITCHER */}
-          <div className="admin-settings-tabs" style={{ marginBottom: "20px" }}>
-            <button
-              type="button"
-              className={`admin-tab-btn ${activeTab === "branches" ? "active" : ""}`}
-              onClick={() => setActiveTab("branches")}
-            >
-              <FaStore size={15} />
-              <span>Daftar Cabang Showroom ({totalBranches})</span>
-            </button>
-
-            <button
-              type="button"
-              className={`admin-tab-btn ${activeTab === "survey" ? "active" : ""}`}
-              onClick={() => setActiveTab("survey")}
-            >
-              <FiCalendar size={15} />
-              <span>Banner Survei & Konsultasi Gratis</span>
-              <span
-                style={{
-                  fontSize: "11px",
-                  padding: "2px 7px",
-                  borderRadius: "10px",
-                  background: isSurveyActive ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)",
-                  color: isSurveyActive ? "#4ade80" : "#f87171",
-                  fontWeight: 600,
-                  marginLeft: "6px",
-                }}
-              >
-                {isSurveyActive ? "Aktif" : "Nonaktif"}
-              </span>
-            </button>
-          </div>
-
-          {/* =========================================================
-              TAB 1: DAFTAR CABANG & SHOWROOM
-          ========================================================= */}
-          {activeTab === "branches" && (
-            <>
-              {/* STATS SUMMARY */}
-              <div className="admin-stat-grid">
+          {/* STATS SUMMARY */}
+          <div className="admin-stat-grid">
                 <div className="admin-stat-card">
                   <div className="stat-top">
                     <div className="stat-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
@@ -469,17 +374,15 @@ export default function CabangPage() {
                   <div className="stat-title">Kota Jaringan Layanan</div>
                 </div>
 
-                <div className="admin-stat-card" style={{ cursor: "pointer" }} onClick={() => setActiveTab("survey")}>
+                <div className="admin-stat-card">
                   <div className="stat-top">
-                    <div className="stat-icon" style={{ background: "#ecfdf5", color: "#059669" }}>
-                      <FiCalendar size={18} />
+                    <div className="stat-icon" style={{ background: "#fef2f2", color: "#ef4444" }}>
+                      <FiLayers size={18} />
                     </div>
-                    <span className="stat-change" style={{ color: "#059669" }}>Klik Edit</span>
+                    <span className="stat-change">Nonaktif</span>
                   </div>
-                  <div className="stat-value" style={{ fontSize: "18px" }}>
-                    {isSurveyActive ? "Survei Aktif" : "Survei Nonaktif"}
-                  </div>
-                  <div className="stat-title">Layanan Survei & Konsultasi ➔</div>
+                  <div className="stat-value">{totalBranches - activeBranches}</div>
+                  <div className="stat-title">Cabang Nonaktif / Persiapan</div>
                 </div>
               </div>
 
@@ -647,271 +550,6 @@ export default function CabangPage() {
                   </div>
                 ))}
               </div>
-            </>
-          )}
-
-          {/* =========================================================
-              TAB 2: KELOLA BANNER LAYANAN SURVEI & KONSULTASI
-          ========================================================= */}
-          {activeTab === "survey" && (
-            <div className="admin-settings-card">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "12px", marginBottom: "20px" }}>
-                <div>
-                  <h3 className="admin-settings-section-title">
-                    Pengaturan Banner Layanan Survei & Konsultasi Gratis
-                  </h3>
-                  <p className="admin-settings-section-subtitle" style={{ marginBottom: 0 }}>
-                    Kelola teks ajakan survei on-site, badge penawaran, nomor WhatsApp tujuan, serta status visibilitas banner di halaman publik <code>/cabang</code>.
-                  </p>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span className="seo-live-badge">
-                    <span className="live-dot" /> Sinkron Realtime
-                  </span>
-                </div>
-              </div>
-
-              {/* LIVE VISUAL PREVIEW OF THE BANNER */}
-              <div style={{ marginBottom: "28px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                  <span style={{ fontSize: "13px", fontWeight: 600, color: "#94a3b8", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                    <FiEye size={14} color="#38bdf8" />
-                    <span>Pratinjau Live di Halaman Publik (/cabang):</span>
-                  </span>
-                  {!isSurveyActive && (
-                    <span style={{ fontSize: "12px", color: "#f87171", fontWeight: 600 }}>
-                      ⚠️ Banner saat ini berstatus NONAKTIF (tersembunyi di web publik)
-                    </span>
-                  )}
-                </div>
-
-                <div
-                  style={{
-                    background: "linear-gradient(135deg, rgba(42, 97, 81, 0.45) 0%, rgba(20, 50, 42, 0.65) 100%)",
-                    border: "1px solid rgba(42, 97, 81, 0.5)",
-                    borderRadius: "16px",
-                    padding: "32px 36px",
-                    position: "relative",
-                    overflow: "hidden",
-                    opacity: isSurveyActive ? 1 : 0.6,
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "24px" }}>
-                    <div style={{ flex: "1 1 500px" }}>
-                      <span
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "6px",
-                          background: "rgba(255, 255, 255, 0.15)",
-                          backdropFilter: "blur(6px)",
-                          padding: "5px 12px",
-                          borderRadius: "20px",
-                          fontSize: "11px",
-                          fontWeight: 700,
-                          color: "#86efac",
-                          letterSpacing: "0.5px",
-                          textTransform: "uppercase",
-                          marginBottom: "12px",
-                        }}
-                      >
-                        <FiCalendar size={13} />
-                        <span>{settings.surveyBadge || "LAYANAN SURVEI & KONSULTASI GRATIS"}</span>
-                      </span>
-
-                      <h3 style={{ fontSize: "22px", fontWeight: 700, color: "#ffffff", margin: "0 0 10px 0", lineHeight: 1.3 }}>
-                        {settings.surveyTitle || "Ingin Tim Kami Datang Langsung ke Lokasi Anda?"}
-                      </h3>
-
-                      <p style={{ fontSize: "14px", color: "#cbd5e1", lineHeight: 1.6, margin: 0, maxWidth: "680px" }}>
-                        {settings.surveyDescription ||
-                          "Dapatkan layanan ukur lokasi presisi, estimasi kebutuhan karpet, dan bawa ratusan sampel bahan langsung ke masjid, kantor, atau kediaman Anda di seluruh Jawa Timur."}
-                      </p>
-                    </div>
-
-                    <div style={{ flexShrink: 0 }}>
-                      <div
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          background: "#fef08a",
-                          color: "#1e293b",
-                          fontWeight: 700,
-                          fontSize: "14px",
-                          padding: "12px 22px",
-                          borderRadius: "10px",
-                          boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
-                        }}
-                      >
-                        <FaWhatsapp size={18} color="#16a34a" />
-                        <span>{settings.surveyButtonText || "Jadwalkan Survei Sekarang"}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* FORM EDIT BANNER SURVEI */}
-              <form onSubmit={handleSaveSurvey}>
-                <div className="admin-settings-grid">
-                  {/* TOGGLE VISIBILITAS BANNER */}
-                  <div className="admin-form-group">
-                    <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span>Status Tampilkan Banner Survei</span>
-                      <span style={{ fontSize: "12px", color: isSurveyActive ? "#4ade80" : "#f87171", fontWeight: 600 }}>
-                        {isSurveyActive ? "Aktif (Tampil di Website)" : "Nonaktif (Sembunyi)"}
-                      </span>
-                    </label>
-                    <select
-                      name="surveyActive"
-                      className="admin-select"
-                      value={settings.surveyActive ?? "true"}
-                      onChange={handleSurveyChange}
-                    >
-                      <option value="true">Aktif — Tampilkan Banner di Halaman Cabang</option>
-                      <option value="false">Nonaktif — Sembunyikan Banner dari Halaman Cabang</option>
-                    </select>
-                    <span className="helper-text">
-                      Jika dinonaktifkan, bagian banner survei & konsultasi ini tidak akan muncul di halaman <code>/cabang</code>.
-                    </span>
-                  </div>
-
-                  {/* TEKS BADGE */}
-                  <div className="admin-form-group">
-                    <label>Teks Badge Tag (Label Atas)</label>
-                    <input
-                      type="text"
-                      name="surveyBadge"
-                      className="admin-input"
-                      placeholder="LAYANAN SURVEI & KONSULTASI GRATIS"
-                      value={settings.surveyBadge || ""}
-                      onChange={handleSurveyChange}
-                    />
-                    <span className="helper-text">
-                      Teks badge kecil dengan ikon kalender di atas judul banner.
-                    </span>
-                  </div>
-
-                  {/* JUDUL UTAMA */}
-                  <div className="admin-form-group">
-                    <label>Judul Utama Banner <span className="required">*</span></label>
-                    <input
-                      type="text"
-                      name="surveyTitle"
-                      className="admin-input"
-                      placeholder="Ingin Tim Kami Datang Langsung ke Lokasi Anda?"
-                      required
-                      value={settings.surveyTitle || ""}
-                      onChange={handleSurveyChange}
-                    />
-                    <span className="helper-text">
-                      Judul ajakan survei on-site untuk menarik minat calon pelanggan.
-                    </span>
-                  </div>
-
-                  {/* DESKRIPSI LAYANAN */}
-                  <div className="admin-form-group">
-                    <label>Deskripsi Layanan & Nilai Tambah</label>
-                    <textarea
-                      name="surveyDescription"
-                      className="admin-textarea"
-                      rows={3}
-                      placeholder="Dapatkan layanan ukur lokasi presisi, estimasi kebutuhan karpet..."
-                      value={settings.surveyDescription || ""}
-                      onChange={handleSurveyChange}
-                    />
-                    <span className="helper-text">
-                      Jelaskan detail keunggulan tim survei (membawa sampel bahan, pengukuran akurat, dll).
-                    </span>
-                  </div>
-
-                  <div className="admin-form-row">
-                    {/* TEKS TOMBOL */}
-                    <div className="admin-form-group">
-                      <label>Teks Tombol Aksi WhatsApp</label>
-                      <input
-                        type="text"
-                        name="surveyButtonText"
-                        className="admin-input"
-                        placeholder="Jadwalkan Survei Sekarang"
-                        value={settings.surveyButtonText || ""}
-                        onChange={handleSurveyChange}
-                      />
-                    </div>
-
-                    {/* NOMOR WHATSAPP */}
-                    <div className="admin-form-group">
-                      <label>Nomor WhatsApp Tujuan Konsultasi</label>
-                      <input
-                        type="text"
-                        name="surveyWhatsapp"
-                        className="admin-input"
-                        placeholder="Contoh: 0821-2128-701"
-                        value={settings.surveyWhatsapp || ""}
-                        onChange={handleSurveyChange}
-                      />
-                      <span className="helper-text">
-                        Jika dikosongkan, otomatis menggunakan nomor WhatsApp utama toko ({settings.whatsapp || "08212128701"}).
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* PESAN WHATSAPP OTOMATIS */}
-                  <div className="admin-form-group">
-                    <label>Template Pesan WhatsApp Otomatis (Saat Diklik)</label>
-                    <textarea
-                      name="surveyMessage"
-                      className="admin-textarea"
-                      rows={2}
-                      placeholder="Halo Rumah Indah Carpet, saya ingin mengajukan jadwal survei lokasi dan konsultasi sampel karpet."
-                      value={settings.surveyMessage || ""}
-                      onChange={handleSurveyChange}
-                    />
-                    <span className="helper-text">
-                      Teks pembuka chat WhatsApp yang otomatis terisi ketika pengunjung mengklik tombol &quot;Jadwalkan Survei&quot;.
-                    </span>
-                  </div>
-                </div>
-
-                {/* ACTION BUTTONS */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    gap: "12px",
-                    marginTop: "24px",
-                    paddingTop: "20px",
-                    borderTop: "1px solid rgba(255, 255, 255, 0.08)",
-                  }}
-                >
-                  <button
-                    type="button"
-                    className="admin-btn-secondary"
-                    onClick={handleResetSurvey}
-                    title="Kembalikan teks ke template default"
-                    style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
-                  >
-                    <FiRotateCcw size={14} />
-                    <span>Reset ke Template Default</span>
-                  </button>
-
-                  <button
-                    type="submit"
-                    className="admin-btn-primary"
-                    disabled={isSavingSurvey}
-                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", minWidth: "160px", justifyContent: "center" }}
-                  >
-                    <FiSave size={16} />
-                    <span>{isSavingSurvey ? "Menyimpan ke Prisma..." : "Simpan Banner Survei"}</span>
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
         </div>
       </main>
 
@@ -954,17 +592,16 @@ export default function CabangPage() {
 
                   <div className="admin-form-group">
                     <label>Tipe Cabang (Badge Tag)</label>
-                    <select
-                      className="admin-select"
+                    <input
+                      type="text"
+                      className="admin-input"
+                      placeholder="Contoh: Showroom Display, Pusat & Gudang Utama, dll"
                       value={formData.badge}
                       onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
-                    >
-                      <option value="Pusat & Gudang Utama">Pusat & Gudang Utama</option>
-                      <option value="Showroom Display">Showroom Display</option>
-                      <option value="Showroom & Konsultasi">Showroom & Konsultasi</option>
-                      <option value="Workshop Obras">Workshop Obras</option>
-                      <option value="Agen Resmi">Agen Resmi</option>
-                    </select>
+                    />
+                    <span className="helper-text">
+                      Tulis tipe atau label cabang (bebas diketik sesuai kebutuhan).
+                    </span>
                   </div>
                 </div>
 
@@ -1017,14 +654,158 @@ export default function CabangPage() {
                 </div>
 
                 <div className="admin-form-group">
-                  <label>URL Foto Gedung / Showroom</label>
-                  <input
-                    type="text"
-                    className="admin-input"
-                    placeholder="https://images.unsplash.com/..."
-                    value={formData.image}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  />
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <label style={{ margin: 0 }}>Foto Tempat Lokasi / Gedung Cabang</label>
+                    {formData.image && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData({ ...formData, image: "" });
+                          showToast("Foto tempat lokasi berhasil dihapus");
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#ef4444",
+                          fontSize: "12px",
+                          fontWeight: "600",
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          padding: 0,
+                        }}
+                      >
+                        <LucideTrash size={13} />
+                        <span>Hapus Foto</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* PREVIEW JIKA SUDAH ADA GAMBAR */}
+                  {formData.image ? (
+                    <div style={{ position: "relative", width: "100%", height: "200px", borderRadius: "10px", overflow: "hidden", border: "1px solid rgba(226, 232, 240, 0.2)", marginBottom: "10px", background: "#0f172a" }}>
+                      <img
+                        src={formData.image}
+                        alt="Preview Tempat Lokasi"
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        onError={(e) => {
+                          e.target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200";
+                        }}
+                      />
+                      <label
+                        className="admin-upload-btn"
+                        style={{
+                          position: "absolute",
+                          bottom: "10px",
+                          right: "10px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          padding: "6px 14px",
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          background: "rgba(15, 23, 42, 0.85)",
+                          color: "#ffffff",
+                          borderRadius: "8px",
+                          backdropFilter: "blur(4px)",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                        }}
+                      >
+                        <FiUpload size={14} />
+                        <span>Ganti Foto</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          style={{ display: "none" }}
+                          onChange={handleImageUpload}
+                        />
+                      </label>
+                    </div>
+                  ) : (
+                    /* UPLOAD BOX JIKA BELUM ADA GAMBAR */
+                    <label
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "24px 16px",
+                        border: "2px dashed rgba(226, 232, 240, 0.3)",
+                        borderRadius: "10px",
+                        background: "rgba(255, 255, 255, 0.02)",
+                        cursor: "pointer",
+                        marginBottom: "10px",
+                        transition: "all 0.2s ease",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "44px",
+                          height: "44px",
+                          borderRadius: "50%",
+                          background: "rgba(42, 97, 81, 0.15)",
+                          color: "#38a169",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <FiUpload size={20} />
+                      </div>
+                      <span style={{ fontSize: "13px", fontWeight: 600, color: "#ffffff", marginBottom: "4px" }}>
+                        Klik untuk Upload Foto Tempat Lokasi
+                      </span>
+                      <span style={{ fontSize: "11px", color: "#94a3b8" }}>
+                        Format: JPG, PNG, WebP (Maksimal 10MB)
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={handleImageUpload}
+                      />
+                    </label>
+                  )}
+
+                  {/* INPUT URL CADANGAN */}
+                  <div className="admin-image-upload-row">
+                    <input
+                      type="text"
+                      className="admin-input"
+                      placeholder="Atau tempel URL gambar jika ada (https://...)"
+                      value={formData.image}
+                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                      style={{ fontSize: "12px" }}
+                    />
+                    <label
+                      className="admin-upload-btn"
+                      title="Pilih file foto dari perangkat"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                        padding: "0 14px",
+                        fontSize: "12px",
+                      }}
+                    >
+                      <FiUpload size={14} />
+                      <span>Upload</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={handleImageUpload}
+                      />
+                    </label>
+                  </div>
+                  <span className="helper-text">
+                    Unggah foto showroom atau tampak gedung cabang yang akan tampil di halaman /cabang publik.
+                  </span>
                 </div>
               </div>
 
@@ -1078,17 +859,16 @@ export default function CabangPage() {
 
                   <div className="admin-form-group">
                     <label>Tipe Cabang (Badge Tag)</label>
-                    <select
-                      className="admin-select"
+                    <input
+                      type="text"
+                      className="admin-input"
+                      placeholder="Contoh: Showroom Display, Pusat & Gudang Utama, dll"
                       value={formData.badge}
                       onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
-                    >
-                      <option value="Pusat & Gudang Utama">Pusat & Gudang Utama</option>
-                      <option value="Showroom Display">Showroom Display</option>
-                      <option value="Showroom & Konsultasi">Showroom & Konsultasi</option>
-                      <option value="Workshop Obras">Workshop Obras</option>
-                      <option value="Agen Resmi">Agen Resmi</option>
-                    </select>
+                    />
+                    <span className="helper-text">
+                      Tulis tipe atau label cabang (bebas diketik sesuai kebutuhan).
+                    </span>
                   </div>
                 </div>
 
@@ -1138,13 +918,158 @@ export default function CabangPage() {
                 </div>
 
                 <div className="admin-form-group">
-                  <label>URL Foto Gedung / Showroom</label>
-                  <input
-                    type="text"
-                    className="admin-input"
-                    value={formData.image}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  />
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <label style={{ margin: 0 }}>Foto Tempat Lokasi / Gedung Cabang</label>
+                    {formData.image && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData({ ...formData, image: "" });
+                          showToast("Foto tempat lokasi berhasil dihapus");
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#ef4444",
+                          fontSize: "12px",
+                          fontWeight: "600",
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          padding: 0,
+                        }}
+                      >
+                        <LucideTrash size={13} />
+                        <span>Hapus Foto</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* PREVIEW JIKA SUDAH ADA GAMBAR */}
+                  {formData.image ? (
+                    <div style={{ position: "relative", width: "100%", height: "200px", borderRadius: "10px", overflow: "hidden", border: "1px solid rgba(226, 232, 240, 0.2)", marginBottom: "10px", background: "#0f172a" }}>
+                      <img
+                        src={formData.image}
+                        alt="Preview Tempat Lokasi"
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        onError={(e) => {
+                          e.target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200";
+                        }}
+                      />
+                      <label
+                        className="admin-upload-btn"
+                        style={{
+                          position: "absolute",
+                          bottom: "10px",
+                          right: "10px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          padding: "6px 14px",
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          background: "rgba(15, 23, 42, 0.85)",
+                          color: "#ffffff",
+                          borderRadius: "8px",
+                          backdropFilter: "blur(4px)",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                        }}
+                      >
+                        <FiUpload size={14} />
+                        <span>Ganti Foto</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          style={{ display: "none" }}
+                          onChange={handleImageUpload}
+                        />
+                      </label>
+                    </div>
+                  ) : (
+                    /* UPLOAD BOX JIKA BELUM ADA GAMBAR */
+                    <label
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "24px 16px",
+                        border: "2px dashed rgba(226, 232, 240, 0.3)",
+                        borderRadius: "10px",
+                        background: "rgba(255, 255, 255, 0.02)",
+                        cursor: "pointer",
+                        marginBottom: "10px",
+                        transition: "all 0.2s ease",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "44px",
+                          height: "44px",
+                          borderRadius: "50%",
+                          background: "rgba(42, 97, 81, 0.15)",
+                          color: "#38a169",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <FiUpload size={20} />
+                      </div>
+                      <span style={{ fontSize: "13px", fontWeight: 600, color: "#ffffff", marginBottom: "4px" }}>
+                        Klik untuk Upload Foto Tempat Lokasi
+                      </span>
+                      <span style={{ fontSize: "11px", color: "#94a3b8" }}>
+                        Format: JPG, PNG, WebP (Maksimal 10MB)
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={handleImageUpload}
+                      />
+                    </label>
+                  )}
+
+                  {/* INPUT URL CADANGAN */}
+                  <div className="admin-image-upload-row">
+                    <input
+                      type="text"
+                      className="admin-input"
+                      placeholder="Atau tempel URL gambar jika ada (https://...)"
+                      value={formData.image}
+                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                      style={{ fontSize: "12px" }}
+                    />
+                    <label
+                      className="admin-upload-btn"
+                      title="Pilih file foto dari perangkat"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                        padding: "0 14px",
+                        fontSize: "12px",
+                      }}
+                    >
+                      <FiUpload size={14} />
+                      <span>Upload</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={handleImageUpload}
+                      />
+                    </label>
+                  </div>
+                  <span className="helper-text">
+                    Unggah foto showroom atau tampak gedung cabang yang akan tampil di halaman /cabang publik.
+                  </span>
                 </div>
               </div>
 
