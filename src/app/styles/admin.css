@@ -6634,6 +6634,361 @@ body.dark .admin-dash-prod-meta {
   color: #94a3b8;
 }
 
+/* =========================================================
+   CAROUSEL ADMIN STYLES (LIGHT & DARK MODE)
+========================================================= */
 
+.admin-carousel-config-card {
+  background: #ffffff;
+  border: 1px solid #E5EAF1;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  transition: all 0.25s ease;
+}
 
+body.dark .admin-carousel-config-card {
+  background: #0A3B25;
+  border-color: #2A6151;
+  color: #FCF7F0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.admin-carousel-config-title {
+  font-size: 15px;
+  color: #0A3B25;
+  display: block;
+  font-weight: 700;
+}
+
+body.dark .admin-carousel-config-title {
+  color: #FCF7F0;
+}
+
+.admin-carousel-config-desc {
+  font-size: 13px;
+  color: #5A6D63;
+}
+
+body.dark .admin-carousel-config-desc {
+  color: #B2B7AA;
+}
+
+.admin-carousel-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #D8DED9;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0A3B25;
+  background: #F4F7F5;
+  cursor: pointer;
+  outline: none;
+}
+
+body.dark .admin-carousel-select {
+  background: #072016;
+  border-color: #2A6151;
+  color: #FCF7F0;
+}
+
+.admin-carousel-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0A3B25;
+}
+
+body.dark .admin-carousel-label {
+  color: #FCF7F0;
+}
+
+.admin-carousel-slide-card {
+  background: #ffffff;
+  border: 1px solid #E5EAF1;
+  border-radius: 16px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+}
+
+body.dark .admin-carousel-slide-card {
+  background: #0A3B25;
+  border-color: #2A6151;
+  color: #FCF7F0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.admin-carousel-slide-title {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0A3B25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.dark .admin-carousel-slide-title {
+  color: #FCF7F0;
+}
+
+.admin-carousel-slide-desc {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  color: #5A6D63;
+  line-height: 1.4;
+}
+
+body.dark .admin-carousel-slide-desc {
+  color: #B2B7AA;
+}
+
+.admin-carousel-slide-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  color: #5A6D63;
+  flex-wrap: wrap;
+}
+
+body.dark .admin-carousel-slide-meta {
+  color: #B2B7AA;
+}
+
+body.dark .admin-carousel-slide-meta code {
+  color: #D8C2A4 !important;
+}
+
+.admin-carousel-move-btn {
+  background: #F4F7F5;
+  border: 1px solid #D8DED9;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #0A3B25;
+  transition: all 0.2s ease;
+}
+
+body.dark .admin-carousel-move-btn {
+  background: #072016;
+  border-color: #2A6151;
+  color: #FCF7F0;
+}
+
+.admin-carousel-move-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.admin-carousel-empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px dashed #D8DED9;
+}
+
+body.dark .admin-carousel-empty-state {
+  background: #0A3B25;
+  border-color: #2A6151;
+  color: #FCF7F0;
+}
+
+body.dark .admin-carousel-empty-state h4 {
+  color: #FCF7F0 !important;
+}
+
+body.dark .admin-carousel-empty-state p {
+  color: #B2B7AA !important;
+}
+
+/* Modals Dark Mode Support */
+body.dark .admin-modal-box {
+  background: #0A3B25 !important;
+  border: 1px solid #2A6151 !important;
+  color: #FCF7F0 !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.dark .admin-modal-header {
+  border-bottom: 1px solid #2A6151 !important;
+  color: #FCF7F0 !important;
+}
+
+body.dark .admin-modal-header h3 {
+  color: #FCF7F0 !important;
+}
+
+body.dark .admin-modal-close {
+  color: #B2B7AA !important;
+}
+
+body.dark .admin-modal-close:hover {
+  background: #2A6151 !important;
+  color: #FCF7F0 !important;
+}
+
+body.dark .admin-modal-body p {
+  color: #D8DED9 !important;
+}
+
+body.dark .admin-modal-footer {
+  border-top: 1px solid #2A6151 !important;
+  background: #072016 !important;
+}
+
+body.dark .admin-form-group label {
+  color: #D8C2A4 !important;
+  font-weight: 600;
+  font-size: 13px;
+  display: block;
+}
+
+.admin-form-group input,
+.admin-form-group textarea,
+.admin-form-group select,
+.admin-input,
+.admin-textarea,
+.admin-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 13.5px;
+  color: #0A3B25;
+  background: #ffffff;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.admin-form-group input:focus,
+.admin-form-group textarea:focus,
+.admin-form-group select:focus,
+.admin-input:focus,
+.admin-textarea:focus,
+.admin-select:focus {
+  border-color: #2A6151;
+  box-shadow: 0 0 0 3px rgba(10, 59, 37, 0.12);
+}
+
+body.dark .admin-form-group input,
+body.dark .admin-form-group textarea,
+body.dark .admin-form-group select,
+body.dark .admin-input,
+body.dark .admin-textarea,
+body.dark .admin-select {
+  background: #061A12 !important;
+  border: 1px solid #2A6151 !important;
+  color: #FCF7F0 !important;
+  border-radius: 10px !important;
+  padding: 10px 14px !important;
+  font-size: 13.5px !important;
+  box-sizing: border-box !important;
+}
+
+body.dark .admin-form-group input:focus,
+body.dark .admin-form-group textarea:focus,
+body.dark .admin-form-group select:focus,
+body.dark .admin-input:focus,
+body.dark .admin-textarea:focus,
+body.dark .admin-select:focus {
+  border-color: #D8C2A4 !important;
+  box-shadow: 0 0 0 3px rgba(216, 194, 164, 0.2) !important;
+  outline: none !important;
+}
+
+body.dark .admin-form-group input::placeholder,
+body.dark .admin-form-group textarea::placeholder,
+body.dark .admin-input::placeholder,
+body.dark .admin-textarea::placeholder {
+  color: #718279 !important;
+}
+
+.admin-carousel-preset-btn {
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid #D8DED9;
+  background: #F4F7F5;
+  color: #5A6D63;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.admin-carousel-preset-btn:hover {
+  background: #EEF3F0;
+  color: #0A3B25;
+}
+
+.admin-carousel-preset-btn.active {
+  border-color: #2A6151;
+  background: rgba(42, 97, 81, 0.12);
+  color: #0A3B25;
+  font-weight: 700;
+}
+
+body.dark .admin-carousel-preset-btn {
+  background: #072016;
+  border-color: #2A6151;
+  color: #B2B7AA;
+}
+
+body.dark .admin-carousel-preset-btn:hover {
+  background: #0d3625;
+  color: #FCF7F0;
+}
+
+body.dark .admin-carousel-preset-btn.active {
+  border-color: #D8C2A4;
+  background: rgba(216, 194, 164, 0.15);
+  color: #D8C2A4;
+}
+
+body.dark .admin-preset-hint {
+  color: #B2B7AA !important;
+}
+
+.admin-carousel-dropzone {
+  border: 2px dashed #D8DED9;
+  background: #F4F7F5;
+  color: #0A3B25;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.admin-carousel-dropzone:hover {
+  border-color: #2A6151;
+  background: rgba(42, 97, 81, 0.08);
+}
+
+body.dark .admin-carousel-dropzone {
+  border-color: #2A6151;
+  background: #072016;
+  color: #FCF7F0;
+}
+
+body.dark .admin-carousel-dropzone:hover {
+  border-color: #D8C2A4;
+  background: rgba(42, 97, 81, 0.2);
+}
 

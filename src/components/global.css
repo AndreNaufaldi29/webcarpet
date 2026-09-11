@@ -4204,79 +4204,176 @@ body.dark .ab-footer-logo-wrapper {
 
 .catalog-card {
   background: white;
-
-  border-radius: 24px;
-
+  border-radius: 20px;
   overflow: hidden;
-
   border: 1px solid #E5EAF1;
-
-  transition: .35s;
-
-  box-shadow:
-    0 10px 30px rgba(0, 11, 88, .05);
+  transition: all .35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px rgba(0, 11, 88, .05);
+  display: flex;
+  flex-direction: column;
 }
 
 .catalog-card:hover {
-  transform: translateY(-10px);
-
-  box-shadow:
-    0 20px 50px rgba(0, 11, 88, .12);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 45px rgba(10, 59, 37, .12);
+  border-color: #D8C2A4;
 }
 
 .catalog-image {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  max-width: 511px;
-  max-height: 511px;
+  min-height: 240px;
+  max-width: 100%;
   overflow: hidden;
-  background: var(--bg-soft, #F4F7F5);
+  background: #061A12;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.catalog-image img {
+/* Ambient Blur Backdrop for Multi-pixel & Multi-ratio Images */
+.catalog-image-backdrop {
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(24px) brightness(0.65) saturate(1.2);
+  opacity: 0.6;
+  transform: scale(1.2);
+  z-index: 1;
+  pointer-events: none;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease, filter 0.4s ease;
+}
+
+.catalog-card:hover .catalog-image-backdrop {
+  opacity: 0.85;
+  filter: blur(18px) brightness(0.75) saturate(1.35);
+  transform: scale(1.28);
+}
+
+.catalog-image-link {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.catalog-card-img {
+  position: relative;
+  z-index: 2;
   width: 100%;
   height: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  transition: .5s;
+  object-position: center;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease !important;
   display: block;
 }
 
-.catalog-card:hover img {
+.catalog-card-img.loading {
+  opacity: 0.7;
+}
+
+.catalog-card-img.loaded {
+  opacity: 1;
+}
+
+.catalog-card:hover .catalog-card-img {
   transform: scale(1.08);
+}
+
+/* Portrait Image Handling */
+.catalog-image.is-portrait .catalog-card-img {
+  object-fit: cover;
+  object-position: center 20%;
+}
+
+/* Landscape Image Handling */
+.catalog-image.is-landscape .catalog-card-img {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Square Image Handling */
+.catalog-image.is-square .catalog-card-img {
+  object-fit: cover;
+  object-position: center;
 }
 
 .catalog-badge {
   position: absolute;
-
-  top: 15px;
-  left: 15px;
-
-  background: var(--accent);
-
-  color: white;
-
-  padding: 8px 14px;
-
+  z-index: 4;
+  top: 14px;
+  left: 14px;
+  background: rgba(10, 59, 37, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #FCF7F0;
+  border: 1px solid rgba(216, 194, 164, 0.4);
+  padding: 6px 14px;
   border-radius: 999px;
-
-  font-size: .8rem;
+  font-size: 0.78rem;
   font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.catalog-gallery-badge {
+  position: absolute;
+  z-index: 4;
+  top: 14px;
+  right: 14px;
+  background: rgba(10, 59, 37, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #FCF7F0;
+  border: 1px solid rgba(216, 194, 164, 0.35);
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
 }
 
 /* CONTENT */
-
 .catalog-card-content {
   padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
 }
 
 .catalog-card-content h3 {
-  color: var(--midnight);
-
+  color: var(--midnight, #061A12);
   margin-bottom: 20px;
-
   font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.catalog-title-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.catalog-title-link:hover {
+  color: #2A6151;
 }
 
 .catalog-btn {
@@ -4445,12 +4542,30 @@ body.dark .catalog-card:hover {
   box-shadow: 0 20px 40px rgba(10, 59, 37, .35);
 }
 
+body.dark .catalog-image {
+  background: #04120C;
+}
+
 body.dark .catalog-card-content h3 {
   color: #FCF7F0;
 }
 
+body.dark .catalog-title-link {
+  color: #FCF7F0;
+}
+
+body.dark .catalog-title-link:hover {
+  color: #D8C2A4;
+}
+
 body.dark .catalog-badge {
-  background: rgba(42, 97, 81, .85);
+  background: rgba(6, 26, 18, 0.88);
+  color: #FCF7F0;
+  border: 1px solid rgba(216, 194, 164, .3);
+}
+
+body.dark .catalog-gallery-badge {
+  background: rgba(6, 26, 18, 0.85);
   color: #FCF7F0;
   border: 1px solid rgba(216, 194, 164, .3);
 }
@@ -6660,41 +6775,14 @@ body.dark .catalog-status-bar {
   animation: animFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.catalog-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 45px rgba(10, 59, 37, 0.1) !important;
-  border-color: #D8C2A4 !important;
-}
-
-.catalog-image {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  max-width: 511px;
-  max-height: 511px;
-  overflow: hidden;
-  background: var(--bg-soft, #F4F7F5);
-}
-
-.catalog-card-img {
-  width: 100%;
-  height: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  display: block;
-}
-
-.catalog-card:hover .catalog-card-img {
-  transform: scale(1.08);
-}
-
 .catalog-img-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(10, 59, 37, 0.35) 0%, transparent 60%);
+  z-index: 3;
+  background: linear-gradient(to top, rgba(10, 59, 37, 0.4) 0%, transparent 60%);
   opacity: 0;
   transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .catalog-card:hover .catalog-img-overlay {

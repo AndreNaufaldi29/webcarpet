@@ -25,6 +25,7 @@ import {
   FiEye,
   FiEdit2,
   FiExternalLink,
+  FiSliders,
 } from "react-icons/fi";
 
 export default function AdminDashboardPage() {
@@ -270,6 +271,13 @@ export default function AdminDashboardPage() {
                       <FiBookOpen size={15} />
                     </div>
                     <span>Artikel & SEO</span>
+                  </Link>
+
+                  <Link href="/admin/carousel" className="admin-quick-link-card">
+                    <div className="quick-icon">
+                      <FiSliders size={15} />
+                    </div>
+                    <span>Carousel & Banner</span>
                   </Link>
 
                   <Link href="/admin/cabang" className="admin-quick-link-card">

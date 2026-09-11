@@ -139,6 +139,9 @@ model Setting {
   surveyButtonText  String?  @default("Jadwalkan Survei Sekarang")
   surveyWhatsapp    String?  @default("08212128701")
   surveyMessage     String?  @db.Text
+  // Carousel Hero Beranda
+  carouselAutoplay  Boolean  @default(true)
+  carouselInterval  Int      @default(6500)
   updatedAt       DateTime @updatedAt
 
   @@map("settings")
@@ -229,3 +232,23 @@ model Article {
 
   @@map("articles")
 }
+
+// 12. Model Hero Carousel & Slider Beranda
+model HeroSlide {
+  id               Int      @id @default(autoincrement())
+  title            String
+  badge            String?  @default("KARPET MASJID & IBADAH")
+  desc             String   @db.Text
+  image            String   @db.Text
+  btnPrimaryText   String?  @default("Jelajahi Katalog")
+  btnPrimaryLink   String?  @default("/catalog")
+  btnSecondaryText String?  @default("Lihat Portofolio")
+  btnSecondaryLink String?  @default("/portofolio")
+  order            Int      @default(0)
+  status           String   @default("Aktif") // "Aktif", "Nonaktif"
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("hero_slides")
+}
+

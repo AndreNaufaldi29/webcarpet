@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import Sidebar from "@/components/admin/Sidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
 import {
@@ -37,6 +38,7 @@ import {
   FiUpload,
   FiCalendar,
   FiEye,
+  FiSliders,
 } from "react-icons/fi";
 import { FaTiktok, FaWhatsapp, FaYoutube } from "react-icons/fa";
 
@@ -261,6 +263,26 @@ export default function PengaturanPage() {
               <FiCalendar size={16} />
               <span>Layanan Survei & Konsultasi</span>
             </button>
+
+            <Link
+              href="/admin/carousel"
+              className="admin-tab-btn"
+              style={{
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                background: "rgba(216, 194, 164, 0.15)",
+                borderColor: "rgba(216, 194, 164, 0.4)",
+                color: "#2A6151",
+                fontWeight: 700,
+              }}
+              title="Buka Halaman Pengaturan Carousel Banner Hero"
+            >
+              <FiSliders size={16} />
+              <span>Pengaturan Carousel Hero</span>
+              <FiExternalLink size={12} />
+            </Link>
 
             <button
               type="button"

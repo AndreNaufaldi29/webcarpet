@@ -11,6 +11,7 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiCheck,
+  FiImage,
 } from "react-icons/fi";
 import {
   getStoredProducts,
@@ -263,35 +264,9 @@ function Catalog() {
 
           {currentItems.length > 0 ? (
             <div className="catalog-grid">
-              {currentItems.map((item, idx) => {
-                const displayImage =
-                  item.images?.[0] ||
-                  item.image ||
-                  "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200";
-
-                return (
-                  <div
-                    className="catalog-card"
-                    key={item.id}
-                    style={{ animationDelay: `${idx * 0.07}s` }}
-                  >
-                    <div className="catalog-image">
-                      <img src={displayImage} alt={item.name} className="catalog-card-img" />
-                      <span className="catalog-badge">{item.category}</span>
-                      <div className="catalog-img-overlay" />
-                    </div>
-
-                    <div className="catalog-card-content">
-                      <h3>{item.name}</h3>
-
-                      <Link href={`/product/${item.id}`} className="catalog-btn">
-                        <span>Detail Produk</span>
-                        <FiArrowRight className="catalog-btn-arrow" />
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
+              {currentItems.map((item, idx) => (
+                <CatalogCardItem key={item.id || idx} item={item} idx={idx} />
+              ))}
             </div>
           ) : (
             <div className="catalog-empty-state">
@@ -355,4 +330,101 @@ function Catalog() {
   );
 }
 
+function CatalogCardItem({ item, idx }) {
+  const [orientation, setOrientation] = useState("landscape");
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const [currentImg, setCurrentImg] = useState(
+    item.images?.[0] ||
+      item.image ||
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200"
+  );
+
+  useEffect(() => {
+    setCurrentImg(
+      item.images?.[0] ||
+        item.image ||
+        "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200"
+    );
+  }, [item]);
+
+  const handleImageLoad = (e) => {
+    setImgLoaded(true);
+    const { naturalWidth, naturalHeight } = e.target;
+    if (naturalWidth && naturalHeight) {
+      if (naturalHeight > naturalWidth * 1.08) {
+        setOrientation("portrait");
+      } else if (naturalWidth > naturalHeight * 1.08) {
+        setOrientation("landscape");
+      } else {
+        setOrientation("square");
+      }
+    }
+  };
+
+  const handleImageError = () => {
+    setCurrentImg("https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200");
+  };
+
+  const galleryCount =
+    Array.isArray(item.images) && item.images.length > 1
+      ? item.images.length
+      : 0;
+
+  return (
+    <div
+      className={`catalog-card is-${orientation}`}
+      style={{ animationDelay: `${idx * 0.07}s` }}
+    >
+      <div className={`catalog-image is-${orientation}`}>
+        {/* Ambient Blur Backdrop for Seamless Multi-pixel & Multi-ratio Filling */}
+        <div
+          className="catalog-image-backdrop"
+          style={{ backgroundImage: `url("${currentImg}")` }}
+          aria-hidden="true"
+        />
+
+        <Link
+          href={`/product/${item.id}`}
+          className="catalog-image-link"
+          aria-label={`Lihat detail ${item.name}`}
+        >
+          <img
+            src={currentImg}
+            alt={item.name}
+            className={`catalog-card-img ${imgLoaded ? "loaded" : "loading"}`}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+            loading="lazy"
+            decoding="async"
+          />
+          <div className="catalog-img-overlay" />
+        </Link>
+
+        <span className="catalog-badge">{item.category}</span>
+
+        {galleryCount > 1 && (
+          <span className="catalog-gallery-badge" title={`${galleryCount} Foto Produk`}>
+            <FiImage size={12} />
+            <span>{galleryCount} Foto</span>
+          </span>
+        )}
+      </div>
+
+      <div className="catalog-card-content">
+        <h3>
+          <Link href={`/product/${item.id}`} className="catalog-title-link">
+            {item.name}
+          </Link>
+        </h3>
+
+        <Link href={`/product/${item.id}`} className="catalog-btn">
+          <span>Detail Produk</span>
+          <FiArrowRight className="catalog-btn-arrow" />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default Catalog;
+

@@ -11,6 +11,7 @@ import {
   FiBox,
   FiGrid,
   FiImage,
+  FiSliders,
   FiMessageSquare,
   FiBookOpen,
   FiMapPin,
@@ -51,6 +52,11 @@ export default function Sidebar({
       name: "Dashboard",
       path: "/admin",
       Icon: FiHome,
+    },
+    {
+      name: "Carousel & Banner",
+      path: "/admin/carousel",
+      Icon: FiSliders,
     },
     {
       name: "Manajemen User",

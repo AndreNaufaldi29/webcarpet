@@ -22,33 +22,15 @@ import {
   subscribeProducts,
   syncProductsFromDatabase,
 } from "@/lib/productStore";
-
-const slides = [
-  {
-    image:
-      "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1600",
-    badge: "KARPET MASJID & IBADAH",
-    title: "Lembut, Nyaman & Elegan Untuk Rumah Ibadah Anda",
-    desc:
-      "Rumah Indah Carpet menyediakan berbagai pilihan karpet berkualitas tinggi untuk masjid, musholla, hotel, kantor dan kebutuhan custom lainnya.",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1600",
-    badge: "KARPET RESIDENSIAL MEWAH",
-    title: "Karpet Premium Untuk Rumah & Hunian Modern",
-    desc:
-      "Karpet pilihan dengan material terbaik untuk menciptakan kenyamanan maksimal dan kehangatan di setiap sudut rumah Anda.",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1600",
-    badge: "KARPET KANTOR & KOMERSIAL",
-    title: "Karpet Kantor Profesional & Ballroom Hotel",
-    desc:
-      "Menciptakan suasana kerja yang elegan, kedap suara, nyaman dan meningkatkan produktivitas serta prestise perusahaan.",
-  },
-];
+import {
+  getStoredSlides,
+  subscribeSlides,
+  syncSlidesFromDatabase,
+  getStoredCarouselSettings,
+  subscribeCarouselSettings,
+  DEFAULT_SLIDES,
+  DEFAULT_CAROUSEL_SETTINGS,
+} from "@/lib/carouselStore";
 
 const DEFAULT_CATEGORY_NAMES = [
   "Semua",
@@ -66,6 +48,8 @@ function HeroSearch() {
   const inputRef = useRef(null);
 
   const [current, setCurrent] = useState(0);
+  const [slides, setSlides] = useState(DEFAULT_SLIDES);
+  const [carouselSettings, setCarouselSettings] = useState(DEFAULT_CAROUSEL_SETTINGS);
   const [categories, setCategories] = useState(DEFAULT_CATEGORY_NAMES);
   const [products, setProducts] = useState([]);
   const [activeCategory, setActiveCategory] = useState("Semua");
@@ -73,8 +57,35 @@ function HeroSearch() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Sync categories & products from database
+  // Sync slides, categories & products from database
   useEffect(() => {
+    // 0. Initial cached carousel slides
+    const initialSlides = getStoredSlides().filter((s) => s.status !== "Nonaktif");
+    if (initialSlides.length > 0) {
+      setSlides(initialSlides);
+    }
+    setCarouselSettings(getStoredCarouselSettings());
+
+    // Sync fresh slides
+    syncSlidesFromDatabase().then((dbSlides) => {
+      if (Array.isArray(dbSlides) && dbSlides.length > 0) {
+        const active = dbSlides.filter((s) => s.status !== "Nonaktif");
+        if (active.length > 0) setSlides(active);
+      }
+    });
+
+    const unsubSlides = subscribeSlides((updated) => {
+      const active = (updated || []).filter((s) => s.status !== "Nonaktif");
+      if (active.length > 0) {
+        setSlides(active);
+        setCurrent((prev) => (prev >= active.length ? 0 : prev));
+      }
+    });
+
+    const unsubSettings = subscribeCarouselSettings((updated) => {
+      if (updated) setCarouselSettings(updated);
+    });
+
     // 1. Initial cached categories
     const initialCats = getStoredCategories().filter((c) => c.status !== "Nonaktif");
     if (initialCats.length > 0) {
@@ -111,19 +122,24 @@ function HeroSearch() {
     });
 
     return () => {
+      unsubSlides();
+      unsubSettings();
       unsubCats();
       unsubProds();
     };
   }, []);
 
-  // Slide rotation timer
+  // Slide rotation timer with configurable autoplay and interval
   useEffect(() => {
+    if (!carouselSettings.autoplay || slides.length <= 1) return;
+
+    const intervalTime = Number(carouselSettings.interval) || 6500;
     const timer = setInterval(() => {
-      handleSlideChange((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-    }, 6500);
+      handleSlideChange((prev) => (prev >= slides.length - 1 ? 0 : prev + 1));
+    }, intervalTime);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length, carouselSettings.autoplay, carouselSettings.interval]);
 
   // Close dropdown on click outside or escape key
   useEffect(() => {
@@ -250,6 +266,8 @@ function HeroSearch() {
     if (inputRef.current) inputRef.current.focus();
   };
 
+  const activeSlide = slides[current] || slides[0] || DEFAULT_SLIDES[0];
+
   return (
     <section className="hero-search">
       {/* HERO SLIDE CONTAINER */}
@@ -258,8 +276,8 @@ function HeroSearch() {
         className={`hero-slide ${isTransitioning ? "slide-fade" : "slide-active"}`}
       >
         <Image
-          src={slides[current].image}
-          alt={slides[current].title}
+          src={activeSlide.image || "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1600"}
+          alt={activeSlide.title || "Rumah Indah Carpet"}
           fill
           priority={current === 0}
           fetchPriority={current === 0 ? "high" : "auto"}
@@ -277,22 +295,26 @@ function HeroSearch() {
 
         <div className="hero-content">
           <div className="hero-badge animate-badge-pop">
-            <span>{slides[current].badge || "KARPET BERKUALITAS PREMIUM"}</span>
+            <span>{activeSlide.badge || "KARPET BERKUALITAS PREMIUM"}</span>
           </div>
 
-          <h1 className="hero-title-anim">{slides[current].title}</h1>
+          <h1 className="hero-title-anim">{activeSlide.title}</h1>
 
-          <p className="hero-desc-anim">{slides[current].desc}</p>
+          <p className="hero-desc-anim">{activeSlide.desc}</p>
 
           <div className="hero-actions-anim">
-            <Link href="/catalog" className="hero-btn">
-              <span>Jelajahi Katalog</span>
-              <FiArrowRight className="hero-btn-arrow" />
-            </Link>
+            {activeSlide.btnPrimaryText && (
+              <Link href={activeSlide.btnPrimaryLink || "/catalog"} className="hero-btn">
+                <span>{activeSlide.btnPrimaryText}</span>
+                <FiArrowRight className="hero-btn-arrow" />
+              </Link>
+            )}
 
-            <Link href="/portofolio" className="hero-btn-secondary">
-              <span>Lihat Portofolio</span>
-            </Link>
+            {activeSlide.btnSecondaryText && (
+              <Link href={activeSlide.btnSecondaryLink || "/portofolio"} className="hero-btn-secondary">
+                <span>{activeSlide.btnSecondaryText}</span>
+              </Link>
+            )}
           </div>
         </div>
 
