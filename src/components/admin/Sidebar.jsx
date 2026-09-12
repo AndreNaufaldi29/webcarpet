@@ -20,6 +20,7 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiX,
+  FiGlobe,
 } from "react-icons/fi";
 
 export default function Sidebar({
@@ -44,7 +45,13 @@ export default function Sidebar({
   const handleLogout = async () => {
     setShowLogoutModal(false);
     await logout();
-    window.location.href = "/admin/login";
+    window.location.replace("/admin/login?reason=logout");
+  };
+
+  const handleLogoutToWebsite = async () => {
+    setShowLogoutModal(false);
+    await logout();
+    window.location.replace("/");
   };
 
   const menus = [
@@ -202,7 +209,7 @@ export default function Sidebar({
         <div className="admin-modal-backdrop" onClick={() => setShowLogoutModal(false)}>
           <div
             className="admin-modal-box"
-            style={{ maxWidth: "420px" }}
+            style={{ maxWidth: "440px" }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="admin-modal-header">
@@ -219,12 +226,15 @@ export default function Sidebar({
             </div>
 
             <div className="admin-modal-body">
-              <p style={{ margin: 0, fontSize: "14px", lineHeight: 1.6 }}>
-                Apakah Anda yakin ingin keluar dari sesi <strong>{currentUser?.name || "Administrator"} ({currentUser?.role || "Super Admin"})</strong>?
+              <p style={{ margin: "0 0 8px", fontSize: "14px", lineHeight: 1.6 }}>
+                Apakah Anda ingin keluar dari sesi <strong>{currentUser?.name || "Administrator"} ({currentUser?.role || "Super Admin"})</strong>?
+              </p>
+              <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
+                Sesi admin akan ditutup dan akun akan dikunci secara aman.
               </p>
             </div>
 
-            <div className="admin-modal-footer">
+            <div className="admin-modal-footer" style={{ gap: "8px", flexWrap: "wrap" }}>
               <button
                 type="button"
                 className="admin-btn-secondary"
@@ -234,10 +244,20 @@ export default function Sidebar({
               </button>
               <button
                 type="button"
+                className="admin-btn-secondary"
+                style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                onClick={handleLogoutToWebsite}
+              >
+                <FiGlobe size={14} />
+                <span>Keluar & Buka Website</span>
+              </button>
+              <button
+                type="button"
                 className="admin-btn-danger"
                 onClick={handleLogout}
               >
-                Ya, Keluar
+                <FiLogOut size={14} />
+                <span>Keluar ke Login</span>
               </button>
             </div>
           </div>

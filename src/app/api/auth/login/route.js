@@ -155,7 +155,7 @@ export async function POST(request) {
     resetRateLimit(trimmedEmail);
 
     // 7. TERBITKAN CRYPTOGRAPHICALLY SIGNED SESSION TOKEN
-    const sessionDurationSeconds = rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60;
+    const sessionDurationSeconds = rememberMe ? 30 * 24 * 60 * 60 : 2 * 60 * 60;
     const token = signSessionToken(
       {
         uid: user.id,
@@ -175,7 +175,7 @@ export async function POST(request) {
           userRole: user.role,
           action: "LOGIN_SUCCESS",
           module: "Auth",
-          description: `${user.role} ${user.name} berhasil login ke Admin Panel`,
+          description: `${user.role} ${user.name} berhasil login ke Admin Panel (${rememberMe ? "30 hari" : "Sesi Sementara"})`,
           ipAddress: clientIp,
           userAgent,
         },
@@ -202,15 +202,21 @@ export async function POST(request) {
     });
 
     // 9. SET HTTPONLY SECURE SESSION COOKIE
-    response.cookies.set({
+    const cookieConfig = {
       name: "abcarpet_admin_session",
       value: token,
       path: "/",
-      maxAge: sessionDurationSeconds,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-    });
+    };
+
+    // Jika rememberMe dicentang, atur maxAge 30 hari; jika tidak, cookie bersifat session-only
+    if (rememberMe) {
+      cookieConfig.maxAge = sessionDurationSeconds;
+    }
+
+    response.cookies.set(cookieConfig);
 
     return response;
   } catch (error) {

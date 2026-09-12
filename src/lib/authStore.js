@@ -62,46 +62,43 @@ function setCookie(name, value, days = 7) {
 }
 
 /**
- * Menghapus cookie di browser secara menyeluruh
+ * Menghapus cookie di browser secara menyeluruh di semua path
  */
 export function deleteCookie(name) {
   if (typeof document === "undefined") return;
-  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0; SameSite=Lax`;
-  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0;`;
+  const paths = ["/", "/admin", "/api"];
+  paths.forEach((p) => {
+    document.cookie = `${name}=; path=${p}; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0; SameSite=Lax`;
+    document.cookie = `${name}=; path=${p}; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0;`;
+  });
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0;`;
 }
 
 /**
- * Mendapatkan sesi admin yang tersimpan
+ * Mendapatkan sesi admin yang tersimpan di sessionStorage atau localStorage
  */
 export function getStoredAuth() {
   if (typeof window === "undefined") return null;
 
   try {
-    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
+    // 1. Periksa sessionStorage (sesi tab/window aktif)
+    const sessionRaw = sessionStorage.getItem(AUTH_STORAGE_KEY);
+    if (sessionRaw) {
+      const parsed = JSON.parse(sessionRaw);
+      if (parsed && parsed.email && parsed.token) {
+        return parsed;
+      }
+      sessionStorage.removeItem(AUTH_STORAGE_KEY);
+    }
+
+    // 2. Periksa localStorage (hanya jika pengguna memilih "Ingat Sesi")
+    const localRaw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (localRaw) {
+      const parsed = JSON.parse(localRaw);
       if (parsed && parsed.email && parsed.token) {
         return parsed;
       }
       localStorage.removeItem(AUTH_STORAGE_KEY);
-      return null;
-    }
-
-    // Coba periksa cookie jika localStorage kosong
-    const cookieSession = getCookie(COOKIE_NAME);
-    if (cookieSession) {
-      try {
-        if (cookieSession.startsWith("{")) {
-          const parsedCookie = JSON.parse(cookieSession);
-          if (parsedCookie && parsedCookie.email && parsedCookie.token) {
-            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(parsedCookie));
-            return parsedCookie;
-          }
-        }
-      } catch {
-        // Abaikan jika cookie berformat raw token string (bukan JSON)
-      }
     }
     return null;
   } catch {
@@ -110,11 +107,63 @@ export function getStoredAuth() {
 }
 
 /**
- * Memeriksa apakah admin sedang login
+ * Memeriksa apakah admin sedang login (lokal)
  */
 export function isAuthenticated() {
   const auth = getStoredAuth();
   return Boolean(auth && auth.email && auth.token);
+}
+
+/**
+ * Memverifikasi keabsahan sesi secara aktif ke server API (/api/auth/me)
+ */
+export async function verifySessionWithServer() {
+  if (typeof window === "undefined") return { authenticated: false };
+
+  try {
+    const res = await fetch("/api/auth/me", {
+      method: "GET",
+      cache: "no-store",
+      headers: {
+        "Cache-Control": "no-store, no-cache",
+      },
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.authenticated && data.user) {
+        const stored = getStoredAuth() || {};
+        const updated = {
+          ...stored,
+          email: data.user.email,
+          user: data.user,
+        };
+        if (sessionStorage.getItem(AUTH_STORAGE_KEY)) {
+          sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(updated));
+        } else if (localStorage.getItem(AUTH_STORAGE_KEY)) {
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(updated));
+        } else {
+          sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(updated));
+        }
+        return { authenticated: true, user: data.user };
+      }
+    }
+
+    // Jika server merespons 401 atau tidak valid, bersihkan sesi lokal seketika
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    sessionStorage.removeItem(AUTH_STORAGE_KEY);
+    sessionStorage.clear();
+    deleteCookie(COOKIE_NAME);
+    deleteCookie("abcarpet_admin_session");
+    window.dispatchEvent(new CustomEvent("abcarpet:auth_changed", { detail: null }));
+    return { authenticated: false };
+  } catch (err) {
+    console.warn("Gagal menghubungi server verifikasi sesi:", err);
+    if (isAuthenticated()) {
+      return { authenticated: true, user: getCurrentUser() };
+    }
+    return { authenticated: false };
+  }
 }
 
 /**
@@ -144,9 +193,9 @@ export function getCurrentUser() {
  * @param {string} email
  * @param {string} password
  * @param {boolean} rememberMe
- * @returns {Promise<{success: boolean, user?: object, message?: string}>}
+ * @returns {Promise<{success: boolean, user?: object, message?: string, isLocked?: boolean, remainingAttempts?: number, lockRemainingSeconds?: number}>}
  */
-export async function login(email, password, rememberMe = true) {
+export async function login(email, password, rememberMe = false) {
   const trimmedEmail = (email || "").trim().toLowerCase();
   const trimmedPassword = (password || "").trim();
 
@@ -180,7 +229,13 @@ export async function login(email, password, rememberMe = true) {
       };
 
       if (typeof window !== "undefined") {
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
+        if (rememberMe) {
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
+          sessionStorage.removeItem(AUTH_STORAGE_KEY);
+        } else {
+          sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+        }
         window.dispatchEvent(new CustomEvent("abcarpet:auth_changed", { detail: authPayload }));
       }
 
@@ -190,7 +245,6 @@ export async function login(email, password, rememberMe = true) {
         message: data.message || `Selamat datang kembali, ${data.user.name}!`,
       };
     } else {
-      // Jika server merespons (400, 401, 403, 429, 500), teruskan pesan dan data rate limit
       return {
         success: false,
         message: data.error || "Email atau kata sandi yang Anda masukkan salah!",
@@ -200,10 +254,10 @@ export async function login(email, password, rememberMe = true) {
       };
     }
   } catch (err) {
-    console.warn("Koneksi API login database gagal, mencoba verifikasi lokal:", err);
+    console.warn("Koneksi API login database gagal, mencoba verifikasi fallback:", err);
   }
 
-  // 2. Fallback offline jika server database tidak merespons
+  // 2. Fallback darurat jika koneksi API terputus
   const matchedAccount = DEFAULT_ADMIN_ACCOUNTS.find(
     (acc) =>
       acc.email.toLowerCase() === trimmedEmail &&
@@ -241,9 +295,16 @@ export async function login(email, password, rememberMe = true) {
   };
 
   if (typeof window !== "undefined") {
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
-    const expiryDays = rememberMe ? 30 : 1;
-    setCookie(COOKIE_NAME, JSON.stringify(authPayload), expiryDays);
+    if (rememberMe) {
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
+      sessionStorage.removeItem(AUTH_STORAGE_KEY);
+      const expiryDays = 30;
+      setCookie(COOKIE_NAME, JSON.stringify(authPayload), expiryDays);
+    } else {
+      sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+      setCookie(COOKIE_NAME, JSON.stringify(authPayload), 0);
+    }
     window.dispatchEvent(new CustomEvent("abcarpet:auth_changed", { detail: authPayload }));
   }
 
@@ -259,29 +320,31 @@ export async function login(email, password, rememberMe = true) {
  */
 export async function logout() {
   if (typeof window !== "undefined") {
-    // 1. Bersihkan localStorage & sessionStorage
+    // 1. Bersihkan localStorage & sessionStorage seketika
     try {
       localStorage.removeItem(AUTH_STORAGE_KEY);
+      sessionStorage.removeItem(AUTH_STORAGE_KEY);
       sessionStorage.clear();
     } catch (e) {
       console.warn("Storage removal error:", e);
     }
 
-    // 2. Hapus cookie client secara komprehensif
+    // 2. Hapus cookie client di semua path
     deleteCookie(COOKIE_NAME);
     deleteCookie("abcarpet_admin_session");
 
-    // 3. Panggil API logout server untuk menghapus HTTP cookie & catat audit log
+    // 3. Panggil API logout server untuk menghapus HTTP cookie secara tuntas & catat audit log
     try {
       await fetch("/api/auth/logout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        cache: "no-store",
       });
     } catch (err) {
       console.warn("Server logout request error:", err);
     }
 
-    // 4. Pastikan cookie terhapus kembali di browser
+    // 4. Pastikan cookie client dihapus ulang
     deleteCookie(COOKIE_NAME);
     deleteCookie("abcarpet_admin_session");
 
