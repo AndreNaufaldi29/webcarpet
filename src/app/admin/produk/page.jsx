@@ -210,12 +210,6 @@ export default function ProductsPage() {
     setActiveDropdownId(null);
   };
 
-  const handleDuplicate = async (product) => {
-    await duplicateProduct(product.id);
-    showToast(`Produk "${product.name}" berhasil diduplikat ke database!`);
-    setActiveDropdownId(null);
-  };
-
   const handleImageFileUpload = (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
@@ -547,29 +541,18 @@ export default function ProductsPage() {
           <div className="products-card">
             {/* CARD HEADER */}
             <div className="products-card-header">
-              <div>
+              <div className="products-card-header-left">
                 <h3>Daftar Produk Karpet</h3>
                 <p>{filteredProducts.length} dari {totalProducts} produk terdaftar</p>
               </div>
-
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={handleExportCSV}
-                title="Ekspor daftar produk ke CSV"
-                style={{ display: "flex", alignItems: "center", gap: "6px" }}
-              >
-                <Download size={13} />
-                <span>Export CSV</span>
-              </button>
             </div>
 
             {/* =================================================
                 TOOLBAR & FILTERS
             ================================================= */}
-            <div className="product-toolbar" style={{ flexWrap: "wrap", gap: "12px" }}>
+            <div className="admin-product-filter-bar">
               {/* SEARCH */}
-              <div className="admin-search-input-wrapper" style={{ flex: "1 1 260px" }}>
+              <div className="admin-search-input-wrapper">
                 <Search size={16} />
                 <input
                   type="text"
@@ -580,36 +563,39 @@ export default function ProductsPage() {
                 />
               </div>
 
-              {/* CATEGORY SELECT */}
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="admin-select-filter"
-              >
-                <option value="Semua Kategori">Semua Kategori</option>
-                {categoriesList.map((cat) => (
-                  <option key={cat.id || cat.name} value={cat.name}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
+              {/* FILTER SELECTS */}
+              <div className="admin-product-select-group">
+                {/* CATEGORY SELECT */}
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="admin-select-filter"
+                >
+                  <option value="Semua Kategori">Semua Kategori</option>
+                  {categoriesList.map((cat) => (
+                    <option key={cat.id || cat.name} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
 
-              {/* STATUS FILTER */}
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="admin-select-filter"
-              >
-                <option value="Semua Status">Semua Status</option>
-                <option value="Aktif">✓ Status Aktif</option>
-                <option value="Nonaktif">Status Nonaktif</option>
-              </select>
+                {/* STATUS FILTER */}
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="admin-select-filter"
+                >
+                  <option value="Semua Status">Semua Status</option>
+                  <option value="Aktif">✓ Status Aktif</option>
+                  <option value="Nonaktif">Status Nonaktif</option>
+                </select>
+              </div>
             </div>
 
             {/* =================================================
-                TABLE
+                DESKTOP TABLE
             ================================================= */}
-            <div className="table-wrapper">
+            <div className="table-wrapper products-desktop-table">
               <table className="products-table">
                 <thead>
                   <tr>
@@ -691,92 +677,66 @@ export default function ProductsPage() {
                           {/* AKSI */}
                           <td>
                             <div
-                              className="action-buttons"
-                              style={{ justifyContent: "center", position: "relative" }}
+                              className="admin-table-actions"
+                              style={{ justifyContent: "center" }}
                             >
+                              {/* VIEW WEBSITE BUTTON */}
+                              <Link
+                                href={`/product/${product.id}`}
+                                target="_blank"
+                                className="admin-table-action-btn view"
+                                title={`Buka ${product.name} di Website`}
+                                aria-label={`Buka ${product.name} di Website`}
+                              >
+                                <ExternalLink size={14} />
+                              </Link>
+
                               {/* EDIT BUTTON */}
                               <button
                                 type="button"
-                                className="edit-button"
+                                className="admin-table-action-btn edit"
                                 onClick={() => handleOpenEdit(product)}
                                 title={`Edit ${product.name}`}
                                 aria-label={`Edit ${product.name}`}
                               >
-                                <Pencil size={15} />
+                                <Pencil size={14} />
+                              </button>
+
+                              {/* TOGGLE STATUS BUTTON */}
+                              <button
+                                type="button"
+                                className={`admin-table-action-btn toggle ${
+                                  product.status === "Aktif" ? "active" : "inactive"
+                                }`}
+                                onClick={() => handleToggleStatus(product)}
+                                title={
+                                  product.status === "Aktif"
+                                    ? "Nonaktifkan Produk"
+                                    : "Aktifkan Produk"
+                                }
+                                aria-label={
+                                  product.status === "Aktif"
+                                    ? "Nonaktifkan Produk"
+                                    : "Aktifkan Produk"
+                                }
+                              >
+                                {product.status === "Aktif" ? (
+                                  <ToggleLeft size={16} />
+                                ) : (
+                                  <ToggleRight size={16} />
+                                )}
                               </button>
 
                               {/* DELETE BUTTON */}
                               <button
                                 type="button"
-                                className="delete-button"
+                                className="admin-table-action-btn delete"
                                 onClick={() => handleOpenDelete(product)}
                                 title={`Hapus ${product.name}`}
                                 aria-label={`Hapus ${product.name}`}
                               >
-                                <Trash2 size={15} />
+                                <Trash2 size={14} />
                               </button>
-
-                              {/* MORE BUTTON & DROPDOWN */}
-                              <div className="more-button-container" style={{ position: "relative" }}>
-                                <button
-                                  type="button"
-                                  className="more-button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setActiveDropdownId(
-                                      isDropdownOpen ? null : product.id
-                                    );
-                                  }}
-                                  title="Menu opsi lainnya"
-                                  aria-label="Menu opsi lainnya"
-                                >
-                                  <MoreVertical size={16} />
-                                </button>
-
-                                {/* DROPDOWN MENU */}
-                                {isDropdownOpen && (
-                                  <div
-                                    className="admin-action-menu-dropdown"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <Link
-                                      href={`/product/${product.id}`}
-                                      target="_blank"
-                                      className="admin-action-menu-item"
-                                    >
-                                      <ExternalLink size={14} color="#2563eb" />
-                                      <span>Lihat di Website</span>
-                                    </Link>
-
-                                    <button
-                                      type="button"
-                                      onClick={() => handleToggleStatus(product)}
-                                      className="admin-action-menu-item"
-                                    >
-                                      {product.status === "Aktif" ? (
-                                        <>
-                                          <ToggleLeft size={14} color="#ea580c" />
-                                          <span>Nonaktifkan</span>
-                                        </>
-                                      ) : (
-                                        <>
-                                          <ToggleRight size={14} color="#16a34a" />
-                                          <span>Aktifkan Produk</span>
-                                        </>
-                                      )}
-                                    </button>
-
-                                    <button
-                                      type="button"
-                                      onClick={() => handleDuplicate(product)}
-                                      className="admin-action-menu-item"
-                                    >
-                                      <Copy size={14} color="#6366f1" />
-                                      <span>Duplikat Produk</span>
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
                             </div>
                           </td>
                         </tr>
@@ -795,6 +755,121 @@ export default function ProductsPage() {
                   )}
                 </tbody>
               </table>
+            </div>
+
+            {/* =================================================
+                MOBILE CARD LIST (RESPONSIVE)
+            ================================================= */}
+            <div className="products-mobile-list">
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => {
+                  const coverImg = product.images?.[0];
+
+                  return (
+                    <div key={product.id} className="product-mobile-card">
+                      <div className="product-mobile-card-top">
+                        <div className="product-mobile-thumb">
+                          {coverImg ? (
+                            <img
+                              src={coverImg}
+                              alt={product.name}
+                            />
+                          ) : (
+                            <Package size={20} />
+                          )}
+                        </div>
+
+                        <div className="product-mobile-info">
+                          <strong className="product-mobile-name">{product.name}</strong>
+                          <div className="product-mobile-tags">
+                            <span className="product-mobile-id">ID #{product.id}</span>
+                            {product.isFeatured && (
+                              <span className="product-tag-featured">
+                                ⭐ Unggulan
+                              </span>
+                            )}
+                            {product.isNew && (
+                              <span className="product-tag-new">
+                                🔥 Terbaru
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="product-mobile-meta-row">
+                        <span className="category-badge">
+                          {product.category}
+                        </span>
+                        <span
+                          className={`status ${
+                            product.status === "Aktif" ? "active" : "inactive"
+                          }`}
+                        >
+                          {product.status || "Aktif"}
+                        </span>
+                      </div>
+
+                      <div className="product-mobile-actions-row">
+                        <button
+                          type="button"
+                          className="admin-action-btn-pill edit"
+                          onClick={() => handleOpenEdit(product)}
+                          title={`Edit ${product.name}`}
+                        >
+                          <Pencil size={13} />
+                          <span>Edit</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="admin-action-btn-pill toggle"
+                          onClick={() => handleToggleStatus(product)}
+                          title={product.status === "Aktif" ? "Nonaktifkan" : "Aktifkan"}
+                        >
+                          {product.status === "Aktif" ? (
+                            <>
+                              <ToggleLeft size={14} color="#ea580c" />
+                              <span>Nonaktif</span>
+                            </>
+                          ) : (
+                            <>
+                              <ToggleRight size={14} color="#16a34a" />
+                              <span>Aktifkan</span>
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          className="admin-action-btn-pill delete"
+                          onClick={() => handleOpenDelete(product)}
+                          title={`Hapus ${product.name}`}
+                        >
+                          <Trash2 size={13} />
+                          <span>Hapus</span>
+                        </button>
+
+                        <Link
+                          href={`/product/${product.id}`}
+                          target="_blank"
+                          className="admin-action-btn-pill web"
+                          title="Buka Halaman Produk di Website"
+                        >
+                          <ExternalLink size={13} />
+                          <span>Web</span>
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="admin-empty-state-card">
+                  <Package size={36} color="#94a3b8" style={{ marginBottom: "10px" }} />
+                  <h4>Tidak ada produk ditemukan</h4>
+                  <p>Coba sesuaikan kata kunci pencarian atau filter kategori Anda.</p>
+                </div>
+              )}
             </div>
           </div>
         </section>

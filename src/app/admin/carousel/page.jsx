@@ -556,23 +556,25 @@ export default function CarouselAdminPage() {
               </div>
 
               <div className="admin-carousel-preview-actions">
-                <button
-                  type="button"
-                  onClick={() => setPreviewDevice("desktop")}
-                  className={`admin-carousel-device-btn ${previewDevice === "desktop" ? "active" : ""}`}
-                >
-                  <FiMonitor size={14} />
-                  <span>Desktop</span>
-                </button>
+                <div className="admin-carousel-device-group">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewDevice("desktop")}
+                    className={`admin-carousel-device-btn ${previewDevice === "desktop" ? "active" : ""}`}
+                  >
+                    <FiMonitor size={14} />
+                    <span>Desktop</span>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => setPreviewDevice("mobile")}
-                  className={`admin-carousel-device-btn ${previewDevice === "mobile" ? "active" : ""}`}
-                >
-                  <FiSmartphone size={14} />
-                  <span>Mobile</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewDevice("mobile")}
+                    className={`admin-carousel-device-btn ${previewDevice === "mobile" ? "active" : ""}`}
+                  >
+                    <FiSmartphone size={14} />
+                    <span>Mobile</span>
+                  </button>
+                </div>
 
                 <Link
                   href="/"
@@ -586,249 +588,124 @@ export default function CarouselAdminPage() {
             </div>
 
             {/* PREVIEW FRAME */}
-            <div
-              className="admin-carousel-preview-frame"
-              style={{
-                maxWidth: previewDevice === "mobile" ? "380px" : "100%",
-                aspectRatio: previewDevice === "mobile" ? "9 / 12" : "16 / 7",
-                minHeight: previewDevice === "mobile" ? "460px" : "320px",
-              }}
-            >
-              {/* Background image */}
-              <img
-                src={
-                  currentPreviewSlide.image ||
-                  "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1600"
-                }
-                alt={currentPreviewSlide.title}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: "center",
-                  display: "block",
-                }}
-              />
-
-              {/* Gradient overlay */}
+            <div className="admin-carousel-preview-outer-wrap">
               <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background:
-                    "linear-gradient(to right, rgba(6, 26, 18, 0.9) 0%, rgba(6, 26, 18, 0.6) 60%, rgba(6, 26, 18, 0.2) 100%)",
-                }}
-              />
-
-              {/* Slide Content */}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  padding: previewDevice === "mobile" ? "24px 18px" : "40px 48px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  maxWidth: previewDevice === "mobile" ? "100%" : "680px",
-                  zIndex: 2,
-                }}
+                className={`admin-carousel-preview-frame ${
+                  previewDevice === "mobile" ? "preview-mobile-device" : "preview-desktop-device"
+                }`}
               >
-                <div style={{ marginBottom: "12px" }}>
-                  <span
-                    style={{
-                      background: "rgba(42, 97, 81, 0.9)",
-                      color: "#FCF7F0",
-                      border: "1px solid rgba(216, 194, 164, 0.4)",
-                      padding: "4px 12px",
-                      borderRadius: "999px",
-                      fontSize: previewDevice === "mobile" ? "10px" : "12px",
-                      fontWeight: 700,
-                      letterSpacing: "0.5px",
-                    }}
-                  >
-                    {currentPreviewSlide.badge || "KARPET PREMIUM"}
-                  </span>
-                </div>
+                {/* Mobile Smartphone Notch / Speaker */}
+                {previewDevice === "mobile" && (
+                  <div className="admin-carousel-phone-notch" />
+                )}
 
-                <h2
-                  style={{
-                    fontSize: previewDevice === "mobile" ? "18px" : "28px",
-                    fontWeight: 800,
-                    lineHeight: 1.25,
-                    margin: "0 0 12px 0",
-                    color: "#FCF7F0",
-                    textShadow: "0 2px 10px rgba(0,0,0,0.5)",
-                  }}
+                {/* Background image */}
+                <img
+                  src={
+                    currentPreviewSlide.image ||
+                    "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1600"
+                  }
+                  alt={currentPreviewSlide.title}
+                  className="admin-carousel-preview-bg"
+                />
+
+                {/* Gradient overlay */}
+                <div
+                  className={`admin-carousel-preview-overlay ${
+                    previewDevice === "mobile" ? "is-mobile-overlay" : "is-desktop-overlay"
+                  }`}
+                />
+
+                {/* Slide Content */}
+                <div
+                  className={`admin-carousel-preview-content ${
+                    previewDevice === "mobile" ? "is-mobile-view" : "is-desktop-view"
+                  }`}
                 >
-                  {currentPreviewSlide.title}
-                </h2>
-
-                <p
-                  style={{
-                    fontSize: previewDevice === "mobile" ? "12px" : "14px",
-                    lineHeight: 1.5,
-                    margin: "0 0 20px 0",
-                    color: "#D8DED9",
-                    maxHeight: previewDevice === "mobile" ? "60px" : "none",
-                    overflow: "hidden",
-                  }}
-                >
-                  {currentPreviewSlide.desc}
-                </p>
-
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                  {currentPreviewSlide.btnPrimaryText && (
-                    <span
-                      style={{
-                        padding: previewDevice === "mobile" ? "8px 14px" : "10px 20px",
-                        borderRadius: "10px",
-                        background: "linear-gradient(135deg, #0A3B25 0%, #2A6151 100%)",
-                        color: "#FCF7F0",
-                        border: "1px solid #D8C2A4",
-                        fontSize: previewDevice === "mobile" ? "11px" : "13px",
-                        fontWeight: 700,
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "6px",
-                      }}
-                    >
-                      {currentPreviewSlide.btnPrimaryText}
-                      <FiArrowRight size={12} />
+                  <div className="admin-carousel-preview-badge-wrap">
+                    <span className="admin-carousel-preview-badge">
+                      {currentPreviewSlide.badge || "KARPET PREMIUM"}
                     </span>
-                  )}
-
-                  {currentPreviewSlide.btnSecondaryText && (
-                    <span
-                      style={{
-                        padding: previewDevice === "mobile" ? "8px 14px" : "10px 20px",
-                        borderRadius: "10px",
-                        background: "rgba(255, 255, 255, 0.12)",
-                        color: "#FCF7F0",
-                        border: "1px solid rgba(255, 255, 255, 0.25)",
-                        fontSize: previewDevice === "mobile" ? "11px" : "13px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {currentPreviewSlide.btnSecondaryText}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Prev / Next controls in preview */}
-              {activeSlides.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setPreviewIndex((p) =>
-                        p === 0 ? activeSlides.length - 1 : p - 1
-                      )
-                    }
-                    style={{
-                      position: "absolute",
-                      left: "12px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "50%",
-                      background: "rgba(6, 26, 18, 0.7)",
-                      border: "1px solid rgba(216, 194, 164, 0.4)",
-                      color: "#FCF7F0",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      zIndex: 3,
-                    }}
-                    aria-label="Slide sebelumnya"
-                  >
-                    <FiChevronLeft size={18} />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setPreviewIndex((p) =>
-                        p === activeSlides.length - 1 ? 0 : p + 1
-                      )
-                    }
-                    style={{
-                      position: "absolute",
-                      right: "12px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "50%",
-                      background: "rgba(6, 26, 18, 0.7)",
-                      border: "1px solid rgba(216, 194, 164, 0.4)",
-                      color: "#FCF7F0",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      zIndex: 3,
-                    }}
-                    aria-label="Slide berikutnya"
-                  >
-                    <FiChevronRight size={18} />
-                  </button>
-
-                  {/* Indicator dots */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "16px",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      display: "flex",
-                      gap: "8px",
-                      zIndex: 3,
-                    }}
-                  >
-                    {activeSlides.map((_, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setPreviewIndex(i)}
-                        style={{
-                          width: previewIndex === i ? "24px" : "8px",
-                          height: "8px",
-                          borderRadius: "999px",
-                          background: previewIndex === i ? "#D8C2A4" : "rgba(255,255,255,0.4)",
-                          border: "none",
-                          cursor: "pointer",
-                          transition: "all 0.3s ease",
-                        }}
-                        aria-label={`Lihat slide ${i + 1}`}
-                      />
-                    ))}
                   </div>
-                </>
-              )}
+
+                  <h2 className="admin-carousel-preview-headline">
+                    {currentPreviewSlide.title}
+                  </h2>
+
+                  <p className="admin-carousel-preview-desc">
+                    {currentPreviewSlide.desc}
+                  </p>
+
+                  <div className="admin-carousel-preview-btn-group">
+                    {currentPreviewSlide.btnPrimaryText && (
+                      <span className="admin-carousel-preview-btn-primary">
+                        <span>{currentPreviewSlide.btnPrimaryText}</span>
+                        <FiArrowRight size={13} />
+                      </span>
+                    )}
+
+                    {currentPreviewSlide.btnSecondaryText && (
+                      <span className="admin-carousel-preview-btn-secondary">
+                        <span>{currentPreviewSlide.btnSecondaryText}</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Prev / Next controls in preview */}
+                {activeSlides.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPreviewIndex((p) =>
+                          p === 0 ? activeSlides.length - 1 : p - 1
+                        )
+                      }
+                      className="admin-carousel-preview-nav-btn prev"
+                      aria-label="Slide sebelumnya"
+                    >
+                      <FiChevronLeft size={18} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPreviewIndex((p) =>
+                          p === activeSlides.length - 1 ? 0 : p + 1
+                        )
+                      }
+                      className="admin-carousel-preview-nav-btn next"
+                      aria-label="Slide berikutnya"
+                    >
+                      <FiChevronRight size={18} />
+                    </button>
+
+                    {/* Indicator dots */}
+                    <div className="admin-carousel-preview-dots">
+                      {activeSlides.map((_, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setPreviewIndex(i)}
+                          className={`admin-carousel-preview-dot ${previewIndex === i ? "active" : ""}`}
+                          aria-label={`Lihat slide ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
           {/* GLOBAL SETTINGS CARD */}
           <div className="admin-carousel-config-card">
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div
-                style={{
-                  width: "42px",
-                  height: "42px",
-                  borderRadius: "10px",
-                  background: "rgba(42, 97, 81, 0.12)",
-                  color: "#2A6151",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+            <div className="admin-carousel-config-header">
+              <div className="admin-carousel-config-icon-box">
                 <FiSliders size={20} />
               </div>
-              <div>
+              <div className="admin-carousel-config-text">
                 <strong className="admin-carousel-config-title">
                   Konfigurasi Pemutaran Carousel
                 </strong>
@@ -838,7 +715,9 @@ export default function CarouselAdminPage() {
               </div>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+            <div className="admin-carousel-config-divider" />
+
+            <div className="admin-carousel-config-controls">
               {/* Autoplay toggle */}
               <label className="admin-carousel-label">
                 <input
@@ -850,14 +729,14 @@ export default function CarouselAdminPage() {
                       autoplay: e.target.checked,
                     }))
                   }
-                  style={{ width: "18px", height: "18px", accentColor: "#2A6151" }}
+                  className="admin-carousel-checkbox"
                 />
                 <span>Autoplay Aktif</span>
               </label>
 
               {/* Interval selector */}
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span className="admin-carousel-config-desc" style={{ fontWeight: 500 }}>
+              <div className="admin-carousel-interval-box">
+                <span className="admin-carousel-interval-label">
                   Durasi:
                 </span>
                 <select
@@ -880,10 +759,9 @@ export default function CarouselAdminPage() {
 
               <button
                 type="button"
-                className="admin-btn-primary"
+                className="admin-btn-primary admin-carousel-config-save-btn"
                 onClick={handleSaveGlobalSettings}
                 disabled={isSavingSettings}
-                style={{ padding: "8px 16px", fontSize: "13px" }}
               >
                 {isSavingSettings ? "Menyimpan..." : "Simpan Pengaturan"}
               </button>
@@ -891,7 +769,7 @@ export default function CarouselAdminPage() {
           </div>
 
           {/* FILTER & ACTION TOOLBAR */}
-          <div className="admin-user-filter-bar">
+          <div className="admin-user-filter-bar admin-carousel-filter-bar">
             <div className="admin-filter-group">
               <div className="admin-search-input-wrapper">
                 <FiSearch />
@@ -915,7 +793,7 @@ export default function CarouselAdminPage() {
               </select>
             </div>
 
-            <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+            <div className="admin-carousel-toolbar-actions">
               <button
                 type="button"
                 className="admin-carousel-sync-btn"
@@ -938,7 +816,7 @@ export default function CarouselAdminPage() {
 
               <button
                 type="button"
-                className="admin-btn-primary"
+                className="admin-btn-primary admin-carousel-add-btn"
                 onClick={handleOpenAdd}
               >
                 <FiPlus size={18} />
@@ -948,25 +826,57 @@ export default function CarouselAdminPage() {
           </div>
 
           {/* SLIDES LIST CARDS */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "20px" }}>
+          <div className="admin-carousel-slides-container">
             {filteredSlides.length > 0 ? (
               filteredSlides.map((slide, idx) => (
                 <div
                   key={slide.id || idx}
-                  className="admin-carousel-slide-card"
-                  style={{
-                    opacity: slide.status === "Nonaktif" ? 0.65 : 1,
-                  }}
+                  className={`admin-carousel-slide-card ${slide.status === "Nonaktif" ? "is-inactive" : ""}`}
                 >
-                  {/* Order & Move buttons */}
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: "4px",
-                    }}
-                  >
+                  {/* Mobile Header Bar (Order + Badges) */}
+                  <div className="admin-carousel-card-header">
+                    <div className="admin-carousel-order-controls">
+                      <button
+                        type="button"
+                        className="admin-carousel-move-btn"
+                        disabled={idx === 0}
+                        onClick={() => handleMoveSlide(idx, "up")}
+                        title="Geser urutan ke atas"
+                      >
+                        <FiArrowUp size={14} />
+                      </button>
+
+                      <span className="admin-carousel-order-badge">
+                        #{idx + 1}
+                      </span>
+
+                      <button
+                        type="button"
+                        className="admin-carousel-move-btn"
+                        disabled={idx === filteredSlides.length - 1}
+                        onClick={() => handleMoveSlide(idx, "down")}
+                        title="Geser urutan ke bawah"
+                      >
+                        <FiArrowDown size={14} />
+                      </button>
+                    </div>
+
+                    <div className="admin-carousel-header-tags">
+                      <span className="admin-carousel-badge-tag">
+                        {slide.badge || "PRODUK"}
+                      </span>
+                      <span
+                        className={`admin-carousel-status-pill ${
+                          slide.status === "Aktif" ? "active" : "inactive"
+                        }`}
+                      >
+                        {slide.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Desktop Order Controls */}
+                  <div className="admin-carousel-desktop-order">
                     <button
                       type="button"
                       className="admin-carousel-move-btn"
@@ -993,82 +903,27 @@ export default function CarouselAdminPage() {
                   </div>
 
                   {/* Thumbnail */}
-                  <div
-                    style={{
-                      width: "160px",
-                      height: "100px",
-                      minWidth: "160px",
-                      borderRadius: "12px",
-                      overflow: "hidden",
-                      position: "relative",
-                      background: "#061A12",
-                      border: "1px solid rgba(42, 97, 81, 0.3)",
-                    }}
-                  >
+                  <div className="admin-carousel-card-thumb">
                     <img
                       src={slide.image}
                       alt={slide.title}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        display: "block",
-                      }}
+                      className="admin-carousel-thumb-img"
                     />
-                    <span
-                      style={{
-                        position: "absolute",
-                        bottom: "6px",
-                        left: "6px",
-                        fontSize: "9px",
-                        fontWeight: 700,
-                        padding: "2px 6px",
-                        borderRadius: "4px",
-                        background: "rgba(10, 59, 37, 0.9)",
-                        color: "#FCF7F0",
-                      }}
-                    >
+                    <span className="admin-carousel-thumb-badge">
                       {slide.badge || "PRODUK"}
                     </span>
                   </div>
 
                   {/* Info details */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        marginBottom: "6px",
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: "11px",
-                          fontWeight: 700,
-                          color: "#2A6151",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.5px",
-                        }}
-                      >
+                  <div className="admin-carousel-card-body">
+                    <div className="admin-carousel-desktop-tags">
+                      <span className="admin-carousel-badge-tag">
                         {slide.badge}
                       </span>
                       <span
-                        style={{
-                          fontSize: "11px",
-                          fontWeight: 600,
-                          padding: "2px 8px",
-                          borderRadius: "999px",
-                          background:
-                            slide.status === "Aktif"
-                              ? "rgba(16, 185, 129, 0.12)"
-                              : "rgba(239, 68, 68, 0.12)",
-                          color:
-                            slide.status === "Aktif" ? "#10b981" : "#ef4444",
-                          border: `1px solid ${
-                            slide.status === "Aktif" ? "#10b981" : "#ef4444"
-                          }`,
-                        }}
+                        className={`admin-carousel-status-pill ${
+                          slide.status === "Aktif" ? "active" : "inactive"
+                        }`}
                       >
                         {slide.status}
                       </span>
@@ -1083,32 +938,21 @@ export default function CarouselAdminPage() {
                     </p>
 
                     <div className="admin-carousel-slide-meta">
-                      <span>
-                        <strong>Tombol 1:</strong> {slide.btnPrimaryText || "-"} (
-                        <code style={{ color: "#2A6151" }}>
-                          {slide.btnPrimaryLink || "/catalog"}
-                        </code>
-                        )
-                      </span>
-                      <span>
-                        <strong>Tombol 2:</strong> {slide.btnSecondaryText || "-"} (
-                        <code style={{ color: "#2A6151" }}>
-                          {slide.btnSecondaryLink || "/portofolio"}
-                        </code>
-                        )
-                      </span>
+                      <div className="admin-carousel-meta-chip">
+                        <span className="meta-label">Tombol 1:</span>
+                        <span className="meta-text">{slide.btnPrimaryText || "-"}</span>
+                        <code className="meta-link">{slide.btnPrimaryLink || "/catalog"}</code>
+                      </div>
+                      <div className="admin-carousel-meta-chip">
+                        <span className="meta-label">Tombol 2:</span>
+                        <span className="meta-text">{slide.btnSecondaryText || "-"}</span>
+                        <code className="meta-link">{slide.btnSecondaryLink || "/portofolio"}</code>
+                      </div>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      flexShrink: 0,
-                    }}
-                  >
+                  <div className="admin-carousel-card-actions">
                     <button
                       type="button"
                       onClick={() => handleToggleStatus(slide)}
@@ -1117,7 +961,17 @@ export default function CarouselAdminPage() {
                         slide.status === "Aktif" ? "status-active" : "status-inactive"
                       }`}
                     >
-                      {slide.status === "Aktif" ? "Nonaktifkan" : "Aktifkan"}
+                      {slide.status === "Aktif" ? (
+                        <>
+                          <FiPause size={13} />
+                          <span>Nonaktifkan</span>
+                        </>
+                      ) : (
+                        <>
+                          <FiPlay size={13} />
+                          <span>Aktifkan</span>
+                        </>
+                      )}
                     </button>
 
                     <button
@@ -1126,7 +980,7 @@ export default function CarouselAdminPage() {
                       title="Edit Slide"
                       className="admin-carousel-action-btn edit"
                     >
-                      <FiEdit2 size={14} />
+                      <FiEdit2 size={13} />
                       <span>Edit</span>
                     </button>
 
@@ -1136,7 +990,8 @@ export default function CarouselAdminPage() {
                       title="Hapus Slide"
                       className="admin-carousel-action-btn delete"
                     >
-                      <FiTrash2 size={15} />
+                      <FiTrash2 size={14} />
+                      <span className="mobile-only-action-label">Hapus</span>
                     </button>
                   </div>
                 </div>
@@ -1168,8 +1023,7 @@ export default function CarouselAdminPage() {
       {showAddModal && (
         <div className="admin-modal-backdrop" onClick={() => setShowAddModal(false)}>
           <div
-            className="admin-modal-box"
-            style={{ maxWidth: "680px" }}
+            className="admin-modal-box admin-carousel-modal-box"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="admin-modal-header">
@@ -1255,44 +1109,17 @@ export default function CarouselAdminPage() {
                   </label>
 
                   {formData.image ? (
-                    <div
-                      style={{
-                        position: "relative",
-                        borderRadius: "12px",
-                        overflow: "hidden",
-                        border: "1px solid #2A6151",
-                        background: "#061A12",
-                        aspectRatio: "16 / 7",
-                        width: "100%",
-                        maxHeight: "220px",
-                        boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
-                      }}
-                    >
+                    <div className="admin-carousel-modal-preview-box">
                       <img
                         src={formData.image}
                         alt="Preview Banner Hero"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          display: "block",
-                        }}
+                        className="admin-carousel-modal-preview-img"
                       />
-                      <div
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          background: "linear-gradient(to top, rgba(6,26,18,0.85) 0%, transparent 60%)",
-                          display: "flex",
-                          alignItems: "flex-end",
-                          justifyContent: "space-between",
-                          padding: "12px 16px",
-                        }}
-                      >
-                        <span style={{ color: "#FCF7F0", fontSize: "12px", fontWeight: 600 }}>
+                      <div className="admin-carousel-modal-preview-overlay">
+                        <span className="admin-carousel-modal-preview-title">
                           {formData.title || "Preview Banner Hero"}
                         </span>
-                        <div style={{ display: "flex", gap: "8px" }}>
+                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                           <label
                             className="admin-btn-secondary"
                             style={{
@@ -1340,37 +1167,14 @@ export default function CarouselAdminPage() {
                       </div>
                     </div>
                   ) : (
-                    <label
-                      className="admin-carousel-dropzone"
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: "36px 20px",
-                        borderRadius: "14px",
-                        textAlign: "center",
-                        gap: "10px",
-                      }}
-                    >
+                    <label className="admin-carousel-dropzone">
                       <input
                         type="file"
                         accept="image/*"
                         style={{ display: "none" }}
                         onChange={handleImageUpload}
                       />
-                      <div
-                        style={{
-                          width: "48px",
-                          height: "48px",
-                          borderRadius: "50%",
-                          background: "rgba(42, 97, 81, 0.15)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "#2A6151",
-                        }}
-                      >
+                      <div className="admin-carousel-dropzone-icon">
                         <FiUpload size={22} />
                       </div>
                       <div>
@@ -1466,8 +1270,7 @@ export default function CarouselAdminPage() {
       {showEditModal && selectedSlide && (
         <div className="admin-modal-backdrop" onClick={() => setShowEditModal(false)}>
           <div
-            className="admin-modal-box"
-            style={{ maxWidth: "680px" }}
+            className="admin-modal-box admin-carousel-modal-box"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="admin-modal-header">
@@ -1550,44 +1353,17 @@ export default function CarouselAdminPage() {
                   </label>
 
                   {formData.image ? (
-                    <div
-                      style={{
-                        position: "relative",
-                        borderRadius: "12px",
-                        overflow: "hidden",
-                        border: "1px solid #2A6151",
-                        background: "#061A12",
-                        aspectRatio: "16 / 7",
-                        width: "100%",
-                        maxHeight: "220px",
-                        boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
-                      }}
-                    >
+                    <div className="admin-carousel-modal-preview-box">
                       <img
                         src={formData.image}
                         alt="Preview Banner Hero"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          display: "block",
-                        }}
+                        className="admin-carousel-modal-preview-img"
                       />
-                      <div
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          background: "linear-gradient(to top, rgba(6,26,18,0.85) 0%, transparent 60%)",
-                          display: "flex",
-                          alignItems: "flex-end",
-                          justifyContent: "space-between",
-                          padding: "12px 16px",
-                        }}
-                      >
-                        <span style={{ color: "#FCF7F0", fontSize: "12px", fontWeight: 600 }}>
+                      <div className="admin-carousel-modal-preview-overlay">
+                        <span className="admin-carousel-modal-preview-title">
                           {formData.title || "Preview Banner Hero"}
                         </span>
-                        <div style={{ display: "flex", gap: "8px" }}>
+                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                           <label
                             className="admin-btn-secondary"
                             style={{
@@ -1635,37 +1411,14 @@ export default function CarouselAdminPage() {
                       </div>
                     </div>
                   ) : (
-                    <label
-                      className="admin-carousel-dropzone"
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: "36px 20px",
-                        borderRadius: "14px",
-                        textAlign: "center",
-                        gap: "10px",
-                      }}
-                    >
+                    <label className="admin-carousel-dropzone">
                       <input
                         type="file"
                         accept="image/*"
                         style={{ display: "none" }}
                         onChange={handleImageUpload}
                       />
-                      <div
-                        style={{
-                          width: "48px",
-                          height: "48px",
-                          borderRadius: "50%",
-                          background: "rgba(42, 97, 81, 0.15)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "#2A6151",
-                        }}
-                      >
+                      <div className="admin-carousel-dropzone-icon">
                         <FiUpload size={22} />
                       </div>
                       <div>
@@ -1853,26 +1606,7 @@ export default function CarouselAdminPage() {
 
       {/* TOAST NOTIFICATION */}
       {toastMessage && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "24px",
-            right: "24px",
-            background: "#0A3B25",
-            color: "#FCF7F0",
-            padding: "14px 22px",
-            borderRadius: "12px",
-            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.25)",
-            border: "1px solid #2A6151",
-            zIndex: 9999,
-            fontSize: "14px",
-            fontWeight: 600,
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            animation: "animFadeUp 0.3s ease",
-          }}
-        >
+        <div className="admin-toast-notification">
           <FiCheckCircle color="#10b981" size={18} />
           <span>{toastMessage}</span>
         </div>

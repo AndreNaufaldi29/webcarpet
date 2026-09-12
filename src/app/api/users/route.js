@@ -32,7 +32,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, email, password = "password123", role = "Staff", status = "active", phone, avatar } = body;
+    const { name, email, password = "password123", role = "Admin", status = "active", phone, avatar } = body;
 
     if (!name || !email) {
       return NextResponse.json(

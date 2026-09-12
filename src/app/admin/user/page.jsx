@@ -22,7 +22,6 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiMail,
-  FiPhone,
   FiCalendar,
   FiLock,
   FiUser,
@@ -35,7 +34,6 @@ const INITIAL_USERS = [
     id: 1,
     name: "Ahmad Fauzi",
     email: "admin@abcarpet.com",
-    phone: "0812-3456-7890",
     role: "Super Admin",
     status: "active",
     password: "admin123",
@@ -44,80 +42,53 @@ const INITIAL_USERS = [
   },
   {
     id: 2,
+    name: "Andre Naufaldi",
+    email: "andrenaufaldi29@gmail.com",
+    role: "Super Admin",
+    status: "active",
+    password: "admin123",
+    joinDate: "2025-01-12",
+    lastActive: "Baru saja",
+  },
+  {
+    id: 3,
     name: "Budi Santoso",
     email: "budi.santoso@abcarpet.com",
-    phone: "0819-8765-4321",
-    role: "Manager",
+    role: "Admin",
     status: "active",
-    password: "manager123",
+    password: "admin123",
     joinDate: "2024-11-20",
     lastActive: "1 hari yang lalu",
   },
   {
-    id: 3,
+    id: 4,
     name: "Hendra Wijaya",
     email: "hendra.staff@abcarpet.com",
-    phone: "0838-4455-6677",
-    role: "Staff",
+    role: "Admin",
     status: "active",
-    password: "staff123",
+    password: "admin123",
     joinDate: "2025-01-15",
     lastActive: "5 jam yang lalu",
   },
   {
-    id: 4,
+    id: 5,
     name: "Siti Rahmawati",
     email: "siti.rahma@gmail.com",
-    phone: "0857-1234-5678",
-    role: "Pelanggan",
+    role: "Admin",
     status: "active",
-    password: "user12345",
+    password: "admin123",
     joinDate: "2025-02-14",
     lastActive: "10 menit yang lalu",
   },
   {
-    id: 5,
+    id: 6,
     name: "Dewi Lestari",
     email: "dewi.lestari@yahoo.com",
-    phone: "0821-9988-7766",
-    role: "Pelanggan",
+    role: "Admin",
     status: "pending",
-    password: "dewi@secret",
+    password: "admin123",
     joinDate: "2025-03-01",
     lastActive: "Belum pernah",
-  },
-  {
-    id: 6,
-    name: "Rina Novita",
-    email: "rina.novita@gmail.com",
-    phone: "0878-1122-3344",
-    role: "Pelanggan",
-    status: "inactive",
-    password: "rina12345",
-    joinDate: "2024-12-05",
-    lastActive: "3 minggu yang lalu",
-  },
-  {
-    id: 7,
-    name: "Rizky Pratama",
-    email: "rizky.pratama@outlook.com",
-    phone: "0813-5566-7788",
-    role: "Pelanggan",
-    status: "active",
-    password: "rizky@123",
-    joinDate: "2025-02-28",
-    lastActive: "30 menit yang lalu",
-  },
-  {
-    id: 8,
-    name: "Maya Indah",
-    email: "maya.indah@gmail.com",
-    phone: "0852-6677-8899",
-    role: "Pelanggan",
-    status: "active",
-    password: "maya@pass",
-    joinDate: "2025-03-04",
-    lastActive: "Baru saja",
   },
 ];
 
@@ -150,8 +121,7 @@ export default function AdminUserPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
-    role: "Pelanggan",
+    role: "Admin",
     status: "active",
     password: "",
   });
@@ -178,8 +148,7 @@ export default function AdminUserPage() {
           id: u.id,
           name: u.name,
           email: u.email,
-          phone: u.phone || "-",
-          role: u.role || "Pelanggan",
+          role: u.role || "Admin",
           status: u.status || "active",
           password: u.password || "password123",
           joinDate: u.createdAt
@@ -201,8 +170,7 @@ export default function AdminUserPage() {
             id: u.id,
             name: u.name,
             email: u.email,
-            phone: u.phone || "-",
-            role: u.role || "Pelanggan",
+            role: u.role || "Admin",
             status: u.status || "active",
             password: u.password || "password123",
             joinDate: u.createdAt
@@ -237,8 +205,7 @@ export default function AdminUserPage() {
     return users.filter((u) => {
       const matchSearch =
         u.name.toLowerCase().includes(search.toLowerCase()) ||
-        u.email.toLowerCase().includes(search.toLowerCase()) ||
-        u.phone.includes(search);
+        u.email.toLowerCase().includes(search.toLowerCase());
 
       const matchRole =
         roleFilter === "all" ||
@@ -259,8 +226,8 @@ export default function AdminUserPage() {
 
   const totalUsers = users.length;
   const activeUsers = users.filter((u) => u.status === "active").length;
-  const adminUsers = users.filter((u) => u.role === "Admin" || u.role === "Manager" || u.role === "Super Admin").length;
-  const newUsersThisMonth = users.filter((u) => u.joinDate?.startsWith("2025-03")).length + 3;
+  const superAdminCount = users.filter((u) => u.role === "Super Admin").length;
+  const adminCount = users.filter((u) => u.role === "Admin").length;
 
   /* =========================================================
      MODAL & CRUD HANDLERS
@@ -269,8 +236,7 @@ export default function AdminUserPage() {
     setFormData({
       name: "",
       email: "",
-      phone: "",
-      role: "Pelanggan",
+      role: "Admin",
       status: "active",
       password: "",
     });
@@ -297,7 +263,7 @@ export default function AdminUserPage() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          phone: formData.phone || "-",
+          phone: "-",
           role: formData.role,
           status: formData.status,
           password: formData.password || "password123",
@@ -310,8 +276,7 @@ export default function AdminUserPage() {
           id: u.id,
           name: u.name,
           email: u.email,
-          phone: u.phone || "-",
-          role: u.role || "Pelanggan",
+          role: u.role || "Admin",
           status: u.status || "active",
           password: u.password || formData.password || "password123",
           joinDate: u.createdAt
@@ -337,7 +302,6 @@ export default function AdminUserPage() {
     setFormData({
       name: user.name,
       email: user.email,
-      phone: user.phone === "-" ? "" : user.phone || "",
       role: user.role,
       status: user.status,
       password: "",
@@ -363,7 +327,7 @@ export default function AdminUserPage() {
       id: selectedUser.id,
       name: formData.name,
       email: formData.email,
-      phone: formData.phone || "-",
+      phone: "-",
       role: formData.role,
       status: formData.status,
       ...(formData.password ? { password: formData.password } : {}),
@@ -385,8 +349,7 @@ export default function AdminUserPage() {
                   ...item,
                   name: u.name,
                   email: u.email,
-                  phone: u.phone || "-",
-                  role: u.role || "Pelanggan",
+                  role: u.role || "Admin",
                   status: u.status || "active",
                   password: u.password || (formData.password ? formData.password : item.password),
                 }
@@ -485,7 +448,7 @@ export default function AdminUserPage() {
             <div className="admin-user-title">
               <h1>Daftar Pengguna Website</h1>
               <p className="admin-user-subtitle">
-                Kelola akun pengguna, hak akses role, dan status keaktifan user tersinkronisasi Prisma.
+                Kelola akun administrator, hak akses role, dan status keaktifan user tersinkronisasi Prisma.
               </p>
             </div>
 
@@ -517,7 +480,7 @@ export default function AdminUserPage() {
                 <div className="stat-icon" style={{ background: "#e0e7ff", color: "#3730a3" }}>
                   <FiUsers />
                 </div>
-                <span className="stat-change">+8%</span>
+                <span className="stat-change">Total</span>
               </div>
               <div className="stat-value">{totalUsers}</div>
               <div className="stat-title">Total Pengguna</div>
@@ -536,24 +499,24 @@ export default function AdminUserPage() {
 
             <div className="admin-stat-card">
               <div className="stat-top">
-                <div className="stat-icon" style={{ background: "#f3e8ff", color: "#6b21a8" }}>
+                <div className="stat-icon" style={{ background: "#fef3c7", color: "#92400e" }}>
                   <FiShield />
                 </div>
-                <span className="stat-change">Staf</span>
+                <span className="stat-change">Role</span>
               </div>
-              <div className="stat-value">{adminUsers}</div>
-              <div className="stat-title">Admin & Manager</div>
+              <div className="stat-value">{superAdminCount}</div>
+              <div className="stat-title">Super Admin</div>
             </div>
 
             <div className="admin-stat-card">
               <div className="stat-top">
-                <div className="stat-icon" style={{ background: "#fef3c7", color: "#92400e" }}>
+                <div className="stat-icon" style={{ background: "#e0e7ff", color: "#3730a3" }}>
                   <FiUserPlus />
                 </div>
-                <span className="stat-change">Bulan Ini</span>
+                <span className="stat-change">Role</span>
               </div>
-              <div className="stat-value">+{newUsersThisMonth}</div>
-              <div className="stat-title">Pengguna Baru</div>
+              <div className="stat-value">{adminCount}</div>
+              <div className="stat-title">Admin</div>
             </div>
           </section>
 
@@ -563,7 +526,7 @@ export default function AdminUserPage() {
                 <FiSearch />
                 <input
                   type="text"
-                  placeholder="Cari berdasarkan nama, email, atau HP..."
+                  placeholder="Cari berdasarkan nama atau email..."
                   value={search}
                   onChange={(e) => {
                     setSearch(e.target.value);
@@ -584,9 +547,6 @@ export default function AdminUserPage() {
                 <option value="all">Semua Role</option>
                 <option value="admin">Admin</option>
                 <option value="super admin">Super Admin</option>
-                <option value="manager">Manager</option>
-                <option value="pelanggan">Pelanggan</option>
-                <option value="staff">Staff</option>
               </select>
 
               <select
@@ -615,7 +575,6 @@ export default function AdminUserPage() {
                 <thead>
                   <tr>
                     <th>Pengguna</th>
-                    <th>Kontak HP</th>
                     <th>Role</th>
                     <th>Status</th>
                     <th>Tgl Bergabung</th>
@@ -637,7 +596,6 @@ export default function AdminUserPage() {
                             </div>
                           </div>
                         </td>
-                        <td>{user.phone}</td>
                         <td>
                           <span className={`badge-role ${user.role.toLowerCase().replace(/\s+/g, "-")}`}>
                             {user.role}
@@ -696,7 +654,7 @@ export default function AdminUserPage() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6" style={{ textAlign: "center", padding: "40px", color: "#64748b" }}>
+                      <td colSpan="5" style={{ textAlign: "center", padding: "40px", color: "#64748b" }}>
                         Tidak ada data pengguna yang sesuai dengan filter pencarian.
                       </td>
                     </tr>
@@ -730,10 +688,6 @@ export default function AdminUserPage() {
                     </div>
 
                     <div className="user-card-body">
-                      <div className="user-card-row">
-                        <span>Telepon:</span>
-                        <strong>{user.phone}</strong>
-                      </div>
                       <div className="user-card-row">
                         <span>Role:</span>
                         <span className={`badge-role ${user.role.toLowerCase().replace(/\s+/g, "-")}`}>
@@ -858,19 +812,6 @@ export default function AdminUserPage() {
                   </div>
                 </div>
 
-                <div className="admin-form-group">
-                  <label>Nomor Telepon / WhatsApp</label>
-                  <div className="admin-input-wrapper">
-                    <FiPhone />
-                    <input
-                      type="text"
-                      placeholder="0812xxxxxxxx"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    />
-                  </div>
-                </div>
-
                 <div className="admin-form-row">
                   <div>
                     <label>Role Pengguna</label>
@@ -880,11 +821,8 @@ export default function AdminUserPage() {
                       value={formData.role}
                       onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                     >
-                      <option value="Pelanggan">Pelanggan</option>
                       <option value="Admin">Admin</option>
                       <option value="Super Admin">Super Admin</option>
-                      <option value="Manager">Manager</option>
-                      <option value="Staff">Staff</option>
                     </select>
                   </div>
 
@@ -934,7 +872,7 @@ export default function AdminUserPage() {
                   Batal
                 </button>
                 <button type="submit" className="admin-btn-primary">
-                  Simpan User ke Prisma
+                  Simpan Pengguna
                 </button>
               </div>
             </form>
@@ -986,23 +924,11 @@ export default function AdminUserPage() {
                   </div>
                 </div>
 
-                <div className="admin-form-group">
-                  <label>Telepon / WhatsApp</label>
-                  <div className="admin-input-wrapper">
-                    <FiPhone />
-                    <input
-                      type="text"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    />
-                  </div>
-                </div>
-
                 {/* TAMPILAN PASSWORD SAAT INI (LAMA) */}
                 <div className="admin-form-group">
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div className="admin-form-label-row">
                     <label style={{ margin: 0 }}>Password Saat Ini (Lama)</label>
-                    <span style={{ fontSize: "11px", color: "#64748b", fontWeight: 600 }}>Tersimpan di Database</span>
+                    <span className="admin-badge-stored">Tersimpan di Database</span>
                   </div>
                   <div className="admin-current-password-box">
                     <div className="admin-password-display">
@@ -1018,8 +944,7 @@ export default function AdminUserPage() {
                     <button
                       type="button"
                       onClick={() => setShowOldPassword(!showOldPassword)}
-                      className="admin-password-toggle-btn"
-                      style={{ position: "static" }}
+                      className="admin-password-toggle-inline"
                       title={showOldPassword ? "Sembunyikan password lama" : "Lihat password lama"}
                     >
                       {showOldPassword ? <FiEyeOff /> : <FiEye />}
@@ -1034,7 +959,7 @@ export default function AdminUserPage() {
                     <FiLock />
                     <input
                       type={showEditPassword ? "text" : "password"}
-                      placeholder="Masukkan password baru jika ingin mengubah"
+                      placeholder="Password baru (opsional)"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       autoComplete="new-password"
@@ -1062,11 +987,8 @@ export default function AdminUserPage() {
                       value={formData.role}
                       onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                     >
-                      <option value="Pelanggan">Pelanggan</option>
                       <option value="Admin">Admin</option>
                       <option value="Super Admin">Super Admin</option>
-                      <option value="Manager">Manager</option>
-                      <option value="Staff">Staff</option>
                     </select>
                   </div>
 
@@ -1095,7 +1017,7 @@ export default function AdminUserPage() {
                   Batal
                 </button>
                 <button type="submit" className="admin-btn-primary">
-                  Perbarui Data & Simpan ke Prisma
+                  Simpan Perubahan
                 </button>
               </div>
             </form>
@@ -1139,14 +1061,6 @@ export default function AdminUserPage() {
                   <div>
                     <span>EMAIL ADDRESS</span>
                     <strong>{selectedUser.email}</strong>
-                  </div>
-                </div>
-
-                <div className="admin-view-item">
-                  <FiPhone style={{ color: "#10b981", fontSize: "18px" }} />
-                  <div>
-                    <span>NOMOR TELEPON / WA</span>
-                    <strong>{selectedUser.phone}</strong>
                   </div>
                 </div>
 
@@ -1253,7 +1167,7 @@ export default function AdminUserPage() {
                 onClick={handleDeleteUser}
                 className="admin-btn-danger"
               >
-                Ya, Hapus dari Prisma
+                Ya, Hapus
               </button>
             </div>
           </div>
@@ -1271,3 +1185,4 @@ export default function AdminUserPage() {
     </div>
   );
 }
+

@@ -264,26 +264,6 @@ export default function PengaturanPage() {
               <span>Layanan Survei & Konsultasi</span>
             </button>
 
-            <Link
-              href="/admin/carousel"
-              className="admin-tab-btn"
-              style={{
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                background: "rgba(216, 194, 164, 0.15)",
-                borderColor: "rgba(216, 194, 164, 0.4)",
-                color: "#2A6151",
-                fontWeight: 700,
-              }}
-              title="Buka Halaman Pengaturan Carousel Banner Hero"
-            >
-              <FiSliders size={16} />
-              <span>Pengaturan Carousel Hero</span>
-              <FiExternalLink size={12} />
-            </Link>
-
             <button
               type="button"
               className="admin-tab-btn"
@@ -910,61 +890,27 @@ export default function PengaturanPage() {
                   </div>
 
                   <div
-                    style={{
-                      background: "linear-gradient(135deg, rgba(42, 97, 81, 0.45) 0%, rgba(20, 50, 42, 0.65) 100%)",
-                      border: "1px solid rgba(42, 97, 81, 0.5)",
-                      borderRadius: "16px",
-                      padding: "32px 36px",
-                      opacity: (settings.surveyActive === false || settings.surveyActive === "false") ? 0.6 : 1,
-                      transition: "all 0.3s ease",
-                    }}
+                    className={`admin-survey-preview-card ${settings.surveyActive === false || settings.surveyActive === "false" ? "is-inactive" : ""}`}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "24px" }}>
-                      <div style={{ flex: "1 1 500px" }}>
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "6px",
-                            background: "rgba(255, 255, 255, 0.15)",
-                            padding: "5px 12px",
-                            borderRadius: "20px",
-                            fontSize: "11px",
-                            fontWeight: 700,
-                            color: "#86efac",
-                            letterSpacing: "0.5px",
-                            textTransform: "uppercase",
-                            marginBottom: "12px",
-                          }}
-                        >
+                    <div className="admin-survey-preview-inner">
+                      <div className="admin-survey-preview-content">
+                        <span className="admin-survey-badge">
                           <FiCalendar size={13} />
                           <span>{settings.surveyBadge || "LAYANAN SURVEI & KONSULTASI GRATIS"}</span>
                         </span>
 
-                        <h3 style={{ fontSize: "22px", fontWeight: 700, color: "#ffffff", margin: "0 0 10px 0", lineHeight: 1.3 }}>
+                        <h3 className="admin-survey-title">
                           {settings.surveyTitle || "Ingin Tim Kami Datang Langsung ke Lokasi Anda?"}
                         </h3>
 
-                        <p style={{ fontSize: "14px", color: "#cbd5e1", lineHeight: 1.6, margin: 0, maxWidth: "680px" }}>
+                        <p className="admin-survey-desc">
                           {settings.surveyDescription ||
                             "Dapatkan layanan ukur lokasi presisi, estimasi kebutuhan karpet, dan bawa ratusan sampel bahan langsung ke masjid, kantor, atau kediaman Anda di seluruh Jawa Timur."}
                         </p>
                       </div>
 
-                      <div style={{ flexShrink: 0 }}>
-                        <div
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            background: "#fef08a",
-                            color: "#1e293b",
-                            fontWeight: 700,
-                            fontSize: "14px",
-                            padding: "12px 22px",
-                            borderRadius: "10px",
-                          }}
-                        >
+                      <div className="admin-survey-btn-wrapper">
+                        <div className="admin-survey-btn">
                           <FaWhatsapp size={18} color="#16a34a" />
                           <span>{settings.surveyButtonText || "Jadwalkan Survei Sekarang"}</span>
                         </div>
