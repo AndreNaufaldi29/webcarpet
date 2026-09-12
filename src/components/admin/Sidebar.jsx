@@ -234,22 +234,13 @@ export default function Sidebar({
               </p>
             </div>
 
-            <div className="admin-modal-footer" style={{ gap: "8px", flexWrap: "wrap" }}>
+            <div className="admin-modal-footer">
               <button
                 type="button"
                 className="admin-btn-secondary"
                 onClick={() => setShowLogoutModal(false)}
               >
                 Batal
-              </button>
-              <button
-                type="button"
-                className="admin-btn-secondary"
-                style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
-                onClick={handleLogoutToWebsite}
-              >
-                <FiGlobe size={14} />
-                <span>Keluar & Buka Website</span>
               </button>
               <button
                 type="button"

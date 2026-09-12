@@ -2,7 +2,6 @@
 
 import { useEffect, Suspense } from "react";
 import { usePathname } from "next/navigation";
-import { isAuthenticated, logout } from "@/lib/authStore";
 
 import Navbar from "./Navbar";
 import Footer from "./footer";
@@ -39,4 +38,3 @@ export default function SiteShell({ children }) {
     </div>
   );
 }
-

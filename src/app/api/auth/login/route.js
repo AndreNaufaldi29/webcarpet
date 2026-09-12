@@ -206,15 +206,11 @@ export async function POST(request) {
       name: "abcarpet_admin_session",
       value: token,
       path: "/",
+      maxAge: sessionDurationSeconds,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
     };
-
-    // Jika rememberMe dicentang, atur maxAge 30 hari; jika tidak, cookie bersifat session-only
-    if (rememberMe) {
-      cookieConfig.maxAge = sessionDurationSeconds;
-    }
 
     response.cookies.set(cookieConfig);
 

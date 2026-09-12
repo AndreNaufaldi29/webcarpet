@@ -63,18 +63,7 @@ function LoginFormInner() {
     } else if (reasonParam === "locked") {
       setErrorMsg("Sesi admin telah dikunci demi keamanan. Silakan masukkan kata sandi Anda untuk membuka.");
     }
-
-    // Hanya jika benar-benar terverifikasi di server, alihkan ke dashboard
-    const checkActiveSession = async () => {
-      if (isAuthenticated()) {
-        const check = await verifySessionWithServer();
-        if (check.authenticated) {
-          router.replace(redirectTarget);
-        }
-      }
-    };
-    checkActiveSession();
-  }, [router, redirectTarget, searchParams]);
+  }, [searchParams]);
 
   // Interval countdown untuk masa lockout
   useEffect(() => {

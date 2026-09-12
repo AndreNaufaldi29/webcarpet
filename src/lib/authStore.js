@@ -75,30 +75,20 @@ export function deleteCookie(name) {
 }
 
 /**
- * Mendapatkan sesi admin yang tersimpan di sessionStorage atau localStorage
+ * Mendapatkan sesi admin yang tersimpan di localStorage / sessionStorage
  */
 export function getStoredAuth() {
   if (typeof window === "undefined") return null;
 
   try {
-    // 1. Periksa sessionStorage (sesi tab/window aktif)
-    const sessionRaw = sessionStorage.getItem(AUTH_STORAGE_KEY);
-    if (sessionRaw) {
-      const parsed = JSON.parse(sessionRaw);
-      if (parsed && parsed.email && parsed.token) {
-        return parsed;
-      }
-      sessionStorage.removeItem(AUTH_STORAGE_KEY);
-    }
-
-    // 2. Periksa localStorage (hanya jika pengguna memilih "Ingat Sesi")
-    const localRaw = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (localRaw) {
-      const parsed = JSON.parse(localRaw);
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY) || sessionStorage.getItem(AUTH_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
       if (parsed && parsed.email && parsed.token) {
         return parsed;
       }
       localStorage.removeItem(AUTH_STORAGE_KEY);
+      sessionStorage.removeItem(AUTH_STORAGE_KEY);
     }
     return null;
   } catch {
@@ -138,13 +128,8 @@ export async function verifySessionWithServer() {
           email: data.user.email,
           user: data.user,
         };
-        if (sessionStorage.getItem(AUTH_STORAGE_KEY)) {
-          sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(updated));
-        } else if (localStorage.getItem(AUTH_STORAGE_KEY)) {
-          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(updated));
-        } else {
-          sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(updated));
-        }
+        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(updated));
+        sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(updated));
         return { authenticated: true, user: data.user };
       }
     }
@@ -229,13 +214,8 @@ export async function login(email, password, rememberMe = false) {
       };
 
       if (typeof window !== "undefined") {
-        if (rememberMe) {
-          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
-          sessionStorage.removeItem(AUTH_STORAGE_KEY);
-        } else {
-          sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
-          localStorage.removeItem(AUTH_STORAGE_KEY);
-        }
+        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
+        sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
         window.dispatchEvent(new CustomEvent("abcarpet:auth_changed", { detail: authPayload }));
       }
 
@@ -295,16 +275,10 @@ export async function login(email, password, rememberMe = false) {
   };
 
   if (typeof window !== "undefined") {
-    if (rememberMe) {
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
-      sessionStorage.removeItem(AUTH_STORAGE_KEY);
-      const expiryDays = 30;
-      setCookie(COOKIE_NAME, JSON.stringify(authPayload), expiryDays);
-    } else {
-      sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
-      localStorage.removeItem(AUTH_STORAGE_KEY);
-      setCookie(COOKIE_NAME, JSON.stringify(authPayload), 0);
-    }
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
+    sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
+    const expiryDays = rememberMe ? 30 : 1;
+    setCookie(COOKIE_NAME, JSON.stringify(authPayload), expiryDays);
     window.dispatchEvent(new CustomEvent("abcarpet:auth_changed", { detail: authPayload }));
   }
 

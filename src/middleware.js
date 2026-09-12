@@ -62,24 +62,13 @@ async function verifyEdgeToken(tokenString) {
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  // Izinkan asset statis atau file aset
+  // Izinkan asset statis atau file berekstensi (gambar, icon, css, js)
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/static") ||
     pathname.includes(".")
   ) {
     return NextResponse.next();
-  }
-
-  // Dapatkan session cookie
-  const sessionCookie = request.cookies.get("abcarpet_admin_session")?.value;
-  let hasValidSession = false;
-
-  if (sessionCookie) {
-    const verifiedPayload = await verifyEdgeToken(sessionCookie);
-    if (verifiedPayload && verifiedPayload.email) {
-      hasValidSession = true;
-    }
   }
 
   // Helper untuk menyematkan Security & Strict Anti-Cache Headers ke respon
@@ -91,7 +80,7 @@ export async function middleware(request) {
       "Permissions-Policy",
       "camera=(), microphone=(), geolocation=()"
     );
-    // Anti-caching ketat untuk mencegah browser back-forward cache (bfcache) membocorkan data admin
+    // Anti-caching ketat untuk mencegah browser cache / history membocorkan halaman admin
     response.headers.set(
       "Cache-Control",
       "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
@@ -102,7 +91,17 @@ export async function middleware(request) {
     return response;
   };
 
-  // Proteksi API Rute Admin (/api/admin/*)
+  const sessionCookie = request.cookies.get("abcarpet_admin_session")?.value;
+
+  let hasValidSession = false;
+  if (sessionCookie) {
+    const verifiedPayload = await verifyEdgeToken(sessionCookie);
+    if (verifiedPayload && verifiedPayload.email) {
+      hasValidSession = true;
+    }
+  }
+
+  // Kasus 1: Proteksi API Rute Admin (/api/admin/*)
   if (pathname.startsWith("/api/admin")) {
     if (!hasValidSession) {
       return applySecurityAndNoCacheHeaders(
@@ -115,35 +114,19 @@ export async function middleware(request) {
     return applySecurityAndNoCacheHeaders(NextResponse.next());
   }
 
-  // Proteksi Halaman Admin Web (/admin/*)
-  if (pathname.startsWith("/admin")) {
-    // Kasus 1: Akses ke Halaman Login (/admin/login)
-    if (pathname === "/admin/login") {
-      // Jika sudah memiliki sesi valid dan tidak sedang logout, arahkan ke dashboard
-      if (hasValidSession) {
-        const redirectTarget = request.nextUrl.searchParams.get("redirect") || "/admin";
-        let targetUrl;
-        try {
-          targetUrl = new URL(redirectTarget, request.url);
-          if (!targetUrl.pathname.startsWith("/admin") || targetUrl.pathname === "/admin/login") {
-            targetUrl = new URL("/admin", request.url);
-          }
-        } catch {
-          targetUrl = new URL("/admin", request.url);
-        }
-        return applySecurityAndNoCacheHeaders(NextResponse.redirect(targetUrl));
-      }
-      // Belum login -> izinkan akses ke halaman login dengan anti-cache
-      return applySecurityAndNoCacheHeaders(NextResponse.next());
-    }
+  // Kasus 2: Akses ke Halaman Login Admin (/admin/login)
+  if (pathname === "/admin/login") {
+    return applySecurityAndNoCacheHeaders(NextResponse.next());
+  }
 
-    // Kasus 2: Akses ke Halaman Admin yang dilindungi (/admin, /admin/produk, dll)
+  // Kasus 3: Akses ke Halaman Dashboard & Fitur Admin (/admin, /admin/produk, dll)
+  if (pathname.startsWith("/admin")) {
     if (!hasValidSession) {
       const loginUrl = new URL("/admin/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
       const redirectResponse = NextResponse.redirect(loginUrl);
 
-      // Pastikan cookie yang kadaluwarsa/tidak valid dihapus seketika
+      // Bersihkan cookie yang tidak valid/kadaluwarsa
       redirectResponse.cookies.delete("abcarpet_admin_session");
       redirectResponse.cookies.set({
         name: "abcarpet_admin_session",
@@ -158,7 +141,7 @@ export async function middleware(request) {
       return applySecurityAndNoCacheHeaders(redirectResponse);
     }
 
-    // Sesi valid, izinkan request lanjut ke halaman admin dengan security & anti-cache headers
+    // Sesi valid, izinkan request lanjut dengan security & anti-cache headers
     return applySecurityAndNoCacheHeaders(NextResponse.next());
   }
 

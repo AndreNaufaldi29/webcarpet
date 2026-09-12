@@ -349,38 +349,15 @@ export default function AdminHeader({
                     <span>Pengaturan Website</span>
                   </Link>
 
-                  <button
-                    type="button"
-                    className="profile-dropdown-link"
-                    style={{ background: "none", border: "none", width: "100%", textAlign: "left", cursor: "pointer", fontFamily: "inherit" }}
-                    onClick={handleLogoutToWebsite}
-                    title="Keluar dari sesi admin dan buka halaman website publik"
-                  >
-                    <FiGlobe size={15} />
-                    <span>Keluar & Ke Website Publik</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="profile-dropdown-link"
-                    style={{ background: "none", border: "none", width: "100%", textAlign: "left", cursor: "pointer", fontFamily: "inherit" }}
-                    onClick={handleLockSession}
-                    title="Kunci sesi admin secara instan"
-                  >
-                    <FiLock size={15} />
-                    <span>Kunci Sesi Admin</span>
-                  </button>
-
                   <a
                     href="/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="profile-dropdown-link"
                     onClick={() => setShowProfileMenu(false)}
-                    title="Buka website publik di tab baru tanpa keluar sesi"
                   >
                     <FiExternalLink size={15} />
-                    <span>Lihat Website (Tab Baru)</span>
+                    <span>Kunjungi Website Publik</span>
                   </a>
                 </div>
 
@@ -409,7 +386,7 @@ export default function AdminHeader({
         <div className="admin-modal-backdrop" onClick={() => setShowLogoutModal(false)}>
           <div
             className="admin-modal-box"
-            style={{ maxWidth: "440px" }}
+            style={{ maxWidth: "420px" }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="admin-modal-header">
@@ -432,22 +409,13 @@ export default function AdminHeader({
               </p>
             </div>
 
-            <div className="admin-modal-footer" style={{ gap: "8px", flexWrap: "wrap" }}>
+            <div className="admin-modal-footer">
               <button
                 type="button"
                 className="admin-btn-secondary"
                 onClick={() => setShowLogoutModal(false)}
               >
                 Batal
-              </button>
-              <button
-                type="button"
-                className="admin-btn-secondary"
-                style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
-                onClick={handleLogoutToWebsite}
-              >
-                <FiGlobe size={14} />
-                <span>Keluar & Buka Website</span>
               </button>
               <button
                 type="button"
